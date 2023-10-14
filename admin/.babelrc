@@ -1,0 +1,4 @@
+{
+    "presets": ["@babel/preset-env"]
+    // Cấu hình khác của Babel (nếu cần)
+}

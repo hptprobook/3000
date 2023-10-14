@@ -12,6 +12,14 @@
     "eslint:recommended",
     "plugin:react/recommended"
   ],
+    "overrides": [
+      {
+        "files": ["serviceWorker.js"],
+        "parserOptions": {
+          "requireConfigFile": false
+        }
+      }
+    ],
   "settings": {
     "react": {
       "createClass": "createReactClass", // Regex for Component Factory to use,
@@ -38,6 +46,7 @@
     },
     "ecmaVersion": 12
   },
+  
   "plugins": ["prettier", "react", "react-hooks"],
   "rules": {
     "react/jsx-uses-react": "error",
@@ -80,7 +89,7 @@
         "printWidth": 140,
         "singleQuote": true,
         "trailingComma": "none",
-        "tabWidth": 2,
+        "tabWidth": 4,
         "useTabs": false,
         "endOfLine": "auto"
       }
