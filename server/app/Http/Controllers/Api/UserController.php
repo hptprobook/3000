@@ -134,10 +134,17 @@ class UserController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/api/users",
+     *     path="/api/users/{id}",
      *     summary="Update user",
      *     operationId="updateUsers",
      *     tags={"Users"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID of the user to update",
+     *         @OA\Schema(type="integer")
+     *     ),
      *     @OA\RequestBody(
      *         required=true,
      *         description="Update a user by ID",
@@ -221,6 +228,9 @@ class UserController extends Controller
         try {
             $user = User::find($id);
             $user->delete();
+            return response()->json([
+                'success' => true,
+            ], 201);
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
@@ -232,7 +242,5 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
-
-        return 'Destroy ' . $id;
     }
 }
