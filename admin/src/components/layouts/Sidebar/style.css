@@ -2,3 +2,15 @@
     font-family: "Inter", sans-serif !important;
     font-style: normal !important;
 }
+
+.sidebarMenu span {
+    font-weight: 600 !important;
+}
+
+.sidebarMenu svg {
+    color: #868e99;
+}
+
+.sidebarMenu__item {
+    border-radius: 4px;
+}

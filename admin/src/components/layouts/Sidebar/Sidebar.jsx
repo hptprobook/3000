@@ -9,31 +9,25 @@ import Button from "@mui/material/Button";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import MenuIcon from "@mui/icons-material/Menu";
-import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
-import StarIcon from "@mui/icons-material/Star";
 
 import "./style.css";
 
 function Sidebar() {
     const [openLevel1, setOpenLevel1] = React.useState(false);
-    const [openLevel2, setOpenLevel2] = React.useState(false);
-    const [zoomedOut, setZoomedOut] = React.useState(false); // Set to false for zoomed in by default
-    const [autoZoom, setAutoZoom] = React.useState(false); // Set to false to disable hover functions by default
+    const [zoomedOut, setZoomedOut] = React.useState(false);
+    const [autoZoom, setAutoZoom] = React.useState(false);
+    const [activeLevel2Item, setActiveLevel2Item] = React.useState(false);
 
     const handleToggleLevel1 = () => {
         setOpenLevel1(!openLevel1);
     };
 
-    const handleToggleLevel2 = () => {
-        setOpenLevel2(!openLevel2);
-    };
-
     const handleToggleZoom = () => {
         setZoomedOut(!zoomedOut);
         if (!zoomedOut) {
-            setAutoZoom(true); // Enable hover effect only when manually zooming out
+            setAutoZoom(true);
         } else {
-            setAutoZoom(false); // Disable hover effect when manually zooming in
+            setAutoZoom(false);
         }
     };
 
@@ -69,19 +63,38 @@ function Sidebar() {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 sx={{
-                    width: zoomedOut ? 60 : 300,
+                    width: zoomedOut ? 80 : 300,
+                    paddingLeft: !zoomedOut ? 3 : 1,
+                    paddingRight: !zoomedOut ? 3 : 1,
                     transition: "width 0.3s",
                     height: "100vh",
                     position: "fixed",
                     left: 0,
                     top: 0,
-                    backgroundColor: "#f7f7f7",
+                    backgroundColor: "#1c2536",
                     borderRight: "1px solid #ddd",
+                    color: "#868e99",
                 }}
             >
-                <ListItem button onClick={handleToggleLevel1}>
+                <ListItem
+                    button
+                    onClick={handleToggleLevel1}
+                    className="sidebarMenu__item"
+                    selected={openLevel1}
+                    sx={{
+                        borderRadius: "12px",
+                        height: 40,
+                        "&:hover": {
+                            backgroundColor: "#252e3e",
+                        },
+                        ...(openLevel1 && {
+                            color: "#fff",
+                            svg: { color: "#6366f1" },
+                        }),
+                    }}
+                >
                     <ListItemIcon>
-                        <MenuIcon />
+                        <MenuIcon sx={{ color: "#868e99" }} />
                     </ListItemIcon>
                     {!zoomedOut && <ListItemText primary="Level 1" />}
                     {!zoomedOut &&
@@ -91,36 +104,39 @@ function Sidebar() {
                     <List component="div" disablePadding>
                         <ListItem
                             button
-                            sx={{ paddingLeft: 3 }}
-                            onClick={handleToggleLevel2}
+                            sx={{
+                                marginTop: "4px",
+                                borderRadius: "12px",
+                                height: 40,
+                                paddingLeft: !zoomedOut ? 9 : 0,
+                            }}
                         >
-                            <ListItemIcon>
-                                <SubdirectoryArrowRightIcon />
-                            </ListItemIcon>
                             {!zoomedOut && <ListItemText primary="Level 2" />}
-                            {!zoomedOut &&
-                                (openLevel2 ? <ExpandLess /> : <ExpandMore />)}
                         </ListItem>
-                        <Collapse in={openLevel2} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                <ListItem button sx={{ paddingLeft: 6 }}>
-                                    <ListItemIcon>
-                                        <StarIcon />
-                                    </ListItemIcon>
-                                    {!zoomedOut && (
-                                        <ListItemText primary="Level 3 Item 1" />
-                                    )}
-                                </ListItem>
-                                <ListItem button sx={{ paddingLeft: 6 }}>
-                                    <ListItemIcon>
-                                        <StarIcon />
-                                    </ListItemIcon>
-                                    {!zoomedOut && (
-                                        <ListItemText primary="Level 3 Item 2" />
-                                    )}
-                                </ListItem>
-                            </List>
-                        </Collapse>
+
+                        <ListItem
+                            button
+                            sx={{
+                                marginTop: "4px",
+                                borderRadius: "12px",
+                                height: 40,
+                                paddingLeft: 9,
+                            }}
+                        >
+                            {!zoomedOut && <ListItemText primary="Level 2" />}
+                        </ListItem>
+
+                        <ListItem
+                            button
+                            sx={{
+                                marginTop: "4px",
+                                borderRadius: "12px",
+                                height: 40,
+                                paddingLeft: 9,
+                            }}
+                        >
+                            {!zoomedOut && <ListItemText primary="Level 2" />}
+                        </ListItem>
                     </List>
                 </Collapse>
             </List>
