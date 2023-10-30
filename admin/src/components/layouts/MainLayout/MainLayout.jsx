@@ -1,10 +1,10 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import './style.css';
+import { Box } from '@mui/material';
 export default function MainLayout() {
 
 

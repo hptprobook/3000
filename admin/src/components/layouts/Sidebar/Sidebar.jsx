@@ -14,6 +14,13 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import { ListSubheader } from '@mui/material';
+import Collapse from '@mui/material/Collapse';
+import DraftsIcon from '@mui/icons-material/Drafts';
+import SendIcon from '@mui/icons-material/Send';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import StarBorder from '@mui/icons-material/StarBorder';
 
 const drawerWidth = 240;
 
@@ -60,6 +67,7 @@ const Sidebar = () => {
     const theme = useTheme();
 
     const [open, setOpen] = React.useState(true);
+    const [openMenu, setOpenMenu] = React.useState(0);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -67,6 +75,15 @@ const Sidebar = () => {
 
     const handleDrawerClose = () => {
         setOpen(false);
+        setOpenMenu(0); 
+
+    };
+    const handleClick = (index) => {
+        if (openMenu === index) {
+            setOpenMenu(0); // Close the submenu if it's open
+        } else {
+            setOpenMenu(index); // Open the submenu
+        }
     };
     return (
         <div>
@@ -88,29 +105,62 @@ const Sidebar = () => {
                     </Typography>
                 </Toolbar>
                 <Divider />
-                <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : 'auto',
-                                        justifyContent: 'center',
-                                    }}
-                                >
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <List
+                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                    subheader={
+                        <ListSubheader component="div" id="nested-list-subheader">
+                            Nested List Items
+                        </ListSubheader>
+                    }
+                >
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <SendIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Sent mail" />
+                    </ListItemButton>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <DraftsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Drafts" />
+                    </ListItemButton>
+                    <ListItemButton onClick={() => handleClick(1)}>
+                        <ListItemIcon>
+                            <InboxIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Inbox" />
+                        {openMenu === 1 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={openMenu === 1} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemIcon>
+                                    <StarBorder />
                                 </ListItemIcon>
-                                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                                <ListItemText primary="Starred" />
                             </ListItemButton>
-                        </ListItem>
-                    ))}
+                        </List>
+                    </Collapse>
+                    <ListItemButton onClick={() => handleClick(2)}>
+                        <ListItemIcon>
+                            <InboxIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Inbox" />
+                        {openMenu === 2 ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={openMenu === 2} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <ListItemButton sx={{ pl: 4 }}>
+                                <ListItemIcon>
+                                    <StarBorder />
+                                </ListItemIcon>
+                                <ListItemText primary="Starred" />
+                            </ListItemButton>
+                        </List>
+                    </Collapse>
                 </List>
                 <Divider />
                 <List>
