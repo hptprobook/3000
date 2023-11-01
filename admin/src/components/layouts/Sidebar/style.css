@@ -1,16 +1,5 @@
-* {
-    font-family: "Inter", sans-serif !important;
-    font-style: normal !important;
-}
-
-.sidebarMenu span {
-    font-weight: 600 !important;
-}
-
-.sidebarMenu svg {
-    color: #868e99;
-}
-
-.sidebarMenu__item {
-    border-radius: 4px;
+.sidebar{
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #1c2536 !important;
 }
