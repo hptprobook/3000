@@ -1,0 +1,19 @@
+.login-page {
+    display: flex;
+}
+
+.login-page .form-login {
+    background-color: #111927;
+    padding: 64px;
+    height: 100vh;
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.login-page .context-login {
+    flex-grow: 1;
+}
+.form-login .input-login {
+    width: 100%;
+}
