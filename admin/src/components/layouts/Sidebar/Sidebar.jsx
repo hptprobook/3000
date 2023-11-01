@@ -12,14 +12,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import { ListSubheader } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import SendIcon from '@mui/icons-material/Send';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
+import { BiHomeSmile } from 'react-icons/bi';
+import { TbDeviceAnalytics } from 'react-icons/tb';
+import { MdOutlineAccountCircle, MdOutlineSell, MdSettings } from 'react-icons/md';
+import { GoDotFill } from 'react-icons/go';
+import { LuUsers2 } from 'react-icons/lu';
+import { HiShoppingBag } from 'react-icons/hi2';
+import { FaShoppingCart } from 'react-icons/fa';
 import './style.css';
 import { NavLink } from 'react-router-dom';
 
@@ -66,15 +69,46 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 const hoverNav = '#252e3e';
 const iconActive = '#6366f1';
+function createList(label, key, link, icon, children,) {
+    return {
+        key,
+        icon,
+        children,
+        label,
+        link,
+    };
+}
+const mainNav = [
+    createList('Tổng quan', 'overview', '/', <BiHomeSmile />),
+    createList('Phân tích', 'analytics', '/analytics', <TbDeviceAnalytics />),
+    createList('Tài khoản', 'account', '/account', <MdOutlineAccountCircle />),
+    createList('Cài đặt', 'setting', '/setting', <MdSettings />),
+]
+const sellNav = [
+    createList('Người dùng', 'user', '/user', <LuUsers2 />, [
+        createList('Danh sách', 'user-list', '/user/list'),
+        createList('Tạo', 'user-create', '/user/create'),
+        createList('Danh sách cấm', 'user-list-ban', '/user/list-ban'),
+    ]),
+    createList('Sản phẩm', 'products', '/products', <HiShoppingBag />, [
+        createList('Danh sách', 'products-list', '/products/list'),
+        createList('Tạo', 'products-create', '/products/create'),
+        createList('Kho', 'products-warehouse', '/products/warehouse'),
+    ]),
+    createList('Đơn hàng', 'order', '/order', <FaShoppingCart />),
+]
 const Sidebar = () => {
     const [bgColor, setBgColor] = React.useState('#1c2536');
     const [navColor, setNavColor] = React.useState('#9da4ae');
     const [navColorIcon, setNavColorIcon] = React.useState('#9da4ae');
     const [activeNav, setActiveNav] = React.useState(null);
+    const [activeSubmenu, setActiveSubmenu] = React.useState(null);
 
-    const activeNavbar = (index) => {
+    const handleActiveNavbar = (index) => {
         setActiveNav(index);
-        console.log(activeNav);
+    }
+    const handleActiveSubmenu = (index) => {
+        setActiveSubmenu(index);
     }
     const theme = useTheme();
 
@@ -91,7 +125,7 @@ const Sidebar = () => {
         setOpenMenu(0);
 
     };
-    const handleClick = (index) => {
+    const handleOpenSubmenu = (index) => {
         if (openMenu === index) {
             setOpenMenu(0); // Close the submenu if it's open
         } else {
@@ -109,7 +143,7 @@ const Sidebar = () => {
                         aria-label="open drawer"
                         edge="start"
                         sx={{
-                            marginRight: 5,
+                            marginRight: 1,
                             color: '#9da4ae'
                         }}
                         onClick={open ? handleDrawerClose : handleDrawerOpen}
@@ -123,87 +157,43 @@ const Sidebar = () => {
 
                 <Divider />
                 <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem key={text} disablePadding sx={{ display: 'block'}}>
-                            <ListItemButton
-                                sx={{
-                                    backgroundColor: activeNav == index ? hoverNav : '',
-                                    borderRadius: 3,
-                                    minHeight: 40,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 1,
-                                    py: 0,
-                                    m: 1,
-                                    color: activeNav == index ? 'white' : navColor,
-                                    '&:hover': {
-                                        backgroundColor: hoverNav, // Change this to your desired hover color
-                                      },
-                                }}
-                                onClick={() =>activeNavbar(index)}
-                            >
-                                <ListItemIcon
+                    {mainNav.map((item) => (
+                        <ListItem key={item.key} disablePadding sx={{ display: 'block' }}>
+                            <NavLink className='nav-link' to={item.link}>
+                                <ListItemButton
                                     sx={{
-                                        color: activeNav == index ? iconActive : navColor,
-                                        minWidth: 0,
-                                        mr: open ? 3 : 0,
-                                        ml: open ? 0 : '6px',
-                                        justifyContent: 'center',
-
+                                        backgroundColor: activeNav == item.key ? hoverNav : '',
+                                        borderRadius: 3,
+                                        minHeight: 40,
+                                        justifyContent: open ? 'initial' : 'center',
+                                        px: 1,
+                                        py: 0,
+                                        m: 1,
+                                        color: activeNav == item.key ? 'white' : navColor,
+                                        '&:hover': {
+                                            backgroundColor: hoverNav, // Change this to your desired hover color
+                                        },
                                     }}
+                                    onClick={() => handleActiveNavbar(item.key)}
                                 >
-                                    <InboxIcon sx={{ height: 20, width: 20 }} />
-                                </ListItemIcon>
-                                <ListItemText primary={text}
-                                    sx={{
-                                        visibility: !open ? 'hidden' : 'visible',
-                                        width: !open ? '0px' : 'auto',
-                                        fontSize: 14,
-                                    }} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem key={text} disablePadding sx={{ display: 'block'}}>
-                           <NavLink className='nav-link' to="/">
-                           <ListItemButton
-                                sx={{
-                                    backgroundColor: activeNav == index ? hoverNav : '',
-                                    borderRadius: 3,
-                                    minHeight: 40,
-                                    justifyContent: open ? 'initial' : 'center',
-                                    px: 1,
-                                    py: 0,
-                                    m: 1,
-                                    color: activeNav == index ? 'white' : navColor,
-                                    '&:hover': {
-                                        backgroundColor: hoverNav, // Change this to your desired hover color
-                                      },
-                                }}
-                                onClick={() =>activeNavbar(index)}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        color: activeNav == index ? iconActive : navColor,
-                                        minWidth: 0,
-                                        mr: open ? 3 : 0,
-                                        ml: open ? 0 : '6px',
-                                        justifyContent: 'center',
-
-                                    }}
-                                >
-                                    <InboxIcon sx={{ height: 20, width: 20 }} />
-                                </ListItemIcon>
-                                <ListItemText primary={text}
-                                    sx={{
-                                        visibility: !open ? 'hidden' : 'visible',
-                                        width: !open ? '0px' : 'auto',
-                                        fontSize: 14,
-                                    }} />
-                            </ListItemButton>
-                           </NavLink>
+                                    <ListItemIcon
+                                        sx={{
+                                            color: activeNav == item.key ? iconActive : navColor,
+                                            minWidth: 0,
+                                            mr: open ? 3 : 0,
+                                            ml: '8px',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        {item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.label}
+                                        sx={{
+                                            visibility: !open ? 'hidden' : 'visible',
+                                            fontSize: 14,
+                                        }} />
+                                </ListItemButton>
+                            </NavLink>
                         </ListItem>
                     ))}
                 </List>
@@ -213,62 +203,101 @@ const Sidebar = () => {
                     component="nav"
                     aria-labelledby="nested-list-subheader"
                     subheader={
-                        <ListSubheader component="div" id="nested-list-subheader">
-                            Nested List Items
+                        <ListSubheader sx={{ backgroundColor: bgColor, color: navColor }} component="div" id="nested-list-subheader">
+                            {open ? 'Bán hàng' : <MdOutlineSell size={20} />}
                         </ListSubheader>
                     }
                 >
-                    <ListItemButton
-                        sx={{
-                            backgroundColor: 'white',
-                            borderRadius: 3,
-                        }}
-                    >
-                        <ListItemIcon>
-                            <SendIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Sent mail" />
-                    </ListItemButton>
-                    <ListItemButton>
-                        <ListItemIcon>
-                            <DraftsIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Drafts" />
-                    </ListItemButton>
-                    <ListItemButton onClick={() => handleClick(1)}>
-                        <ListItemIcon>
-                            <InboxIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Inbox" />
-                        {openMenu === 1 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={openMenu === 1} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemIcon>
-                                    <StarBorder />
-                                </ListItemIcon>
-                                <ListItemText primary="Starred" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-                    <ListItemButton onClick={() => handleClick(2)}>
-                        <ListItemIcon>
-                            <InboxIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Inbox" />
-                        {openMenu === 2 ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={openMenu === 2} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemIcon>
-                                    <StarBorder />
-                                </ListItemIcon>
-                                <ListItemText primary="Starred" />
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
+                    {sellNav.map((item) => (
+                        <div key={item.key}>
+                            <NavLink className='nav-link' to={item.children ? '' : item.link}>
+                                <ListItemButton
+                                    onClick={() => {
+                                        handleOpenSubmenu(item.key);
+                                        !item.children ? handleActiveNavbar(item.key) : '';
+                                    }}
+                                    sx={{
+                                        backgroundColor: activeNav == item.key ? hoverNav : '',
+                                        borderRadius: 3,
+                                        minHeight: 40,
+                                        justifyContent: open ? 'initial' : 'center',
+                                        px: 1,
+                                        py: 0,
+                                        m: 1,
+                                        color: activeNav == item.key ? 'white' : navColor,
+                                        '&:hover': {
+                                            backgroundColor: hoverNav, // Change this to your desired hover color
+                                        },
+                                    }}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            color: activeNav == item.key ? iconActive : navColor,
+                                            minWidth: 0,
+                                            mr: open ? 3 : 0,
+                                            ml: '8px',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        {item.icon}
+                                    </ListItemIcon>
+                                    <ListItemText primary={item.label}
+                                        sx={{
+                                            visibility: !open ? 'hidden' : 'visible',
+                                            fontSize: 14,
+                                        }} />
+                                    {item.children ? openMenu === 1 ? <ExpandLess /> : <ExpandMore sx={{ display: !open ? 'none' : 'block', }} /> : ''}
+
+                                </ListItemButton>
+                            </NavLink>
+                            {item.children ? <Collapse in={openMenu === item.key} timeout="auto" unmountOnExit>
+                                <List component="div" disablePadding>
+                                    {item.children.map(subItem => (
+                                        <NavLink key={subItem.key} className='nav-link' to={subItem.link}>
+                                            <ListItemButton
+                                                onClick={() => {
+                                                    handleActiveNavbar(item.key);
+                                                    handleActiveSubmenu(subItem.key);
+                                                }}
+                                                sx={{
+                                                    borderRadius: 3,
+                                                    minHeight: 40,
+                                                    justifyContent: open ? 'initial' : 'center',
+                                                    px: 1,
+                                                    py: 0,
+                                                    m: 1,
+                                                    color: activeSubmenu == subItem.key ? 'white' : navColor,
+                                                    '&:hover': {
+                                                        backgroundColor: hoverNav, // Change this to your desired hover color
+                                                    },
+                                                }}
+                                            >
+                                                <ListItemIcon
+                                                    sx={{
+                                                        opacity: activeSubmenu == subItem.key ? 1 : 0,
+                                                        color: iconActive,
+                                                        minWidth: 0,
+                                                        mr: open ? 3 : 0,
+                                                        ml: '8px',
+                                                        justifyContent: 'center',
+                                                    }}
+                                                >
+                                                    <GoDotFill />
+                                                </ListItemIcon>
+                                                <ListItemText primary={subItem.label}
+                                                    sx={{
+                                                        visibility: !open ? 'hidden' : 'visible',
+                                                        fontSize: 14,
+                                                    }} />
+
+                                            </ListItemButton>
+                                        </NavLink>
+                                    ))}
+                                </List>
+                            </Collapse>
+                                : ''}
+                        </div>
+                    ))}
                 </List>
             </Drawer>
         </div>
