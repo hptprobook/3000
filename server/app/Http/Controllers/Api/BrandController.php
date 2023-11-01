@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\brand;
+use App\Models\Brand;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -14,7 +14,7 @@ class BrandController extends Controller
     public function index()
     {
         try {
-            $brands = brand::all();
+            $brands = Brand::all();
 
             return response()->json(['success' => true, 'data' => $brands], 200);
         } catch (Exception $e) {
@@ -32,7 +32,7 @@ class BrandController extends Controller
                 ]
             );
 
-            $brand = brand::create(
+            $brand = Brand::create(
                 [
                     'name' => $request->name,
                     'icon_url' => $request->icon_url
@@ -50,7 +50,7 @@ class BrandController extends Controller
     public function show(string $id)
     {
         try {
-            $brand = brand::find($id);
+            $brand = Brand::find($id);
 
             return response()->json(['success' => true, 'brand' => $brand], 200);
         } catch (Exception $e) {
@@ -61,7 +61,7 @@ class BrandController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $brand = brand::find($id);
+            $brand = Brand::find($id);
 
             if ($brand) {
                 $request->validate(
@@ -92,7 +92,7 @@ class BrandController extends Controller
     public function destroy(string $id)
     {
         try {
-            $brand = brand::find($id);
+            $brand = Brand::find($id);
 
             if ($brand) {
                 $brand->delete();

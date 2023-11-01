@@ -12,10 +12,11 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 
 
-Route::apiResource('brands', BrandController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
+
+    Route::apiResource('brands', BrandController::class);
 
     Route::apiResource('categories', CategoryController::class);
 
