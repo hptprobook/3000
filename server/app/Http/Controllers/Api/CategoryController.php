@@ -24,9 +24,12 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         try {
+            $parent_id = $request->parent_id ?? null;
+
             $request->validate(
                 [
                     'name' => 'required|min:3|max:128',
+                    'parent_id' => 'max:10',
                     'icon_url' => 'required|max:255'
                 ]
             );
@@ -34,6 +37,7 @@ class CategoryController extends Controller
             $category = Category::create(
                 [
                     'name' => $request->name,
+                    'parent_id' => $parent_id,
                     'icon_url' => $request->icon_url
                 ]
             );
@@ -51,7 +55,11 @@ class CategoryController extends Controller
         try {
             $category = Category::find($id);
 
-            return response()->json(['success' => true, 'category' => $category], 200);
+            if ($category) {
+                return response()->json(['success' => true, 'category' => $category], 200);
+            } else {
+                return response()->json(['error' => 'Category not found', 'category' => null], 500);
+            }
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -63,16 +71,21 @@ class CategoryController extends Controller
             $category = Category::find($id);
 
             if ($category) {
+
+                $parent_id = $request->parent_id ?? null;
+
                 $request->validate(
                     [
-                        'name' => 'required|min:3|max:128',
-                        'icon_url' => 'required|max:255'
+                        'name' => 'min:3|max:128',
+                        'parent_id' => 'max:10',
+                        'icon_url' => 'max:255'
                     ]
                 );
 
                 $category = $category->update(
                     [
                         'name' => $request->name,
+                        'parent_id' => $parent_id,
                         'icon_url' => $request->icon_url
                     ]
                 );
