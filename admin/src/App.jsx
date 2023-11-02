@@ -1,15 +1,11 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import DashboardRoute from "./routes/dashboard.route";
-import Navbar from "./components/layouts/Sidebar/Sidebar";
+
+import  MainLayout from "./components/layouts/MainLayout/MainLayout";
 import "./App.css";
 
 function App() {
     return (
         <div className="app">
-            <Navbar />
-
-            <DashboardRoute />
+            <MainLayout />
         </div>
     );
 }
