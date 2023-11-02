@@ -25,9 +25,11 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         try {
+            $parent_id = $request->parent_id ?? null;
             $request->validate(
                 [
                     'name' => 'required|min:3|max:128',
+                    'parent_id' => 'max:10',
                     'icon_url' => 'required|max:255'
                 ]
             );
@@ -35,6 +37,7 @@ class BrandController extends Controller
             $brand = Brand::create(
                 [
                     'name' => $request->name,
+                    'parent_id' => $parent_id,
                     'icon_url' => $request->icon_url
                 ]
             );
@@ -52,7 +55,11 @@ class BrandController extends Controller
         try {
             $brand = Brand::find($id);
 
-            return response()->json(['success' => true, 'brand' => $brand], 200);
+            if ($brand) {
+                return response()->json(['success' => true, 'brand' => $brand], 200);
+            } else {
+                return response()->json(['error' => 'Brand not found', 'brand' => null], 422);
+            }
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -64,9 +71,11 @@ class BrandController extends Controller
             $brand = Brand::find($id);
 
             if ($brand) {
+                $parent_id = $request->parent_id ?? null;
                 $request->validate(
                     [
                         'name' => 'required|min:3|max:128',
+                        'parent_id' => 'max:10',
                         'icon_url' => 'required|max:255'
                     ]
                 );
@@ -74,6 +83,7 @@ class BrandController extends Controller
                 $brand = $brand->update(
                     [
                         'name' => $request->name,
+                        'parent_id' => $parent_id,
                         'icon_url' => $request->icon_url
                     ]
                 );
