@@ -9,12 +9,7 @@ class ProductTag extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'product_id'];
+    protected $fillable = ['product_id', "tag_id"];
 
     public $timestamps = false;
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
 }
