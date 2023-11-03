@@ -1026,6 +1026,283 @@
                     }
                 ]
             }
+        },
+        "/api/products": {
+            "get": {
+                "tags": ["Products"],
+                "summary": "Get all Products",
+                "operationId": "getProducts",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Products"],
+                "summary": "Create a new Product",
+                "operationId": "createProduct",
+                "requestBody": {
+                    "description": "Create a new Product",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "price",
+                                    "discount",
+                                    "short_desc",
+                                    "detail",
+                                    "thumbnail",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Iphone 14"
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 30000000
+                                    },
+                                    "discount": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "short_desc": {
+                                        "type": "string",
+                                        "example": "This is the short description of product"
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "This is the detail of product"
+                                    },
+                                    "thumbnail": {
+                                        "type": "string",
+                                        "example": "public/img.png"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "brand_ids": {
+                                        "type": "array",
+                                        "example": [1, 2, 3]
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "example": [
+                                            "public/img.jpg",
+                                            "public/img2.jpg",
+                                            "public/img3.jpg"
+                                        ]
+                                    },
+                                    "tags": {
+                                        "type": "string",
+                                        "example": "hot|sale|deal"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Brand created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or user already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "tags": ["Products"],
+                "summary": "Get a Product by ID",
+                "operationId": "getProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the brand to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Products"],
+                "summary": "Update Product",
+                "operationId": "updateProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Product to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a brand by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "price",
+                                    "discount",
+                                    "short_desc",
+                                    "detail",
+                                    "thumbnail",
+                                    "category_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Iphone 14"
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 30000000
+                                    },
+                                    "discount": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "short_desc": {
+                                        "type": "string",
+                                        "example": "This is the short description of product"
+                                    },
+                                    "detail": {
+                                        "type": "string",
+                                        "example": "This is the detail of product"
+                                    },
+                                    "thumbnail": {
+                                        "type": "string",
+                                        "example": "public/img.png"
+                                    },
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "brand_ids": {
+                                        "type": "array",
+                                        "example": [1, 2, 3]
+                                    },
+                                    "images": {
+                                        "type": "array",
+                                        "example": [
+                                            "public/img.jpg",
+                                            "public/img2.jpg",
+                                            "public/img3.jpg"
+                                        ]
+                                    },
+                                    "tags": {
+                                        "type": "string",
+                                        "example": "hot|sale|deal"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or Product already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Products"],
+                "summary": "Delete a Product by ID",
+                "operationId": "deleteProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Product to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Product deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Product not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
 
