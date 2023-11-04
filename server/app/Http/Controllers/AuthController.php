@@ -63,7 +63,7 @@ class AuthController extends Controller
                 'password' => Hash::make($request->input('password')),
             ]);
 
-            return response()->json(['success' => true, 'data' => $user], 201);
+            return response()->json(['message' => 'success', 'data' => $user], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -91,7 +91,7 @@ class AuthController extends Controller
             $user->password = Hash::make($request->newPassword);
             $user->save();
 
-            return response()->json(['success' => true, 'message' => 'Password updated successfully']);
+            return response()->json(['message' => 'Password updated successfully']);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
         } catch (\Exception $e) {

@@ -16,7 +16,7 @@ class BrandController extends Controller
         try {
             $brands = Brand::all();
 
-            return response()->json(['success' => true, 'data' => $brands], 200);
+            return response()->json(['message' => "success", 'data' => $brands], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -25,9 +25,11 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         try {
+            $parent_id = $request->parent_id ?? null;
             $request->validate(
                 [
                     'name' => 'required|min:3|max:128',
+                    'parent_id' => 'max:10',
                     'icon_url' => 'required|max:255'
                 ]
             );
@@ -35,11 +37,12 @@ class BrandController extends Controller
             $brand = Brand::create(
                 [
                     'name' => $request->name,
+                    'parent_id' => $parent_id,
                     'icon_url' => $request->icon_url
                 ]
             );
 
-            return response()->json(['message' => 'Create brand successfully', 'brand' => $brand], 200);
+            return response()->json(['message' => 'Create brand successfully', 'data' => $brand], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         } catch (ValidationException $e) {
@@ -52,7 +55,11 @@ class BrandController extends Controller
         try {
             $brand = Brand::find($id);
 
-            return response()->json(['success' => true, 'brand' => $brand], 200);
+            if ($brand) {
+                return response()->json(['message' => "success", 'data' => $brand], 200);
+            } else {
+                return response()->json(['error' => 'Brand not found'], 422);
+            }
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -64,9 +71,11 @@ class BrandController extends Controller
             $brand = Brand::find($id);
 
             if ($brand) {
+                $parent_id = $request->parent_id ?? null;
                 $request->validate(
                     [
                         'name' => 'required|min:3|max:128',
+                        'parent_id' => 'max:10',
                         'icon_url' => 'required|max:255'
                     ]
                 );
@@ -74,11 +83,12 @@ class BrandController extends Controller
                 $brand = $brand->update(
                     [
                         'name' => $request->name,
+                        'parent_id' => $parent_id,
                         'icon_url' => $request->icon_url
                     ]
                 );
 
-                return response()->json(['message' => 'Update brand successfully', 'category' => $brand], 200);
+                return response()->json(['message' => 'Update brand successfully', 'data' => $brand], 200);
             } else {
                 return response()->json(['message' => 'Brand not found'], 403);
             }
