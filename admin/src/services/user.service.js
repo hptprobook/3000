@@ -4,7 +4,7 @@ const UserService = {
     getAllUser: async () => {
         try {
             const res = await request.get("users");
-            console.log(res.data);
+            console.log("Data: ", res.data);
             return res.data;
         } catch (err) {
             console.log("Error: ", err);
