@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 128);
             $table->unsignedTinyInteger('parent_id')->nullable();
-            $table->string('icon_url', 255);
+            $table->string('icon_url', 255)->nullable();
         });
     }
 

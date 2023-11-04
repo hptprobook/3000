@@ -5,14 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class brand extends Model
+class Post extends Model
 {
     use HasFactory;
-    public $timestamps = false;
 
     protected $fillable = [
-        'name',
-        'parent_id',
-        'icon_url',
+        'title', 
+        'content',
     ];
 }
