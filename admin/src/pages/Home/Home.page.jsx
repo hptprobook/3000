@@ -3,17 +3,17 @@ import React, { useEffect } from "react";
 import authService from "../../services/auth.service";
 
 export default function HomePage() {
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const result = await authService();
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchApi = async () => {
+    //         try {
+    //             const result = await authService();
+    //         } catch (error) {
+    //             console.error("Error:", error);
+    //         }
+    //     };
 
-        fetchApi();
-    }, []);
+    //     fetchApi();
+    // }, []);
 
     return (
         <div>

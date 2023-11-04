@@ -6,3 +6,12 @@
 .nav-link{
     text-decoration: none;
 }
+/* Tắt tùy chỉnh autofill của trình duyệt */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    background-color: transparent !important;
+}
+.pad64px {
+    padding: 64px;
+}
