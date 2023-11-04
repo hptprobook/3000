@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -24,4 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('variant_types', VariantTypesController::class);
 
     Route::apiResource('products', ProductController::class);
+
+    Route::apiResource('reviews', ReviewController::class);
 });

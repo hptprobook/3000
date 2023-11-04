@@ -16,7 +16,7 @@ class BrandController extends Controller
         try {
             $brands = Brand::all();
 
-            return response()->json(['success' => true, 'data' => $brands], 200);
+            return response()->json(['message' => "success", 'data' => $brands], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -42,7 +42,7 @@ class BrandController extends Controller
                 ]
             );
 
-            return response()->json(['message' => 'Create brand successfully', 'brand' => $brand], 200);
+            return response()->json(['message' => 'Create brand successfully', 'data' => $brand], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         } catch (ValidationException $e) {
@@ -56,9 +56,9 @@ class BrandController extends Controller
             $brand = Brand::find($id);
 
             if ($brand) {
-                return response()->json(['success' => true, 'brand' => $brand], 200);
+                return response()->json(['message' => "success", 'data' => $brand], 200);
             } else {
-                return response()->json(['error' => 'Brand not found', 'brand' => null], 422);
+                return response()->json(['error' => 'Brand not found'], 422);
             }
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -88,7 +88,7 @@ class BrandController extends Controller
                     ]
                 );
 
-                return response()->json(['message' => 'Update brand successfully', 'category' => $brand], 200);
+                return response()->json(['message' => 'Update brand successfully', 'data' => $brand], 200);
             } else {
                 return response()->json(['message' => 'Brand not found'], 403);
             }

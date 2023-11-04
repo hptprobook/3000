@@ -33,7 +33,7 @@ class UserController extends Controller
         }
 
         $users = User::all();
-        return response()->json(['success' => true, 'data' => $users], 200);
+        return response()->json(['message' => 'success', 'data' => $users], 200);
     }
 
     public function store(Request $request)
@@ -46,12 +46,12 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['success' => true, 'data' => $user], 201);
+        return response()->json(['message' => 'success', 'data' => $user], 201);
     }
 
     public function show(User $user)
     {
-        return response()->json(['success' => true, 'data' => $user], 200);
+        return response()->json(['message' => 'success', 'data' => $user], 200);
     }
 
     public function update(Request $request, User $user)
@@ -64,12 +64,12 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['success' => true, 'data' => $user], 200);
+        return response()->json(['message' => 'success', 'data' => $user], 200);
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return response()->json(['success' => true], 204);
+        return response()->json(['message' => 'success'], 204);
     }
 }
