@@ -1,0 +1,7 @@
+.header-notification{
+    height: auto;
+    width: fit-content;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+}
