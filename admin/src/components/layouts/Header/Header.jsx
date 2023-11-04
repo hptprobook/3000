@@ -2,6 +2,8 @@ import React from 'react'
 import './style.css';
 import AvatarUser from '../../common/User/Avatar';
 import { Box } from '@mui/material';
+import Notification from '../../common/Notification/Notification';
+import Message from '../../common/Message/Message';
 
 const Header = (propCustom) => {
   let bgColor = '#111927';
@@ -15,6 +17,9 @@ const Header = (propCustom) => {
   return (
     <div className='header'>
       <Box sx={{ display: 'flex', alignContent: 'center', float: 'right', height: '100%' }}>
+        <Message />
+
+        <Notification />
         <AvatarUser
           customBg={bgColor}
           customColor={customColor}
