@@ -29,7 +29,7 @@ export const fetchUserById = createAsyncThunk(
 const initialState = {
     users: [],
     selectedUser: null,
-    status: "loading", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
 
