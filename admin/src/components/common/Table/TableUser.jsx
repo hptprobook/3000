@@ -8,6 +8,7 @@ import InputAdornments from '../TextField/InputSearch';
 import InputSearch from '../TextField/InputSearch';
 import { Divider, Grid } from '@mui/material';
 import SelectFilter from '../Select/SelectFilter';
+import TableDataUser from './TableDataUser';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -94,7 +95,7 @@ export default function Tableuser() {
                 </Grid>
             </Grid>
             <CustomTabPanel value={value} index={0}>
-                Item One
+                <TableDataUser />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
                 Item Two
