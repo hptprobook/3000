@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
@@ -6,6 +6,7 @@ import './style.css';
 import { Box } from '@mui/material';
 import DashboardRoute from '~/routes/dashboard.route';
 import { useNavigate } from 'react-router-dom';
+import ButtonChangeMode from '../../common/Button/ButtonChangeMode';
 
 export default function MainLayout() {
     const navigate = useNavigate();
@@ -15,14 +16,20 @@ export default function MainLayout() {
             navigate('/login');
         }
     }, [navigate, token]);
+    const [mode, setMode] = useState('dark');
+
+    const changeMode = () => {
+        setMode((prevMode) => (prevMode === 'dark' ? 'light' : 'dark'));
+        console.log(mode)
+    }
 
     return (
         <Box>
-            <div className="main">
+            <div className={`main ${mode === 'dark' ? 'dark' : 'light'}`}>
                 <CssBaseline />
                 <Sidebar />
                 <div className='main-layout'>
-                    <Header sx={{ flexGrow: 1, width: '100%' }} mode={'dark'}/>
+                    <Header sx={{ flexGrow: 1, width: '100%' }} mode={mode} changeMode={changeMode}/>
                     <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                         <DashboardRoute />
                     </Box>
