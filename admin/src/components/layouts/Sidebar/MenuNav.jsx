@@ -33,7 +33,6 @@ export function getMenuNav() {
       createList('Người dùng', 'user', '/user', <LuUsers2 />, [
         createList('Danh sách', 'user-list', '/user/list'),
         createList('Tạo', 'user-create', '/user/create'),
-        createList('Danh sách cấm', 'user-list-ban', '/user/list-ban'),
       ]),
       createList('Sản phẩm', 'products', '/products', <HiShoppingBag />, [
         createList('Danh sách', 'products-list', '/products/list'),

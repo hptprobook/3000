@@ -236,6 +236,7 @@ const Sidebar = () => {
                                                 mr: open ? 3 : 0,
                                                 ml: "8px",
                                                 justifyContent: "center",
+                                                fontSize: '20px',
                                             }}
                                         >
                                             {item.icon}

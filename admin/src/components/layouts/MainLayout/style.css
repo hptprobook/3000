@@ -1,11 +1,14 @@
-.main-layout{
+.main-layout {
     height: 100vh;
-    overflow: scroll;
+    overflow-y: scroll;
+    /* Giữ thanh cuộn dọc */
+    overflow-x: hidden;
     background-color: #0e1320;
-    color:  #edf2f7;
+    color: #edf2f7;
     flex-grow: 1;
 }
-.main{
+
+.main {
     display: flex;
     width: 100vw;
 }
