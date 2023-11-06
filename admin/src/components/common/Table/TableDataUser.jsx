@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -15,6 +14,10 @@ import Checkbox from '@mui/material/Checkbox';
 import { MdDelete } from 'react-icons/md';
 import { visuallyHidden } from '@mui/utils';
 import { IconButton, Tooltip } from '@mui/material';
+import styled from '@emotion/styled';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
 
 function createData(id, name, calories, fat, carbs, protein) {
     return {
@@ -42,6 +45,11 @@ const rows = [
     createData(12, 'Nougat', 360, 19.0, 9, 37.0),
     createData(13, 'Oreo', 437, 18.0, 63, 4.0),
 ];
+const CustomTableCell = styled(TableCell)(({ theme }) => ({
+    borderBottom: '1px solid rgb(45, 55, 72)',
+    color: '#edf2f7',
+
+}));
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -126,15 +134,18 @@ function EnhancedTableHead(props) {
                 backgroundColor: 'rgb(28, 37, 54)',
             }}>
             <TableRow>
-                <TableCell padding="checkbox">
+                <TableCell
+                    sx={{
+                        borderBottom: '1px solid rgb(45, 55, 72)',
+                    }}
+                    padding="checkbox">
                     <Checkbox
                         sx={{
-                            borderRadius: '12px',
-                            color: '#9da4ae',
-                            '& .MuiSvgIcon-root': {
-                                borderRadius: '12px',
-                            },
+                            borderRadius: '50',
                         }}
+                        icon={<CheckBoxOutlineBlankIcon sx={{ color: '#9da4ae' }} />}
+                        checkedIcon={<CheckBoxIcon sx={{ color: '#6366f1' }} />}
+                        indeterminateIcon={<IndeterminateCheckBoxIcon sx={{ color: '#6366f1' }} />}
                         indeterminate={numSelected > 0 && numSelected === rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
@@ -150,6 +161,7 @@ function EnhancedTableHead(props) {
                         padding={'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                         sx={{
+                            borderBottom: '1px solid rgb(45, 55, 72)',
                             color: '#9da4ae',
                             '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active': {
                                 color: '#edf2f7 !important',
@@ -182,6 +194,7 @@ function EnhancedTableHead(props) {
                 )) : <>
                     <TableCell
                         sx={{
+                            borderBottom: '1px solid rgb(45, 55, 72)',
                             paddingLeft: 0,
                             color: '#9da4ae',
                             '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active': {
@@ -194,7 +207,8 @@ function EnhancedTableHead(props) {
                                 color: '#edf2f7 !important',
                             }
                         }}
-                        colSpan="4"
+                        component="th"
+                        colSpan="1"
                     >
                         <TableSortLabel
                             active={orderBy === 'name'}
@@ -209,14 +223,23 @@ function EnhancedTableHead(props) {
 
                     <TableCell
                         sx={{
-                            padding: 0
+                            borderBottom: '1px solid rgb(45, 55, 72)',
+                            padding: 0,
+                            '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                                color: '#edf2f7 !important',
+                            },
+                            '& :hover ': {
+                                color: '#edf2f7 !important',
+                            }
                         }}
-                        colSpan="1"
+                        colSpan="5"
                         align="right"
                     >
 
                         <Tooltip title="Xóa" onClick={() => handleDelete(selected)} >
                             <IconButton sx={{
+                                color: '#9da4ae',
+
                                 marginRight: '8px'
                             }}
                             >
@@ -314,10 +337,14 @@ export default function TableDataUser() {
     );
 
     return (
-        <Paper sx={{ width: '100%', mb: 2, position: 'relative', borderRadius: 0 }}>
+        <Paper sx={{
+            width: '100%',
+            position: 'relative',
+            border: '0px solid black',
+            borderRadius: '14px'
+        }}>
 
             <TableContainer>
-
                 <Table
                     sx={{ minWidth: 750 }}
                     aria-labelledby="tableTitle"
@@ -332,7 +359,17 @@ export default function TableDataUser() {
                         selected={selected}
                         handleDelete={handleDelete}
                     />
-                    <TableBody>
+                    <TableBody
+                        sx={{
+                            '& .MuiTableRow-root': {
+                                backgroundColor: '#111927',
+                            },
+                            '& .MuiTableRow-root.Mui-selected': {
+                                backgroundColor: '#1b223f !important',
+                            },
+
+                        }}
+                    >
                         {visibleRows.map((row, index) => {
                             const isItemSelected = isSelected(row.id);
                             const labelId = `enhanced-table-checkbox-${index}`;
@@ -346,29 +383,45 @@ export default function TableDataUser() {
                                     tabIndex={-1}
                                     key={row.id}
                                     selected={isItemSelected}
-                                    sx={{ cursor: 'pointer' }}
+                                    sx={{
+                                        cursor: 'pointer',
+                                        color: '#edf2f7',
+                                        '&:hover': {
+                                            backgroundColor: '#151c26 !important',
+                                        }
+                                    }}
                                 >
-                                    <TableCell padding="checkbox">
+                                    <CustomTableCell padding="checkbox">
                                         <Checkbox
-                                            color="primary"
                                             checked={isItemSelected}
+                                            icon={<CheckBoxOutlineBlankIcon sx={{ color: '#9da4ae' }} />}
+                                            checkedIcon={<CheckBoxIcon sx={{ color: '#5154c6' }} />}
+                                            indeterminateIcon={<IndeterminateCheckBoxIcon sx={{ color: '#5154c6' }} />}
                                             inputProps={{
                                                 'aria-labelledby': labelId,
                                             }}
+                                            sx={{
+                                                borderRadius: '50',
+                                                color: '#9da4ae',
+                                                '& .MuiSvgIcon-root': {
+                                                    borderRadius: '12px',
+                                                },
+                                            }}
                                         />
-                                    </TableCell>
-                                    <TableCell
+                                    </CustomTableCell>
+                                    <CustomTableCell
                                         component="th"
                                         id={labelId}
                                         scope="row"
                                         padding="none"
                                     >
                                         {row.name}
-                                    </TableCell>
-                                    <TableCell align="left">{row.calories}</TableCell>
-                                    <TableCell align="left">{row.fat}</TableCell>
-                                    <TableCell align="left">{row.carbs}</TableCell>
-                                    <TableCell align="left">{row.protein}</TableCell>
+                                    </CustomTableCell>
+                                    <CustomTableCell align="left">{row.calories}</CustomTableCell>
+                                    <CustomTableCell align="left">{row.fat}</CustomTableCell>
+                                    <CustomTableCell align="left">{row.carbs}</CustomTableCell>
+                                    <CustomTableCell align="left">{row.protein}</CustomTableCell>
+                                    <CustomTableCell align="left">{row.protein}</CustomTableCell>
                                 </TableRow>
                             );
                         })}
@@ -378,7 +431,7 @@ export default function TableDataUser() {
                                     height: 53 * emptyRows,
                                 }}
                             >
-                                <TableCell colSpan={6} />
+                                <TableCell colSpan={7} />
                             </TableRow>
                         )}
                     </TableBody>
@@ -394,10 +447,17 @@ export default function TableDataUser() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 labelRowsPerPage="Số hàng mỗi trang:"
                 sx={{
+                    color: 'white',
+                    backgroundColor: '#111927',
+                    borderBottomLeftRadius: '12px',
+                    borderBottomRightRadius: '12px',
+                    padding: 0,
+                    '& .MuiSvgIcon-root': {
+                        color: '#9da4ae',
+                    },
                     '& .MuiTablePagination-selectLabel ,.MuiTablePagination-displayedRows ': {
                         m: 0,
-
-                    }
+                    },
                 }}
             />
         </Paper>
