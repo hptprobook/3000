@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\UserController;
@@ -18,6 +20,8 @@ Route::post('/changePassword', [AuthController::class, 'changePassword'])->middl
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
 
+    Route::apiResource('addresses', AddressController::class);
+
     Route::apiResource('brands', BrandController::class);
 
     Route::apiResource('categories', CategoryController::class);
@@ -27,4 +31,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductController::class);
 
     Route::apiResource('reviews', ReviewController::class);
+
+    Route::apiResource('posts', PostController::class);
 });

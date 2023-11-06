@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import UserService from "~/services/user.service";
+import Loading from "~/components/common/Loading/Loading";
+
 import "./style.css";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import TableUser from "../../../components/common/Table/TableUser";
@@ -27,9 +29,13 @@ export default function ListUserPage() {
     //     fetchUsers();
     // }, []);
 
-    // if (loading) {
-    //     return <Typography>Loading...</Typography>;
-    // }
+    if (loading) {
+        return (
+            <div>
+                <Loading />
+            </div>
+        );
+    }
 
     // if (error) {
     //     return <Typography>Error: {error}</Typography>;
