@@ -17,11 +17,11 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["email", "password"],
+                                "required": ["login", "password"],
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
+                                        "format": "login",
                                         "example": "admin@gmail.com"
                                     },
                                     "password": {
@@ -86,7 +86,7 @@
                             "schema": {
                                 "required": [
                                     "name",
-                                    "email",
+                                    "email/phone",
                                     "password",
                                     "confirmPassword"
                                 ],
@@ -97,7 +97,7 @@
                                     },
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
+                                        "format": "email/phone",
                                         "example": "admin@gmail.com"
                                     },
                                     "password": {
@@ -270,7 +270,12 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["name", "email", "password"],
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -285,6 +290,10 @@
                                         "type": "string",
                                         "format": "password",
                                         "example": "PassWord12345"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "ADMIN"
                                     }
                                 },
                                 "type": "object"
@@ -364,7 +373,12 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": ["name", "email", "password"],
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "role"
+                                ],
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -379,6 +393,10 @@
                                         "type": "string",
                                         "format": "password",
                                         "example": "PassWord12345"
+                                    },
+                                    "role": {
+                                        "type": "string",
+                                        "example": "USER"
                                     }
                                 },
                                 "type": "object"
@@ -1069,7 +1087,9 @@
                                     "short_desc",
                                     "detail",
                                     "thumbnail",
-                                    "category_id"
+                                    "category_id",
+                                    "status",
+                                    "quantity"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1095,6 +1115,14 @@
                                     "thumbnail": {
                                         "type": "string",
                                         "example": "public/img.png"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "in_stock"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 1000
                                     },
                                     "category_id": {
                                         "type": "integer",
@@ -1201,7 +1229,9 @@
                                     "short_desc",
                                     "detail",
                                     "thumbnail",
-                                    "category_id"
+                                    "category_id",
+                                    "status",
+                                    "quantity"
                                 ],
                                 "properties": {
                                     "name": {
@@ -1227,6 +1257,14 @@
                                     "thumbnail": {
                                         "type": "string",
                                         "example": "public/img.png"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "in_stock"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 100
                                     },
                                     "category_id": {
                                         "type": "integer",

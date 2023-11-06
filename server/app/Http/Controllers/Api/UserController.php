@@ -32,7 +32,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        $users = User::all();
+        $users = User::with('addresses')->get();
         return response()->json(['message' => 'success', 'data' => $users], 200);
     }
 
@@ -44,6 +44,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'USER'
         ]);
 
         return response()->json(['message' => 'success', 'data' => $user], 201);
@@ -62,6 +63,7 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role ?? 'USER'
         ]);
 
         return response()->json(['message' => 'success', 'data' => $user], 200);
