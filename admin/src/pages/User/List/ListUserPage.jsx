@@ -46,17 +46,5 @@ export default function ListUserPage() {
             <HeaderPage namePage={'Người dùng'} />
             <TableUser />
         </div>
-        // <div>
-        //     <Typography variant="h1">User list Page</Typography>
-        //     {users && users.length > 0 ? (
-        //         <ul>
-        //             {users.map((user) => (
-        //                 <li key={user.id}>{user.name}</li>
-        //             ))}
-        //         </ul>
-        //     ) : (
-        //         <Typography>Không có người dùng nào.</Typography>
-        //     )}
-        // </div>
     );
 }
