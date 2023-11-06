@@ -19,32 +19,36 @@ class PostController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+    
     public function show($id)
     {
         try {
             $post = Post::find($id);
-
+    
             if (!$post) {
                 return response()->json(['message' => 'Post not found'], 404);
             }
-
+    
             return response()->json($post, 200); 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+    
     public function store(Request $request)
     {
         try {
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'content' => 'required',
+                'author' => 'required',
+                'tags' => 'required',
+                'img' => 'required',
+                'status' => 'required',
             ]);
-
+    
             $post = Post::create($validatedData);
-
+    
             return response()->json(['message' => 'Post created successfully', 'data' => $post], 201);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
@@ -52,23 +56,27 @@ class PostController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-
+    
     public function update(Request $request, $id)
     {
         try {
             $post = Post::find($id);
-
+    
             if (!$post) {
                 return response()->json(['message' => 'Post not found'], 404);
             }
-
+    
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'content' => 'required',
+                'author' => 'required',
+                'tags' => 'required',
+                'img' => 'required',
+                'status' => 'required',
             ]);
-
+    
             $post->update($validatedData);
-
+    
             return response()->json(['message' => 'Post updated successfully', 'data' => $post], 200);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
@@ -76,6 +84,7 @@ class PostController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    
 
     public function destroy($id)
     {

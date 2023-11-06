@@ -36,7 +36,9 @@ class ProductController extends Controller
                 'category_id' => 'required|integer|exists:categories,id',
                 'images' => 'required|array',
                 'images.*' => 'string|min:3|max:255',
-                'tags.*' => 'string|min:1|max:128'
+                'tags.*' => 'string|min:1|max:128',
+                'status' => 'required',
+                'quantity' => 'required|numeric|between:0,10000'
             ]);
 
             if ($validator->fails()) {
@@ -44,7 +46,7 @@ class ProductController extends Controller
             }
 
             $product = Product::create($request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id'
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity'
             ]));
 
             if ($request->has('brand_ids') && is_array($request->brand_ids)) {
@@ -99,11 +101,13 @@ class ProductController extends Controller
                 'category_id' => 'required',
                 'images' => 'sometimes|array',
                 'images.*' => 'string|min:3|max:255',
-                'tags' => 'sometimes|string'
+                'tags' => 'sometimes|string',
+                'status' => 'required',
+                'quantity' => 'required|numeric|between:0,10000'
             ]);
 
             $product->update($request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id'
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity'
             ]));
 
             if ($request->has('brand_ids') && is_array($request->brand_ids)) {

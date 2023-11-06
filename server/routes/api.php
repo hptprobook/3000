@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PostController;
@@ -18,6 +19,8 @@ Route::post('/changePassword', [AuthController::class, 'changePassword'])->middl
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
+
+    Route::apiResource('addresses', AddressController::class);
 
     Route::apiResource('brands', BrandController::class);
 
