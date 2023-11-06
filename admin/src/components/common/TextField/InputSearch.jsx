@@ -8,7 +8,6 @@ const InputSearch = () => {
             <FormControl
                 fullWidth
                 sx={{
-                    m: 1,
                     '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
                         borderColor: 'rgb(99, 102, 241) !important',
                         transition: 'border 0.4s linear',

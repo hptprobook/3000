@@ -2,12 +2,9 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import InputAdornments from '../TextField/InputSearch';
 import InputSearch from '../TextField/InputSearch';
 import { Divider, Grid } from '@mui/material';
-import SelectFilter from '../Select/SelectFilter';
 import TableDataUser from './TableDataUser';
 
 function CustomTabPanel(props) {
@@ -22,8 +19,10 @@ function CustomTabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
+                <Box sx={{
+                    paddingBottom: '12px'
+                }}>
+                    {children}
                 </Box>
             )}
         </div>
@@ -86,12 +85,9 @@ export default function Tableuser() {
                 </Tabs>
             </Box>
             <Divider sx={{ borderColor: '#fff' }} />
-            <Grid container spacing={0} sx={{ padding: '32px 0', margin: 0, display: 'flex', justifyContent: 'space-around' }}>
-                <Grid item xs={8}>
+            <Grid container spacing={0} sx={{ padding: '32px 0', margin: 0 }}>
+                <Grid item xs={12} sx={{ p: '0 12px' }}>
                     <InputSearch />
-                </Grid>
-                <Grid item xs={3}>
-                    <SelectFilter />
                 </Grid>
             </Grid>
             <CustomTabPanel value={value} index={0}>
