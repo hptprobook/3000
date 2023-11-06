@@ -17,7 +17,7 @@ class VariantTypesController extends Controller
     {
         $variantTypes = VariantType::all();
 
-        return response()->json(['success' => true, 'variant_types' => $variantTypes]);
+        return response()->json(['message' => 'success', 'data' => $variantTypes]);
     }
 
     /**
@@ -32,7 +32,7 @@ class VariantTypesController extends Controller
 
             $variantTypes = VariantType::create($request->all());
 
-            return response()->json(['success' => true, 'variant_types' => $variantTypes], 200);
+            return response()->json(['message' => 'success', 'data' => $variantTypes], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -46,7 +46,7 @@ class VariantTypesController extends Controller
         try {
             $variantTypes = VariantType::find($id);
 
-            return response()->json(['success' => true, 'variant_types' => $variantTypes], 200);
+            return response()->json(['message' => 'success', 'data' => $variantTypes], 200);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -73,7 +73,7 @@ class VariantTypesController extends Controller
                     ]
                 );
 
-                return response()->json(['message' => 'Update variant type successfully', 'variant_types' => $variantTypes], 200);
+                return response()->json(['message' => 'Update variant type successfully', 'data' => $variantTypes], 200);
             } else {
                 return response()->json(['message' => 'VariantType not found'], 403);
             }
