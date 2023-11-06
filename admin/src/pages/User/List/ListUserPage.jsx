@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import UserService from "~/services/user.service";
+import Loading from "~/components/common/Loading/Loading";
+
 import "./style.css";
 
 export default function ListUserPage() {
@@ -26,7 +28,11 @@ export default function ListUserPage() {
     }, []);
 
     if (loading) {
-        return <Typography>Loading...</Typography>;
+        return (
+            <div>
+                <Loading />
+            </div>
+        );
     }
 
     if (error) {
