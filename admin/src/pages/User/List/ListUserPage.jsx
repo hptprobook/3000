@@ -29,13 +29,13 @@ export default function ListUserPage() {
     //     fetchUsers();
     // }, []);
 
-    if (loading) {
-        return (
-            <div>
-                <Loading />
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div>
+    //             <Loading />
+    //         </div>
+    //     );
+    // }
 
     // if (error) {
     //     return <Typography>Error: {error}</Typography>;
