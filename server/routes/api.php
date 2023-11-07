@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
@@ -31,6 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductController::class);
 
     Route::apiResource('reviews', ReviewController::class);
+
+    Route::apiResource('carts', CartController::class);
+
+    Route::apiResource('orders', OrderController::class);
 
     Route::apiResource('posts', PostController::class);
 });

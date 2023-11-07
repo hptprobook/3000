@@ -4,6 +4,7 @@ import AvatarUser from '../../common/User/Avatar';
 import { Box } from '@mui/material';
 import Notification from '../../common/Notification/Notification';
 import Message from '../../common/Message/Message';
+import ButtonChangeMode from '../../common/Button/ButtonChangeMode';
 
 const Header = (propCustom) => {
   let bgColor = '#111927';
@@ -17,6 +18,8 @@ const Header = (propCustom) => {
   return (
     <div className='header'>
       <Box sx={{ display: 'flex', alignContent: 'center', float: 'right', height: '100%' }}>
+        <ButtonChangeMode changeMode={propCustom.changeMode}/>
+
         <Message />
 
         <Notification />
