@@ -19,9 +19,7 @@ function CustomTabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box sx={{
-                    paddingBottom: '12px'
-                }}>
+                <Box>
                     {children}
                 </Box>
             )}
@@ -50,8 +48,7 @@ export default function Tableuser() {
     };
 
     return (
-        <Box sx={{ width: '100%', mt: '16px', backgroundColor: '#111927', borderRadius: '14px' }}>
-
+        <Box sx={{ width: '100%', mt: '16px', backgroundColor: '#111927', borderRadius: '13px' }}>
             <Box sx={{ padding: '0 12px' }}>
                 <Tabs
                     value={value}
