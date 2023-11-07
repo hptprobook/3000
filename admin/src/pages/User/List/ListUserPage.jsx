@@ -29,13 +29,13 @@ export default function ListUserPage() {
     //     fetchUsers();
     // }, []);
 
-    if (loading) {
-        return (
-            <div>
-                <Loading />
-            </div>
-        );
-    }
+    // if (loading) {
+    //     return (
+    //         <div>
+    //             <Loading />
+    //         </div>
+    //     );
+    // }
 
     // if (error) {
     //     return <Typography>Error: {error}</Typography>;
@@ -43,7 +43,7 @@ export default function ListUserPage() {
 
     return (
         <div>
-            <HeaderPage namePage={'Người dùng'} />
+            <HeaderPage namePage={"Người dùng"} />
             <TableUser />
         </div>
         // <div>
