@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,35 +13,27 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import { MdDelete } from 'react-icons/md';
 import { visuallyHidden } from '@mui/utils';
-import { IconButton, Tooltip } from '@mui/material';
-
-function createData(id, name, calories, fat, carbs, protein) {
-    return {
-        id,
-        name,
-        calories,
-        fat,
-        carbs,
-        protein,
-    };
-}
-
-const rows = [
-    createData(1, 'Cupcake', 305, 3.7, 67, 4.3),
-    createData(2, 'Donut', 452, 25.0, 51, 4.9),
-    createData(3, 'Eclair', 262, 16.0, 24, 6.0),
-    createData(4, 'Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData(5, 'Gingerbread', 356, 16.0, 49, 3.9),
-    createData(6, 'Honeycomb', 408, 3.2, 87, 6.5),
-    createData(7, 'Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData(8, 'Jelly Bean', 375, 0.0, 94, 0.0),
-    createData(9, 'KitKat', 518, 26.0, 65, 7.0),
-    createData(10, 'Lollipop', 392, 0.2, 98, 0.0),
-    createData(11, 'Marshmallow', 318, 0, 81, 2.0),
-    createData(12, 'Nougat', 360, 19.0, 9, 37.0),
-    createData(13, 'Oreo', 437, 18.0, 63, 4.0),
-];
-
+import { Button, Chip, Collapse, Grid, IconButton, TextField, Tooltip, Typography } from '@mui/material';
+import styled from '@emotion/styled';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
+import FormatDateTime from '../Function/FormatDate';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { ReadOnly } from '../TextField/ReadOnly';
+const CustomTableCell = styled(TableCell)(({ theme }) => ({
+    borderBottom: '1px solid rgb(45, 55, 72)',
+    color: '#edf2f7',
+}));
+const CustomTableCellHaed = styled(TableCell)(({ theme }) => ({
+    borderBottom: '1px solid rgb(45, 55, 72)',
+    color: '#edf2f7',
+}));
+const CustomTableCellSub = styled(TableCell)(({ theme }) => ({
+    padding: '24px 16px 24px 0',
+    borderBottom: 'none',
+}));
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -59,10 +50,6 @@ function getComparator(order, orderBy) {
         : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-// Since 2020 all major browsers ensure sort stability with Array.prototype.sort().
-// stableSort() brings sort stability to non-modern browsers (notably IE11). If you
-// only support modern browsers you can replace stableSort(exampleArray, exampleComparator)
-// with exampleArray.slice().sort(exampleComparator)
 function stableSort(array, comparator) {
     const stabilizedThis = array.map((el, index) => [el, index]);
     stabilizedThis.sort((a, b) => {
@@ -82,12 +69,7 @@ const headCells = [
         disablePadding: true,
         label: 'Tên',
     },
-    {
-        id: 'location',
-        numeric: true,
-        disablePadding: false,
-        label: 'Địa chỉ',
-    },
+
     {
         id: 'order',
         numeric: true,
@@ -101,10 +83,16 @@ const headCells = [
         label: 'Chi tiêu',
     },
     {
-        id: 'created',
+        id: 'role',
         numeric: false,
         disablePadding: false,
-        label: 'Ngày tạo',
+        label: 'Vai trò',
+    },
+    {
+        id: 'status',
+        numeric: true,
+        disablePadding: false,
+        label: 'Trạng thái',
     },
     {
         id: 'action',
@@ -126,15 +114,18 @@ function EnhancedTableHead(props) {
                 backgroundColor: 'rgb(28, 37, 54)',
             }}>
             <TableRow>
-                <TableCell padding="checkbox">
+                <TableCell
+                    sx={{
+                        borderBottom: '1px solid rgb(45, 55, 72)',
+                    }}
+                    padding="checkbox">
                     <Checkbox
                         sx={{
-                            borderRadius: '12px',
-                            color: '#9da4ae',
-                            '& .MuiSvgIcon-root': {
-                                borderRadius: '12px',
-                            },
+                            borderRadius: '50',
                         }}
+                        icon={<CheckBoxOutlineBlankIcon sx={{ color: '#9da4ae' }} />}
+                        checkedIcon={<CheckBoxIcon sx={{ color: '#6366f1' }} />}
+                        indeterminateIcon={<IndeterminateCheckBoxIcon sx={{ color: '#6366f1' }} />}
                         indeterminate={numSelected > 0 && numSelected === rowCount}
                         checked={rowCount > 0 && numSelected === rowCount}
                         onChange={onSelectAllClick}
@@ -150,6 +141,7 @@ function EnhancedTableHead(props) {
                         padding={'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                         sx={{
+                            borderBottom: '1px solid rgb(45, 55, 72)',
                             color: '#9da4ae',
                             '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active': {
                                 color: '#edf2f7 !important',
@@ -182,6 +174,7 @@ function EnhancedTableHead(props) {
                 )) : <>
                     <TableCell
                         sx={{
+                            borderBottom: '1px solid rgb(45, 55, 72)',
                             paddingLeft: 0,
                             color: '#9da4ae',
                             '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active': {
@@ -194,7 +187,8 @@ function EnhancedTableHead(props) {
                                 color: '#edf2f7 !important',
                             }
                         }}
-                        colSpan="4"
+                        component="th"
+                        colSpan="1"
                     >
                         <TableSortLabel
                             active={orderBy === 'name'}
@@ -209,14 +203,23 @@ function EnhancedTableHead(props) {
 
                     <TableCell
                         sx={{
-                            padding: 0
+                            borderBottom: '1px solid rgb(45, 55, 72)',
+                            padding: 0,
+                            '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                                color: '#edf2f7 !important',
+                            },
+                            '& :hover ': {
+                                color: '#edf2f7 !important',
+                            }
                         }}
-                        colSpan="1"
+                        colSpan="5"
                         align="right"
                     >
 
                         <Tooltip title="Xóa" onClick={() => handleDelete(selected)} >
                             <IconButton sx={{
+                                color: '#9da4ae',
+
                                 marginRight: '8px'
                             }}
                             >
@@ -244,7 +247,8 @@ EnhancedTableHead.propTypes = {
 };
 
 
-export default function TableDataUser() {
+export default function TableDataUser(props) {
+    const rows = props.data;
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
@@ -265,7 +269,6 @@ export default function TableDataUser() {
         }
         setSelected([]);
     };
-
     const handleClick = (event, id) => {
         const selectedIndex = selected.indexOf(id);
         let newSelected = [];
@@ -304,7 +307,7 @@ export default function TableDataUser() {
     const emptyRows =
         page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-    const visibleRows = React.useMemo(
+    const visibleRow = React.useMemo(
         () =>
             stableSort(rows, getComparator(order, orderBy)).slice(
                 page * rowsPerPage,
@@ -312,12 +315,35 @@ export default function TableDataUser() {
             ),
         [order, orderBy, page, rowsPerPage],
     );
+    const [visibleRows, setVisibleRows] = React.useState(visibleRow);
+    const [open, setOpen] = React.useState(0);
+    function handleOpen(key) {
+        if (open === key) {
+            setOpen(0);
+        }
+        else {
+            setOpen(key);
+        }
+    }
+    React.useEffect(() => {
+        // Tính toán visibleRows từ props.data
+        const newVisibleRows = stableSort(props.data, getComparator(order, orderBy)).slice(
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage
+        );
+
+        setVisibleRows(newVisibleRows);
+    }, [props.data, order, orderBy, page, rowsPerPage]);
 
     return (
-        <Paper sx={{ width: '100%', mb: 2, position: 'relative', borderRadius: 0 }}>
+        <Paper sx={{
+            width: '100%',
+            position: 'relative',
+            border: '0px solid black',
+            borderRadius: '14px'
+        }}>
 
             <TableContainer>
-
                 <Table
                     sx={{ minWidth: 750 }}
                     aria-labelledby="tableTitle"
@@ -332,53 +358,206 @@ export default function TableDataUser() {
                         selected={selected}
                         handleDelete={handleDelete}
                     />
-                    <TableBody>
-                        {visibleRows.map((row, index) => {
-                            const isItemSelected = isSelected(row.id);
-                            const labelId = `enhanced-table-checkbox-${index}`;
+                    <TableBody
+                        sx={{
+                            '& .MuiTableRow-root': {
+                                backgroundColor: '#111927',
+                            },
+                            '& .MuiTableRow-root.Mui-selected': {
+                                backgroundColor: '#1b223f !important',
+                            },
 
-                            return (
-                                <TableRow
-                                    hover
-                                    onClick={(event) => handleClick(event, row.id)}
-                                    role="checkbox"
-                                    aria-checked={isItemSelected}
-                                    tabIndex={-1}
-                                    key={row.id}
-                                    selected={isItemSelected}
-                                    sx={{ cursor: 'pointer' }}
-                                >
-                                    <TableCell padding="checkbox">
-                                        <Checkbox
-                                            color="primary"
-                                            checked={isItemSelected}
-                                            inputProps={{
-                                                'aria-labelledby': labelId,
+                        }}
+                    >
+                        {visibleRows.length ? (
+                            visibleRows.map((row, index) => {
+                                const isItemSelected = isSelected(row.id);
+                                const labelId = `enhanced-table-checkbox-${index}`;
+
+                                return (
+                                    <React.Fragment key={row.id}>
+                                        <TableRow
+                                            hover
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row.id}
+                                            selected={isItemSelected}
+                                            sx={{
+                                                cursor: 'pointer',
+                                                color: '#edf2f7',
+                                                '&:hover': {
+                                                    backgroundColor: '#151c26 !important',
+                                                }
                                             }}
-                                        />
-                                    </TableCell>
-                                    <TableCell
-                                        component="th"
-                                        id={labelId}
-                                        scope="row"
-                                        padding="none"
-                                    >
-                                        {row.name}
-                                    </TableCell>
-                                    <TableCell align="left">{row.calories}</TableCell>
-                                    <TableCell align="left">{row.fat}</TableCell>
-                                    <TableCell align="left">{row.carbs}</TableCell>
-                                    <TableCell align="left">{row.protein}</TableCell>
-                                </TableRow>
-                            );
-                        })}
+                                        >
+                                            <CustomTableCell
+
+                                                padding="checkbox">
+                                                <Checkbox
+                                                    onClick={(event) => handleClick(event, row.id)}
+
+                                                    checked={isItemSelected}
+                                                    icon={<CheckBoxOutlineBlankIcon sx={{ color: '#9da4ae' }} />}
+                                                    checkedIcon={<CheckBoxIcon sx={{ color: '#5154c6' }} />}
+                                                    indeterminateIcon={<IndeterminateCheckBoxIcon sx={{ color: '#5154c6' }} />}
+                                                    inputProps={{
+                                                        'aria-labelledby': labelId,
+                                                    }}
+                                                    sx={{
+                                                        borderRadius: '50',
+                                                        color: '#9da4ae',
+                                                        '& .MuiSvgIcon-root': {
+                                                            borderRadius: '12px',
+                                                        },
+                                                    }}
+                                                />
+                                            </CustomTableCell>
+                                            <CustomTableCell
+                                                component="th"
+                                                id={labelId}
+                                                scope="row"
+                                                padding="none"
+                                            >
+                                                {row.name}
+                                            </CustomTableCell>
+
+                                            <CustomTableCell align="left">Comingson</CustomTableCell>
+                                            <CustomTableCell align="left">Comingson</CustomTableCell>
+                                            <CustomTableCell align="left">
+                                                <Chip
+                                                    sx={{
+                                                        backgroundColor: row.role == 'USER' ? '#162f34' : '#183343',
+                                                        color: row.role == 'USER' ? '#137d5f' : '#0b8baa',
+                                                        textTransform: 'uppercase',
+                                                        fontWeight: '600'
+                                                    }}
+                                                    label={row.role} /></CustomTableCell>
+                                            <CustomTableCell align="left">
+                                                <Chip
+                                                    sx={{
+                                                        backgroundColor: row.status == 'active' ? '#162f34' : '#31212b',
+                                                        color: row.status == 'active' ? '#137d5f' : '#c83d35',
+                                                        textTransform: 'uppercase',
+                                                        fontWeight: '600'
+                                                    }}
+                                                    label={row.status} />
+                                            </CustomTableCell>
+                                            <CustomTableCell
+                                                sx={{
+                                                    '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                                                        color: '#edf2f7 !important',
+                                                    },
+                                                    '& :hover ': {
+                                                        color: '#edf2f7 !important',
+                                                    }
+                                                }}
+                                                colSpan="5"
+                                                align="right"
+                                            >
+                                                <Tooltip title="Xóa" onClick={() => handleDelete(selected)} >
+
+                                                    <IconButton sx={{
+                                                        color: '#9da4ae',
+                                                        marginRight: '8px'
+                                                    }}
+                                                    >
+                                                        <MdDelete />
+                                                    </IconButton>
+                                                </Tooltip>
+                                                <Tooltip title="Mở" >
+
+                                                    <IconButton
+                                                        sx={{
+                                                            color: '#9da4ae',
+                                                            marginRight: '8px'
+                                                        }}
+                                                        aria-label="expand row"
+                                                        size="small"
+                                                        onClick={() => handleOpen(row.id)}
+                                                    >
+                                                        {open == row.id ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </CustomTableCell>
+                                        </TableRow>
+                                        <TableRow>
+                                            <CustomTableCell
+                                                sx={{
+                                                    paddingTop: 0,
+                                                    paddingBottom: 0,
+                                                }}
+                                                colSpan={7}>
+                                                <Collapse in={open == row.id ? true : false} timeout="auto" unmountOnExit>
+                                                    <Box
+                                                        sx={{
+                                                            padding: '24px'
+                                                        }}>
+                                                        <Grid container spacing={1}>
+                                                            <Grid item xs={6}>
+                                                                <Table size="small" aria-label="purchases">
+                                                                    <TableHead>
+                                                                        <TableRow>
+                                                                            <CustomTableCellHaed colSpan={2}>
+                                                                                Địa chỉ
+                                                                            </CustomTableCellHaed>
+                                                                        </TableRow>
+                                                                    </TableHead>
+                                                                    <TableBody>
+                                                                        <TableRow>
+                                                                            <CustomTableCellSub>  <ReadOnly label={'Email'} value={row.email} /></CustomTableCellSub>
+                                                                            <CustomTableCellSub>  <ReadOnly label={'Số điện thoại'} value={row.phone_number ? row.phone_number : 'Trống'} /></CustomTableCellSub>
+                                                                        </TableRow>
+                                                                        <TableRow>
+                                                                            <CustomTableCellSub colSpan={2}>  <ReadOnly label={'Địa chỉ'} value={row.phone_number ? row.phone_number : 'Trống'} /></CustomTableCellSub>
+                                                                        </TableRow>
+                                                                    </TableBody>
+                                                                </Table>
+                                                            </Grid>
+                                                            <Grid item xs={6}>
+                                                                <Table size="small" aria-label="purchases">
+                                                                    <TableHead>
+                                                                        <TableRow>
+                                                                            <CustomTableCellHaed colSpan={2}>
+                                                                                Trạng thái
+                                                                            </CustomTableCellHaed>
+                                                                        </TableRow>
+                                                                    </TableHead>
+                                                                    <TableBody>
+                                                                        <TableRow>
+                                                                            <CustomTableCellSub>  <ReadOnly label={'Giới tính'} value={row.gender ? row.gender : 'Trống'} /></CustomTableCellSub>
+                                                                            <CustomTableCellSub>  <ReadOnly label={'Ngày sinh'} value={row.birth_date ? FormatDateTime(row.birth_date) : 'Trống'} /></CustomTableCellSub>
+                                                                        </TableRow>
+                                                                        <TableRow>
+                                                                            <CustomTableCellSub>  <ReadOnly label={'Ngày tạo'} value={row.created_at ? FormatDateTime(row.created_at) : 'Trống'} /></CustomTableCellSub>
+                                                                            <CustomTableCellSub>  <ReadOnly label={'Ngày cập nhật'} value={row.update_at ? FormatDateTime(row.update_at) : 'Trống'} /></CustomTableCellSub>
+                                                                        </TableRow>
+                                                                    </TableBody>
+                                                                </Table>
+                                                            </Grid>
+                                                        </Grid>
+
+
+                                                    </Box>
+                                                </Collapse>
+                                            </CustomTableCell>
+                                        </TableRow>
+                                    </React.Fragment>
+                                );
+                            })) : <TableRow
+                                style={{
+                                    height: 53 * emptyRows,
+                                }}
+                            >
+                            <CustomTableCell align='center' colSpan={7} >Trống</CustomTableCell>
+                        </TableRow>}
                         {emptyRows > 0 && (
                             <TableRow
                                 style={{
                                     height: 53 * emptyRows,
                                 }}
                             >
-                                <TableCell colSpan={6} />
+                                <CustomTableCell align='center' colSpan={7} >Trống</CustomTableCell>
                             </TableRow>
                         )}
                     </TableBody>
@@ -394,10 +573,17 @@ export default function TableDataUser() {
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 labelRowsPerPage="Số hàng mỗi trang:"
                 sx={{
+                    color: 'white',
+                    backgroundColor: '#111927',
+                    borderBottomLeftRadius: '12px',
+                    borderBottomRightRadius: '12px',
+                    padding: 0,
+                    '& .MuiSvgIcon-root': {
+                        color: '#9da4ae',
+                    },
                     '& .MuiTablePagination-selectLabel ,.MuiTablePagination-displayedRows ': {
                         m: 0,
-
-                    }
+                    },
                 }}
             />
         </Paper>

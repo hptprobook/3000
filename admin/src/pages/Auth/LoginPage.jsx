@@ -6,13 +6,17 @@ import ButtonLogin from '~/components/common/Button/ButtonLogin';
 import AuthService from '../../services/auth.service';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { FormHelperText } from '@mui/material';
 // import { useHistory } from 'react-router-dom';
 
 
 export default function LoginPage() {
     const token = localStorage.getItem('access_token');
     const navigate = useNavigate();
-
+    const [usernameError, setUsernameError] = React.useState(false);
+    const [passwordError, setPasswordError] = React.useState(false);
+    const [usernameHelperText, setUsernameHelperText] = React.useState('');
+    const [passwordHelperText, setPasswordHelperText] = React.useState('');
     useEffect(() => {
         if (token) {
             navigate('/');
@@ -21,13 +25,36 @@ export default function LoginPage() {
     function Login() {
         let login = document.getElementById('username').value;
         let password = document.getElementById('password').value;
+        event.preventDefault();
+        // Validate username
+        if (login.length < 8) {
+            setUsernameError(true);
+            setUsernameHelperText('Tên đăng nhập / Email phải chứa ít nhất 8 ký tự');
+            return;
+        } else {
+            setUsernameError(false);
+            setUsernameHelperText('');
+        }
+
+        // Validate password
+        if (password.length < 8) {
+            setPasswordError(true);
+            setPasswordHelperText('Mật khẩu phải chứa ít nhất 8 ký tự');
+            return;
+        } else {
+            setPasswordError(false);
+            setPasswordHelperText('');
+        }
+      
+
         AuthService.login({ login, password })
             .then(response => {
                 if (response.error) {
                     console.log(response);
                 } else {
-                    localStorage.setItem('access_token', response.token);
-                    navigate('/');
+                    // localStorage.setItem('access_token', response.data.token);
+                    // navigate('/');
+                    console.log(response);
                 }
             });
     }
@@ -50,11 +77,15 @@ export default function LoginPage() {
                         id="username"
                         label="Tên đăng nhập / Email"
                         type="text"
+                        error={usernameError}
+                        helperText={usernameHelperText}
                     />
                     <InputLogin
                         id="password"
                         label="Mật khẩu"
                         type="password"
+                        error={passwordError}
+                        helperText={passwordHelperText}
                     />
                     <ButtonLogin
                         funcustom={Login}
