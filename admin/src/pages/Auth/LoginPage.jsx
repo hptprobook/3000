@@ -13,8 +13,10 @@ import { FormHelperText } from '@mui/material';
 export default function LoginPage() {
     const token = localStorage.getItem('access_token');
     const navigate = useNavigate();
-    const [error, setError] = React.useState(false);
-    const [helperText, setHelperText] = React.useState('');
+    const [usernameError, setUsernameError] = React.useState(false);
+    const [passwordError, setPasswordError] = React.useState(false);
+    const [usernameHelperText, setUsernameHelperText] = React.useState('');
+    const [passwordHelperText, setPasswordHelperText] = React.useState('');
     useEffect(() => {
         if (token) {
             navigate('/');
@@ -23,18 +25,27 @@ export default function LoginPage() {
     function Login() {
         let login = document.getElementById('username').value;
         let password = document.getElementById('password').value;
+        event.preventDefault();
+        // Validate username
         if (login.length < 8) {
-            setError(true);
-            setHelperText('Tên đăng nhập / Email phải chứa ít nhất 8 ký tự');
+            setUsernameError(true);
+            setUsernameHelperText('Tên đăng nhập / Email phải chứa ít nhất 8 ký tự');
             return;
-        } else if (password.length < 8) {
-            setError(true);
-            setHelperText('Mật khẩu phải chứa ít nhất 8 ký tự');
-            return;
+        } else {
+            setUsernameError(false);
+            setUsernameHelperText('');
         }
-        //Nếu ko có lỗi thì false
-        setError(false);
-        setHelperText(''); 
+
+        // Validate password
+        if (password.length < 8) {
+            setPasswordError(true);
+            setPasswordHelperText('Mật khẩu phải chứa ít nhất 8 ký tự');
+            return;
+        } else {
+            setPasswordError(false);
+            setPasswordHelperText('');
+        }
+      
 
         AuthService.login({ login, password })
             .then(response => {
@@ -66,15 +77,15 @@ export default function LoginPage() {
                         id="username"
                         label="Tên đăng nhập / Email"
                         type="text"
-                        error={error}
-                        helperText={helperText}
+                        error={usernameError}
+                        helperText={usernameHelperText}
                     />
                     <InputLogin
                         id="password"
                         label="Mật khẩu"
                         type="password"
-                        error={error}
-                        helperText={helperText}
+                        error={passwordError}
+                        helperText={passwordHelperText}
                     />
                     <ButtonLogin
                         funcustom={Login}

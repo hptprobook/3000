@@ -11,39 +11,28 @@ const ListUserPage = () => {
     const status = useSelector((state) => state.users.status);
     const error = useSelector((state) => state.users.error);
 
-    // useEffect(() => {
-    //     const fetchUsers = async () => {
-    //         setLoading(true);
-    //         try {
-    //             const data = await UserService.getAllUser();
-    //             setUsers(data.data);
-    //             setError(null);
-    //         } catch (error) {
-    //             console.error("Error:", error);
-    //             setError("Không thể lấy dữ liệu từ server.");
-    //         }
-    //         setLoading(false);
-    //     };
+    useEffect(() => {
+        if (status === "idle") {
+            dispatch(fetchAllUsers());
+        }
+    }, [status, dispatch]);
 
-    //     fetchUsers();
-    // }, []);
+    if (status === "loading") {
+        return <div><Loading /></div>;
+    }
 
-    if (loading) {
+    if (status === "failed") {
+        return <div>Error: {error}</div>;
+    }
+
+    if (status === "succeeded") {
         return (
             <div>
-                <Loading />
+                <HeaderPage namePage={'Người dùng'} />
+                <TableUser data={users} />
             </div>
         );
     }
+};
 
-    // if (error) {
-    //     return <Typography>Error: {error}</Typography>;
-    // }
-
-    return (
-        <div>
-            <HeaderPage namePage={'Người dùng'} />
-            <TableUser />
-        </div>
-    );
-}
+export default ListUserPage;
