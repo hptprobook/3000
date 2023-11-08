@@ -55,7 +55,8 @@ class CartController extends Controller
             $carts = $cart->cart_items()->updateOrCreate(
                 [
                     'product_id' => $product->id,
-                    'quantity' => DB::raw("quantity + $request->quantity")
+                    'quantity' => DB::raw("quantity + $request->quantity"),
+                    'price' => $product->price
                 ]
             );
 

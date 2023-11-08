@@ -1,8 +1,19 @@
 import { FormControl, InputAdornment, InputLabel, OutlinedInput } from '@mui/material';
 import { FaSearch } from 'react-icons/fa'
-import React from 'react'
+import React, { useState } from 'react'
 
-const InputSearch = () => {
+const InputSearch = ({ onChange }) => {
+    const [searchValue, setSearchValue] = useState('');
+
+    const handleInputChange = (e) => {
+        const newValue = e.target.value;
+        setSearchValue(newValue);
+
+        // Gọi hàm onChange và truyền giá trị tìm kiếm mới
+        if (onChange) {
+            onChange(newValue);
+        }
+    };
     return (
         <div>
             <FormControl
@@ -26,6 +37,8 @@ const InputSearch = () => {
                 }}>
                 <InputLabel htmlFor="outlined-adornment-amount" sx={{ color: '#6c737f', }}>Tìm kiếm</InputLabel>
                 <OutlinedInput
+                    value={searchValue}
+                    onChange={handleInputChange}
                     id="outlined-adornment-amount"
                     sx={{
                         '&:hover .MuiOutlinedInput-notchedOutline': {

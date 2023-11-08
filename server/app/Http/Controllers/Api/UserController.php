@@ -32,7 +32,7 @@ class UserController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        $users = User::with('addresses')->get();
+        $users = User::with(['addresses', 'orders'])->get();
         return response()->json(['message' => 'success', 'data' => $users], 200);
     }
 
@@ -50,8 +50,9 @@ class UserController extends Controller
         return response()->json(['message' => 'success', 'data' => $user], 201);
     }
 
-    public function show(User $user)
+    public function show($id)
     {
+        $user = User::with(['addresses', 'orders'])->findOrFail($id);
         return response()->json(['message' => 'success', 'data' => $user], 200);
     }
 
