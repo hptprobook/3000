@@ -36,4 +36,3 @@ const ListUserPage = () => {
 };
 
 export default ListUserPage;
-

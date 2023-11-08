@@ -20,4 +20,14 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id', 'id');
+    }
+
+    public function coupons()
+    {
+        return $this->hasMany(CouponUsage::class);
+    }
 }
