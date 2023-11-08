@@ -4,4 +4,6 @@
     position: sticky;
     top: 0;
     background-color: rgba(17, 25, 45, 0.9);
+    /* background-color: #fff; */
+    padding: 0 16px;
 }

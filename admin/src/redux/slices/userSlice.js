@@ -2,9 +2,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import UserService from "../../services/user.service";
 
-// Async thunk for fetching all users
 export const fetchAllUsers = createAsyncThunk(
-    "users/fetchAll",
+    "users",
     async (_, { rejectWithValue }) => {
         try {
             const response = await UserService.getAllUser();
@@ -15,7 +14,6 @@ export const fetchAllUsers = createAsyncThunk(
     }
 );
 
-// Async thunk for fetching a single user by id
 export const fetchUserById = createAsyncThunk(
     "users/fetchById",
     async (userId, { rejectWithValue }) => {
