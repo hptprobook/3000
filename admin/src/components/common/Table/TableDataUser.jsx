@@ -12,6 +12,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import { MdDelete } from 'react-icons/md';
+import { BiSolidPencil } from 'react-icons/bi';
 import { visuallyHidden } from '@mui/utils';
 import { Button, Chip, Collapse, Grid, IconButton, TextField, Tooltip, Typography } from '@mui/material';
 import styled from '@emotion/styled';
@@ -21,7 +22,9 @@ import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox
 import FormatDateTime from '../Function/FormatDate';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 import { ReadOnly } from '../TextField/ReadOnly';
+import { NavLink } from 'react-router-dom';
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: '1px solid rgb(45, 55, 72)',
     color: '#edf2f7',
@@ -455,16 +458,19 @@ export default function TableDataUser(props) {
                                                 colSpan="5"
                                                 align="right"
                                             >
-                                                <Tooltip title="Xóa" onClick={() => handleDelete(selected)} >
+                                                <NavLink to={'/user/edit/' + row.id}>
+                                                    <Tooltip title="Sửa" onClick={() => handleDelete(selected)} >
 
-                                                    <IconButton sx={{
-                                                        color: '#9da4ae',
-                                                        marginRight: '8px'
-                                                    }}
-                                                    >
-                                                        <MdDelete />
-                                                    </IconButton>
-                                                </Tooltip>
+                                                        <IconButton sx={{
+                                                            color: '#9da4ae',
+                                                            marginRight: '8px'
+                                                        }}
+                                                        >
+                                                            <BiSolidPencil style={{ fontSize: '16px' }} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                </NavLink>
+
                                                 <Tooltip title="Mở" >
 
                                                     <IconButton

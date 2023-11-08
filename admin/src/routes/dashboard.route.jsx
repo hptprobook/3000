@@ -4,6 +4,7 @@ import HomePage from "../pages/Home/Home.page";
 import Error404Page from "../pages/Error/Error404Page";
 import UserPage from "../pages/User/List/ListUserPage";
 import AddUserPage from "../pages/User/Add/AddUserPage";
+import EditUserPage from "../pages/User/Edit/EditUserPage";
 
 function DashboardRoute() {
     return (
@@ -12,6 +13,7 @@ function DashboardRoute() {
             <Route path="*" element={<Error404Page />} />
             <Route path="user/list" element={<UserPage />} />
             <Route path="user/create" element={<AddUserPage />} />
+            <Route path="user/edit/:id" element={<EditUserPage />} />
         </Routes>
     );
 }
