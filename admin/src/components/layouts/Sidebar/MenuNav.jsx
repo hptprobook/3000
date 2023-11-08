@@ -56,21 +56,21 @@ export function getMenuNav() {
                 createList("Danh sách", "user-list", "/user/list"),
                 createList("Tạo", "user-create", "/user/create"),
             ]),
-            createList("Sản phẩm", "products", "/products", <HiShoppingBag />, [
-                createList("Danh sách", "products-list", "/products/list"),
-                createList("Tạo", "products-create", "/products/create"),
-                createList("Kho", "products-warehouse", "/products/warehouse"),
+            createList("Sản phẩm", "product", "/product", <HiShoppingBag />, [
+                createList("Danh sách", "product-list", "/product/list"),
+                createList("Tạo", "product-create", "/product/create"),
+                createList("Kho", "product-warehouse", "/product/warehouse"),
             ]),
             createList(
                 "Phân loại",
-                "categroy",
-                "/categroy",
+                "category",
+                "/category",
                 <MdOutlineLabelImportant />,
                 [
-                    createList("Danh sách", "categroy-list", "/categroy/list"),
-                    createList("Tạo", "categroy-create", "/categroy/create"),
+                    createList("Danh sách", "category-list", "/category/list"),
+                    createList("Tạo", "category-create", "/category/create"),
                     createList(
-                        "Nhãn hàng",
+                        "Thương hiệu",
                         "category-brand",
                         "/category/brand"
                     ),
