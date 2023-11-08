@@ -10,6 +10,7 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -75,6 +76,7 @@ class OrderController extends Controller
                     'total_amount' => $total_amount,
                     'address_id' => $address->id,
                     'status' => 'pending',
+                    'note' => $validatedData['note'],
                 ]);
 
                 foreach ($cartItems as $cartItem) {
