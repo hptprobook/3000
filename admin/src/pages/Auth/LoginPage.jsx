@@ -37,7 +37,7 @@ export default function LoginPage() {
         }
 
         // Validate password
-        if (password.length < 8) {
+        if (password.length < 6) {
             setPasswordError(true);
             setPasswordHelperText('Mật khẩu phải chứa ít nhất 8 ký tự');
             return;
@@ -45,15 +45,15 @@ export default function LoginPage() {
             setPasswordError(false);
             setPasswordHelperText('');
         }
-      
+
 
         AuthService.login({ login, password })
             .then(response => {
                 if (response.error) {
                     console.log(response);
                 } else {
-                    // localStorage.setItem('access_token', response.data.token);
-                    // navigate('/');
+                    localStorage.setItem('access_token', response.data.token);
+                    navigate('/');
                     console.log(response);
                 }
             });

@@ -28,7 +28,10 @@ const ListUserPage = () => {
     if (status === "succeeded") {
         return (
             <div>
-                <HeaderPage namePage={'Người dùng'} />
+                <HeaderPage
+                    namePage={'Người dùng'}
+                    Breadcrumb={['Người dùng', 'Danh sách']}
+                    ButtonLink='/user/create' />
                 <TableUser data={users} />
             </div>
         );

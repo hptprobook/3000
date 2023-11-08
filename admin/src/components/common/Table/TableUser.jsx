@@ -27,32 +27,7 @@ function CustomTabPanel(props) {
         </div>
     );
 }
-function createData(id, name, status, created, order, spent) {
-    return {
-        id,
-        name,
-        status,
-        created,
-        order,
-        spent,
-    };
-}
 
-const rows = [
-    createData(1, 'Cupcake', 'active', 3.7, 67, 4.3),
-    createData(2, 'Donut', 452, 25.0, 51, 4.9),
-    createData(3, 'Eclair', 262, 16.0, 24, 6.0),
-    createData(4, 'Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData(5, 'Gingerbread', 356, 16.0, 49, 3.9),
-    createData(6, 'Honeycomb', 408, 3.2, 87, 6.5),
-    createData(7, 'Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData(8, 'Jelly Bean', 375, 0.0, 94, 0.0),
-    createData(9, 'KitKat', 518, 26.0, 65, 7.0),
-    createData(10, 'Lollipop', 392, 0.2, 98, 0.0),
-    createData(11, 'Marshmallow', 318, 0, 81, 2.0),
-    createData(12, 'Nougat', 360, 19.0, 9, 37.0),
-    createData(13, 'Oreo', 437, 18.0, 63, 4.0),
-];
 CustomTabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.number.isRequired,
@@ -70,7 +45,8 @@ export default function TableUser(props) {
     const [value, setValue] = React.useState(0);
     const [userData, setUserData] = React.useState(props.data);
     const [dataSearch, setDataSearch] = React.useState(userData);
-
+    const dataActive = userData.filter(item => item.status === 'active');
+    const dataBan = userData.filter(item => item.status === 'ban');
     const handleSearch = (searchValue) => {
         // Tạo một biểu thức chính quy để tìm kiếm "searchValue" trong các dữ liệu
         const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
@@ -84,7 +60,6 @@ export default function TableUser(props) {
             setUserData(props.data);
         }
     };
-    console.log(props.data);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -132,10 +107,10 @@ export default function TableUser(props) {
                 <TableDataUser data={userData} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-                <TableDataUser data={userData} />
+                <TableDataUser data={dataActive} />
             </CustomTabPanel>
             <CustomTabPanel value={value} index={2}>
-                <TableDataUser data={userData} />
+                <TableDataUser data={dataBan} />
             </CustomTabPanel>
         </Box>
     );
