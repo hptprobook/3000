@@ -2,6 +2,7 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import { NavLink } from 'react-router-dom';
 const BootstrapButton = styled(Button)({
     boxShadow: 'none',
     textTransform: 'none',
@@ -22,8 +23,8 @@ const BootstrapButton = styled(Button)({
         borderColor: '#005cbf',
     },
 });
-export default function ButtonAdd() {
+export default function ButtonAdd({ link }) {
     return (
-        <BootstrapButton variant="contained" startIcon={<AddIcon />}>Thêm mới</BootstrapButton>
+        <NavLink to={link}> <BootstrapButton variant="contained" startIcon={<AddIcon />}>Thêm mới</BootstrapButton></NavLink>
     )
 }

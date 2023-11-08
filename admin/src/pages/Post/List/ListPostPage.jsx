@@ -10,7 +10,11 @@ const ListPostPage = () => {
     const error = useSelector((state) => state.posts.error); // Update the selector for posts
     return (
         <div>
-            <HeaderPage namePage={'Bài viết'} />
+            <HeaderPage
+                namePage={'Bài viết'}
+                Breadcrumb={['Bài viết', 'Danh sách']}
+                ButtonLink='/post/create'
+            />
         </div>
     );
     // }

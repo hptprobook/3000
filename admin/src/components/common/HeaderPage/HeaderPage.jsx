@@ -15,9 +15,9 @@ const HeaderPage = (propCustom) => {
                 }} gutterBottom>
                     {propCustom.namePage}
                 </Typography>
-                <Breadcrumb />
+                <Breadcrumb link={propCustom.Breadcrumb} />
             </div>
-            <ButtonAdd />
+            <ButtonAdd link={propCustom.ButtonLink} />
 
         </Box>
     )
