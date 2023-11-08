@@ -86,6 +86,12 @@ class OrderController extends Controller
                         'discount' => $cartItem->discount ?? 0,
                     ]);
                     $cartItem->delete();
+
+                    $product = Product::find($cartItem->product_id);
+                    if ($product->quantity <= 0) {
+                        throw new Exception("Product with ID {$product->id} is out of stock.");
+                    }
+                    $product->decrement('quantity', $cartItem->quantity);
                 }
             } else {
                 $order = Order::create([
@@ -108,6 +114,13 @@ class OrderController extends Controller
                     'quantity' => $productDetail['quantity'],
                     'discount' => 0,
                 ]);
+
+                $product = Product::find($productDetail['product_id']);
+
+                if ($product->quantity < $productDetail['quantity']) {
+                    throw new Exception("Not enough stock for product with ID {$product->id}");
+                }
+                $product->decrement('quantity', $productDetail['quantity']);
             }
 
 

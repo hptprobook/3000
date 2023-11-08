@@ -43,8 +43,8 @@ class AuthController extends Controller
         try {
             $request->validate([
                 'name' => 'required|string|min:5|max:50',
-                'email' => 'nullable|email|unique:users',
-                'phone_number' => 'nullable|unique:users',
+                'email' => 'required|nullable|email|unique:users',
+                'phone_number' => 'required|nullable|unique:users',
                 'password' => 'required',
                 'confirmPassword' => 'required|same:password',
             ]);
@@ -75,27 +75,21 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        try {
-            $request->validate([
-                'currentPassword' => 'required',
-                'newPassword' => "required|min:6|max:50",
-                'confirmPassword' => 'required|same:newPassword',
-            ]);
+        $validatedData = $request->validate([
+            'currentPassword' => 'required',
+            'newPassword' => 'required|min:6|max:50',
+            'confirmPassword' => 'required|same:newPassword',
+        ]);
 
-            $user = Auth::user();
+        $user = Auth::user();
 
-            if (!Hash::check($request->currentPassword, $user->password)) {
-                return response()->json(['error' => 'Current password is incorrect'], 400);
-            }
-
-            $user->password = Hash::make($request->newPassword);
-            $user->save();
-
-            return response()->json(['message' => 'Password updated successfully']);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
+        if (!Hash::check($validatedData['currentPassword'], $user->password)) {
+            return response()->json(['error' => 'The provided password does not match your current password.'], 422);
         }
+
+        $user->password = Hash::make($validatedData['newPassword']);
+        $user->save();
+
+        return response()->json(['message' => 'Password changed successfully'], 200);
     }
 }
