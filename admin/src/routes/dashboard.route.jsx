@@ -8,6 +8,7 @@ import EditUserPage from "../pages/User/Edit/EditUserPage";
 import CreateProductPage from "../pages/Product/Create/CreateProductPage";
 import ListProductPage from "../pages/Product/List/ListProductPage";
 import WarehouseProductPage from "../pages/Product/Warehouse/WarehouseProductPage";
+import ListPostPage from "../pages/Post/List/ListPostPage";
 
 function DashboardRoute() {
     return (
@@ -19,6 +20,7 @@ function DashboardRoute() {
             <Route path="user/edit/:id" element={<EditUserPage />} />
             <Route path="product/create" element={<CreateProductPage />} />
             <Route path="product/list" element={<ListProductPage />} />
+            <Route path="post/list" element={<ListPostPage />} />
             <Route
                 path="product/warehouse"
                 element={<WarehouseProductPage />}

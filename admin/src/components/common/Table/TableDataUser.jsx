@@ -222,7 +222,6 @@ function EnhancedTableHead(props) {
                         <Tooltip title="Xóa" onClick={() => handleDelete(selected)} >
                             <IconButton sx={{
                                 color: '#9da4ae',
-
                                 marginRight: '8px'
                             }}
                             >
@@ -431,7 +430,7 @@ export default function TableDataUser(props) {
                                                 <Chip
                                                     sx={{
                                                         backgroundColor: row.role == 'USER' ? '#162f34' : '#183343',
-                                                        color: row.role == 'USER' ? '#137d5f' : '#0b8baa',
+                                                        color: row.role == 'USER' ? '#10b981' : '#d32f2f',
                                                         textTransform: 'uppercase',
                                                         fontWeight: '600'
                                                     }}
@@ -440,7 +439,7 @@ export default function TableDataUser(props) {
                                                 <Chip
                                                     sx={{
                                                         backgroundColor: row.status == 'active' ? '#162f34' : '#31212b',
-                                                        color: row.status == 'active' ? '#137d5f' : '#c83d35',
+                                                        color: row.status == 'active' ? '#10b981' : '#d32f2f',
                                                         textTransform: 'uppercase',
                                                         fontWeight: '600'
                                                     }}

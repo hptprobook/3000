@@ -46,9 +46,9 @@ export function getMenuNav() {
                 "/chat",
                 <HiMiniChatBubbleOvalLeftEllipsis />
             ),
-            createList("Bài viết", "posts", "/posts", <MdOutlinePostAdd />, [
-                createList("Danh sách", "posts-list", "/posts/list"),
-                createList("Tạo", "posts-create", "/posts/create"),
+            createList("Bài viết", "post", "/post", <MdOutlinePostAdd />, [
+                createList("Danh sách", "post-list", "/post/list"),
+                createList("Tạo", "post-create", "/post/create"),
             ]),
         ]),
         createList("Bán hàng", "menu2", true, <MdOutlineSell />, [
