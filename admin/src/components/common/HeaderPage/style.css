@@ -1,0 +1,11 @@
+.headerPage-user {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.headerPage-user__content h4,
+.headerPage-user__content h6 {
+    padding-left: 12px;
+    margin: 0;
+}
