@@ -1,66 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Để thiết lập đăng nhập sử dụng Laravel Sanctum và React với Axios, bạn cần thực hiện các bước sau đây:
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+-   Bước 1: Cài đặt Laravel Sanctum
 
-## About Laravel
+    -   Trong terminal của bạn, chạy lệnh sau trong thư mục gốc của dự án Laravel:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+        composer require laravel/sanctum
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+    -   Sau khi cài đặt, bạn cần xuất bản cấu hình Sanctum và chạy migration:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+        php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
+        php artisan migrate
 
-## Learning Laravel
+-   Bước 2: Cấu hình CORS
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    -   Chỉnh sửa file config/cors.php để cho phép các yêu cầu từ domain của ứng dụng React:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+        'paths' => ['api/*', 'sanctum/csrf-cookie'],
+        'allowed_methods' => ['*'],
+        'allowed_origins' => ['http://localhost:3000'], // Địa chỉ của SPA React
+        'allowed_origins_patterns' => [],
+        'allowed_headers' => ['*'],
+        'exposed_headers' => [],
+        'max_age' => 0,
+        'supports_credentials' => true, // Quan trọng để gửi cookie qua CORS
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   Bước 3: Cấu hình Middleware
 
-## Laravel Sponsors
+    -   Thêm EnsureFrontendRequestsAreStateful vào $middlewareGroups trong app/Http/Kernel.php:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+        use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
-### Premium Partners
+        'api' => [
+        EnsureFrontendRequestsAreStateful::class,
+        'throttle:api',
+        \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ],
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+-   Bước 4: Tạo Route Xác Thực
 
-## Contributing
+    -   Trong routes/api.php, bạn cần một route để xử lý yêu cầu đăng nhập:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+        use App\Http\Controllers\AuthController;
 
-## Code of Conduct
+        Route::post('/login', [AuthController::class, 'login']);
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   Bước 5: Tạo Auth Controller
 
-## Security Vulnerabilities
+    -   Tạo AuthController với phương thức login:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+        namespace App\Http\Controllers;
 
-## License
+        use Illuminate\Support\Facades\Auth;
+        use Illuminate\Http\Request;
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+        class AuthController extends Controller
+        {
+        public function login(Request $request)
+        {
+        $credentials = $request->validate([
+        'email' => 'required|email',
+        'password' => 'required',
+        ]);
+
+                  if (Auth::attempt($credentials)) {
+                      $request->session()->regenerate();
+                      return response()->json(Auth::user(), 200);
+                  }
+
+                  return response()->json(['message' => 'The provided credentials do not match our records.'], 401);
+              }
+
+        }
+
+-   Bước 6: Frontend với React và Axios
+
+    -   Trong ứng dụng React của bạn, cài đặt Axios:
+
+        npm install axios
+
+    -   Tạo hàm đăng nhập sử dụng Axios:
+
+        import axios from 'axios';
+
+        const api = axios.create({
+        baseURL: 'http://your-laravel-app.test/api',
+        withCredentials: true // Cho phép gửi cookie qua CORS
+        });
+
+        export const login = async (email, password) => {
+        try {
+        // Lấy CSRF token trước khi đăng nhập
+        await api.get('/sanctum/csrf-cookie');
+
+              // Thực hiện yêu cầu đăng nhập
+              const response = await api.post('/login', { email, password });
+
+              // Lưu trữ thông tin người dùng hoặc token nhận được (nếu cần)
+              console.log(response.data);
+
+        } catch (error) {
+        console.error('Error during login', error.response);
+        }
+        };
+
+    -   Gọi hàm login từ component hoặc hook khi người dùng gửi form đăng nhập.
+
+-   Bước 7: Lưu Token và Xử lý Session
+
+    -   Laravel Sanctum sử dụng session để xác thực người dùng, vì vậy token không cần phải được lưu trữ trên client. Nó sẽ được lưu trữ trong cookie của session, mà Laravel sẽ tự quản lý.
+
+-   Bước 8: Bảo mật
+
+    -   Luôn sử dụng HTTPS khi triển khai ứng dụng của bạn trên môi trường sản xuất để đảm bảo an toàn thông tin người dùng.
+
+    -   Những bước trên đây là hướng dẫn chi tiết kèm theo code mẫu để thiết lập hệ thống đăng nhập sử dụng Laravel Sanctum và React với Axios. Hãy chắc chắn rằng bạn đã thực hiện các bước cần thiết để bảo mật ứng dụng của mình và kiểm tra kỹ lưỡng trong quá trình phát triển.
