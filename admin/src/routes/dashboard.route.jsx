@@ -21,6 +21,7 @@ function DashboardRoute() {
             <Route path="product/create" element={<CreateProductPage />} />
             <Route path="product/list" element={<ListProductPage />} />
             <Route path="post/list" element={<ListPostPage />} />
+            <Route path="post/edit/:id" element={<ListPostPage />} />
             <Route
                 path="product/warehouse"
                 element={<WarehouseProductPage />}

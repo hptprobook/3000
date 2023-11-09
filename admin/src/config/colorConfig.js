@@ -10,7 +10,9 @@ const color = {
         light: '#EDF2F7'
     },
     textGray: '#a0aec0',
-
+    backgroundChip: {
+        dark: '#2d3440'
+    },
     secondary: '#FF4136',
     background: '#F5F5F5',
     text: '#333333',
