@@ -2,6 +2,7 @@ import { Box, Typography } from '@mui/material'
 import React from 'react'
 import ButtonAdd from '../Button/ButtonAdd'
 import ButtonExport from '../Button/ButtonExport'
+import Breadcrumb from '../Breadcrumb/Breadcrumb'
 
 const HeaderPage = (propCustom) => {
     return (
@@ -14,10 +15,9 @@ const HeaderPage = (propCustom) => {
                 }} gutterBottom>
                     {propCustom.namePage}
                 </Typography>
-                <ButtonExport />
-                <ButtonExport />
+                <Breadcrumb link={propCustom.Breadcrumb} />
             </div>
-            <ButtonAdd />
+            <ButtonAdd link={propCustom.ButtonLink} />
 
         </Box>
     )

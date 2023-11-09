@@ -1,18 +1,19 @@
 import request from "../utils/request";
 
-const UserService = {
-    getAllUser: async () => {
+const PostService = {
+    getAllPosts: async () => {
         try {
-            const res = await request.get("users");
+            const res = await request.get("posts"); // Replace "users" with "posts"
             return res.data;
         } catch (err) {
             console.log("Error: ", err);
             throw err;
         }
     },
-    getUser: async (id) => {
+    getPost: async (id) => {
         try {
-            const res = await request.get(`users/${id}`);
+            const res = await request.get(`posts/${id}`); // Replace "users" with "posts"
+            console.log(res.data);
             return res.data;
         } catch (err) {
             console.log("Error: ", err);
@@ -21,4 +22,4 @@ const UserService = {
     },
 };
 
-export default UserService;
+export default PostService;
