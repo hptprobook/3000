@@ -7,14 +7,19 @@ use App\Models\Tag;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class TagController extends Controller
 {
     public function index()
     {
-        $tags = Tag::all();
+        try {
+            $tags = Tag::all();
 
-        return response()->json(['success' => true, 'data' => $tags], 200);
+            return response()->json(['success' => true, 'data' => $tags], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function store(Request $request)
@@ -28,8 +33,10 @@ class TagController extends Controller
             $tag = Tag::create($request->all());
 
             return response()->json(['data' => $tag, 'message' => 'Tag created successfully'], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -59,10 +66,12 @@ class TagController extends Controller
             $tag = $tag->update($request->all());
 
             return response()->json(['data' => $tag, 'message' => 'Tag created successfully'], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => 'Tag not found'], 404);
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 

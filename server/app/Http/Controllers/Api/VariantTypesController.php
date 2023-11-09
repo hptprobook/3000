@@ -5,24 +5,23 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\VariantType;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class VariantTypesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $variantTypes = VariantType::all();
+        try {
+            $variantTypes = VariantType::all();
 
-        return response()->json(['message' => 'success', 'data' => $variantTypes]);
+            return response()->json(['message' => 'success', 'data' => $variantTypes]);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -33,32 +32,30 @@ class VariantTypesController extends Controller
             $variantTypes = VariantType::create($request->all());
 
             return response()->json(['message' => 'success', 'data' => $variantTypes], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         try {
-            $variantTypes = VariantType::find($id);
+            $variantTypes = VariantType::findOrFail($id);
 
             return response()->json(['message' => 'success', 'data' => $variantTypes], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         try {
-            $variantTypes = VariantType::find($id);
+            $variantTypes = VariantType::findOrFail($id);
 
             if ($variantTypes) {
                 $request->validate(
@@ -78,19 +75,18 @@ class VariantTypesController extends Controller
                 return response()->json(['message' => 'VariantType not found'], 403);
             }
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         try {
-            $variantTypes = VariantType::find($id);
+            $variantTypes = VariantType::findOrFail($id);
 
             if ($variantTypes) {
                 $variantTypes->delete();
@@ -98,8 +94,10 @@ class VariantTypesController extends Controller
             } else {
                 return response()->json(['message' => 'Variant type not found'], 403);
             }
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

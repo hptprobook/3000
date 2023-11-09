@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -61,6 +63,8 @@ class CartController extends Controller
             );
 
             return response()->json(['message' => 'success', 'carts' => $carts], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -71,11 +75,9 @@ class CartController extends Controller
         try {
             $cart = CartItem::with('product')->findOrFail($id);
 
-            if ($cart) {
-                return response()->json(['message' => 'success', 'data' => $cart], 200);
-            } else {
-                return response()->json(['message' => 'Cart not found'], 404);
-            }
+            return response()->json(['message' => 'success', 'data' => $cart], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -84,7 +86,7 @@ class CartController extends Controller
     public function update(Request $request, string $id)
     {
         try {
-            $cartItem = CartItem::find($id);
+            $cartItem = CartItem::findOrFail($id);
 
             if (!$cartItem || $cartItem->cart->user_id !== Auth::id()) {
                 return response()->json(['message' => 'Not found'], 404);
@@ -97,6 +99,10 @@ class CartController extends Controller
             $cartItem->update($request->all());
 
             return response()->json(['message' => 'success', 'data' => $cartItem], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -105,7 +111,7 @@ class CartController extends Controller
     public function destroy(string $id)
     {
         try {
-            $cartItem = CartItem::find($id);
+            $cartItem = CartItem::findOrFail($id);
 
             if (!$cartItem || $cartItem->cart->user_id !== Auth::id()) {
                 return response()->json(['message' => 'Not found'], 404);
@@ -114,6 +120,8 @@ class CartController extends Controller
             $cartItem->delete();
 
             return response()->json(['message' => 'Deleted success'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

@@ -7,6 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PostController extends Controller
 {
@@ -19,22 +20,20 @@ class PostController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function show($id)
     {
         try {
-            $post = Post::find($id);
-    
-            if (!$post) {
-                return response()->json(['message' => 'Post not found'], 404);
-            }
-    
-            return response()->json($post, 200); 
+            $post = Post::findOrFail($id);
+
+            return response()->json($post, 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-    
+
     public function store(Request $request)
     {
         try {
@@ -46,9 +45,9 @@ class PostController extends Controller
                 'img' => 'required',
                 'status' => 'required',
             ]);
-    
+
             $post = Post::create($validatedData);
-    
+
             return response()->json(['message' => 'Post created successfully', 'data' => $post], 201);
         } catch (ValidationException $e) {
             return response()->json(['error' => $e->errors()], 422);
@@ -56,16 +55,16 @@ class PostController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
-    
+
     public function update(Request $request, $id)
     {
         try {
-            $post = Post::find($id);
-    
+            $post = Post::findOrFail($id);
+
             if (!$post) {
                 return response()->json(['message' => 'Post not found'], 404);
             }
-    
+
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'content' => 'required',
@@ -74,32 +73,32 @@ class PostController extends Controller
                 'img' => 'required',
                 'status' => 'required',
             ]);
-    
+
             $post->update($validatedData);
-    
+
             return response()->json(['message' => 'Post updated successfully', 'data' => $post], 200);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
-    
+
 
     public function destroy($id)
     {
         try {
             $post = Post::find($id);
 
-            if (!$post) {
-                return response()->json(['message' => 'Post not found'], 404);
-            }
-
             $post->delete();
 
-            return response()->json(['message' => 'Post deleted successfully'], 204); 
+            return response()->json(['message' => 'Post deleted successfully'], 204);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

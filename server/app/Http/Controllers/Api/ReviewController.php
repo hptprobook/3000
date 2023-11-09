@@ -5,18 +5,24 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Review;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class ReviewController extends Controller
 {
 
     public function index()
     {
-        $reviews = Review::with(['user', 'product'])->get();
+        try {
+            $reviews = Review::with(['user', 'product'])->get();
 
-        return response()->json(['message' => 'success', 'data' => $reviews], 200);
+            return response()->json(['message' => 'success', 'data' => $reviews], 200);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 
     public function store(Request $request)
@@ -39,8 +45,10 @@ class ReviewController extends Controller
             $review = Review::create($reviewData);
 
             return response()->json(['message' => 'Review created successfully', 'data' => $review], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -52,8 +60,10 @@ class ReviewController extends Controller
             $review = Review::with(['user', 'product'])->findOrFail($id);
 
             return response()->json(['message' => 'success', 'data' => $review], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['errors' => 'Review not found or an error occurred', 'message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -80,8 +90,12 @@ class ReviewController extends Controller
             $review->update($request->all());
 
             return response()->json(['message' => 'Review updated successfully', 'data' => $review], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -98,8 +112,10 @@ class ReviewController extends Controller
             $review->delete();
 
             return response()->json(['message' => 'Review deleted successfully'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
-            return response()->json(['errors' => 'Review not found or an error occurred', 'message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

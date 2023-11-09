@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
-use App\Models\OrderDetail;
 use App\Models\Product;
+use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -127,6 +126,9 @@ class OrderController extends Controller
 
             DB::commit();
             return response()->json(['message' => 'Order successfully created', 'data' => $order->load('order_details')], 200);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Order creation failed', 'error' => $e->getMessage()], 500);
@@ -144,6 +146,8 @@ class OrderController extends Controller
             }
 
             return response()->json(['message' => 'success', 'data' => $order], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -167,6 +171,12 @@ class OrderController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'Order status updated successfully', 'data' => $order], 200);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Order status update failed', 'error' => $e->getMessage()], 500);
@@ -190,9 +200,11 @@ class OrderController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'Order and order details successfully deleted'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to delete order', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 }

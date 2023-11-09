@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\OrderDetail;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,6 +31,8 @@ class OrderDetailController extends Controller
             }
 
             return response()->json(['message' => 'success', 'data' => $order_details], 201);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -60,6 +63,8 @@ class OrderDetailController extends Controller
             DB::commit();
 
             return response()->json(['message' => 'Order detail and order total amount updated successfully'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             DB::rollBack();
             return response()->json(['message' => 'Failed to delete order detail', 'error' => $e->getMessage()], 500);

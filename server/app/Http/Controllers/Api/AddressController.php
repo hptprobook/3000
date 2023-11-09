@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AddressController extends Controller
 {
@@ -35,6 +37,8 @@ class AddressController extends Controller
             $address = Address::create($validatedData);
 
             return response()->json(['message' => 'Address created successfully', 'address' => $address], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -45,8 +49,10 @@ class AddressController extends Controller
         try {
             $address = Address::findOrFail($id);
             return response()->json(['message' => 'success', 'address' => $address], 200);
-        } catch (Exception $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
+        } catch (Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
         }
     }
 
@@ -67,6 +73,10 @@ class AddressController extends Controller
             $address->update($validatedData);
 
             return response()->json(['message' => 'Address updated successfully', 'address' => $address], 200);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
@@ -79,6 +89,8 @@ class AddressController extends Controller
             $address->delete();
 
             return response()->json(['message' => 'Address deleted successfully'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => $e->getMessage()], 404);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }

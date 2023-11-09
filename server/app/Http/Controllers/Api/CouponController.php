@@ -39,6 +39,8 @@ class CouponController extends Controller
             $coupon = Coupon::create($request->all());
 
             return response()->json(['message' => 'success', 'data' => $coupon], 201);
+        } catch (ValidationException $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
         } catch (Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
         }
