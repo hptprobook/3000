@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
 
 class AddressController extends Controller
 {
@@ -16,9 +17,9 @@ class AddressController extends Controller
     {
         try {
             $addresses = Address::all();
-            return response()->json(['message' => 'success', 'addresses' => $addresses], 200);
+            return response()->json($addresses, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -36,11 +37,11 @@ class AddressController extends Controller
 
             $address = Address::create($validatedData);
 
-            return response()->json(['message' => 'Address created successfully', 'address' => $address], 201);
+            return response()->json($address, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -48,11 +49,12 @@ class AddressController extends Controller
     {
         try {
             $address = Address::findOrFail($id);
-            return response()->json(['message' => 'success', 'address' => $address], 200);
+
+            return response()->json($address, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -70,15 +72,15 @@ class AddressController extends Controller
                 'note' => 'sometimes|string|nullable',
             ]);
 
-            $address->update($validatedData);
+            $address = $address->update($validatedData);
 
-            return response()->json(['message' => 'Address updated successfully', 'address' => $address], 200);
+            return response()->json($address, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -88,11 +90,11 @@ class AddressController extends Controller
             $address = Address::findOrFail($id);
             $address->delete();
 
-            return response()->json(['message' => 'Address deleted successfully'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

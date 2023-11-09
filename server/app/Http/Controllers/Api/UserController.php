@@ -8,6 +8,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -33,31 +34,29 @@ class UserController extends Controller
     public function index()
     {
         try {
-            if (auth()->guest()) {
-                return response()->json(['error' => 'Unauthenticated'], 401);
-            }
-
             $users = User::with(['addresses', 'orders'])->get();
-            return response()->json(['message' => 'success', 'data' => $users], 200);
+
+            return response()->json($users, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function store(Request $request)
     {
-        return response()->json(['message' => 'Api does not exist'], 500);
+        return response()->json(['error' => 'Api does not exist'], Response::HTTP_NOT_FOUND);
     }
 
     public function show($id)
     {
         try {
-            $user = User::with(['addresses', 'orders'])->findOrFail($id);
-            return response()->json(['message' => 'success', 'data' => $user], 200);
+            $user = User::with(['addresses.ward', 'orders'])->findOrFail($id);
+
+            return response()->json($user, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -82,9 +81,8 @@ class UserController extends Controller
             $wardExists = Ward::where('id', $validatedData['ward_id'])->exists();
             if (!$wardExists) {
                 return response()->json([
-                    'message' => 'Order creation failed',
                     'error' => 'The provided ward_id does not exist in the database.'
-                ], 422);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $address = Address::updateOrCreate(
@@ -102,13 +100,13 @@ class UserController extends Controller
                 'address_id' => $address->id
             ]);
 
-            return response()->json(['message' => 'success', 'data' => $user], 200);
+            return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -131,11 +129,11 @@ class UserController extends Controller
 
             $user->fill($validatedData)->save();
 
-            return response()->json(['message' => 'User profile updated successfully.', 'data' => $user], 200);
+            return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => 'Validation error.', 'errors' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => 'Server error.', 'error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -143,14 +141,14 @@ class UserController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-
             $user->update(['role' => 'ADMIN']);
-
             $user->assignRole('ADMIN');
+
+            return response()->json($user, Response::HTTP_CREATED);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -160,16 +158,16 @@ class UserController extends Controller
             $user = User::findOrFail($id);
 
             if ($user->id == Auth::id()) {
-                return response()->json(['message' => 'Can not delete this user'], 400);
+                return response()->json(['error' => 'Can not delete this user'], Response::HTTP_BAD_REQUEST);
             }
 
             $user->delete();
 
-            return response()->json(['message' => 'Deleted successfully'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

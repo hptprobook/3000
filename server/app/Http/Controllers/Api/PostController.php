@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
@@ -15,9 +16,10 @@ class PostController extends Controller
     {
         try {
             $posts = Post::all();
-            return response()->json($posts, 200);
+
+            return response()->json($posts, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -26,11 +28,11 @@ class PostController extends Controller
         try {
             $post = Post::findOrFail($id);
 
-            return response()->json($post, 200);
+            return response()->json($post, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -48,11 +50,11 @@ class PostController extends Controller
 
             $post = Post::create($validatedData);
 
-            return response()->json(['message' => 'Post created successfully', 'data' => $post], 201);
+            return response()->json($post, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -60,10 +62,6 @@ class PostController extends Controller
     {
         try {
             $post = Post::findOrFail($id);
-
-            if (!$post) {
-                return response()->json(['message' => 'Post not found'], 404);
-            }
 
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
@@ -74,15 +72,15 @@ class PostController extends Controller
                 'status' => 'required',
             ]);
 
-            $post->update($validatedData);
+            $post = $post->update($validatedData);
 
-            return response()->json(['message' => 'Post updated successfully', 'data' => $post], 200);
+            return response()->json($post, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -90,15 +88,15 @@ class PostController extends Controller
     public function destroy($id)
     {
         try {
-            $post = Post::find($id);
+            $post = Post::findOrFail($id);
 
             $post->delete();
 
-            return response()->json(['message' => 'Post deleted successfully'], 204);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

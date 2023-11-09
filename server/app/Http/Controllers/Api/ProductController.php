@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -22,9 +23,9 @@ class ProductController extends Controller
         try {
             $products = Product::with(['brands', 'category', 'tags', 'images', 'reviews'])->get();
 
-            return response()->json(['message' => 'success', 'data' => $products], 200);
+            return response()->json($products, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -49,7 +50,7 @@ class ProductController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
+                return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
             }
 
             $product = Product::create($request->only([
@@ -76,13 +77,13 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Product created successfully', 'data' => $product], 200);
+            return response()->json($product, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             DB::rollBack();
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -92,11 +93,11 @@ class ProductController extends Controller
         try {
             $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews'])->findOrFail($id);
 
-            return response()->json(['data' => $product], 200);
+            return response()->json($product, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -156,16 +157,16 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'success', 'data' => $product->fresh()], 200);
+            return response()->json($product->fresh(), Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             DB::rollBack();
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
             DB::rollBack();
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -188,12 +189,12 @@ class ProductController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Product and related data deleted successfully.'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

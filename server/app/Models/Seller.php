@@ -10,7 +10,7 @@ class Seller extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'email', 'phone_number', 'address_id'
+        'name', 'email', 'phone_number', 'address_id', 'user_id'
     ];
 
     public function user()
@@ -21,5 +21,10 @@ class Seller extends Model
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'id', 'address_id');
     }
 }

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SellerController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -46,6 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('coupons', CouponController::class);
 
     Route::apiResource('coupon_usages', CouponUsageController::class);
+
+    Route::apiResource('sellers', SellerController::class);
 
     Route::apiResource('posts', PostController::class);
 });

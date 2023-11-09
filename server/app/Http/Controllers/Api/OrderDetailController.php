@@ -7,40 +7,37 @@ use App\Models\OrderDetail;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class OrderDetailController extends Controller
 {
     public function index()
     {
-        return response()->json(['message' => 'Api does not exist!'], 404);
+        return response()->json(['error' => 'Api does not exist!'], Response::HTTP_NOT_FOUND);
     }
 
     public function store(Request $request)
     {
-        return response()->json(['message' => 'Api does not exist!'], 404);
+        return response()->json(['error' => 'Api does not exist!'], Response::HTTP_NOT_FOUND);
     }
 
     public function show(string $id)
     {
         try {
-            $order_details = OrderDetail::with(['product'])->findOrFail($id);
+            $order_detail = OrderDetail::with(['product'])->findOrFail($id);
 
-            if (!$order_details) {
-                return response()->json(['message' => 'Order detail not found!'], 404);
-            }
-
-            return response()->json(['message' => 'success', 'data' => $order_details], 201);
+            return response()->json($order_detail, Response::HTTP_CREATED);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function update(Request $request, string $id)
     {
-        return response()->json(['message' => 'Api does not exist!'], 404);
+        return response()->json(['error' => 'Api does not exist!'], Response::HTTP_NOT_FOUND);
     }
 
     public function destroy(string $id)
@@ -62,12 +59,12 @@ class OrderDetailController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Order detail and order total amount updated successfully'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to delete order detail', 'error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

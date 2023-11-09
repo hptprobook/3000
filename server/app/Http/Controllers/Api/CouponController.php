@@ -7,6 +7,7 @@ use App\Models\Coupon;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class CouponController extends Controller
@@ -16,9 +17,9 @@ class CouponController extends Controller
         try {
             $coupons = Coupon::all();
 
-            return response()->json(['message' => 'success', 'data' => $coupons], 200);
+            return response()->json($coupons, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -38,11 +39,11 @@ class CouponController extends Controller
 
             $coupon = Coupon::create($request->all());
 
-            return response()->json(['message' => 'success', 'data' => $coupon], 201);
+            return response()->json($coupon, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -51,11 +52,11 @@ class CouponController extends Controller
         try {
             $coupon = Coupon::findOrFail($id);
 
-            return response()->json(['message' => 'success', 'data' => $coupon], 200);
+            return response()->json($coupon, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,15 +76,15 @@ class CouponController extends Controller
                 ]
             );
 
-            $coupon->update($request->all());
+            $coupon = $coupon->update($request->all());
 
-            return response()->json(['message' => 'success', 'data' => $coupon], 201);
+            return response()->json($coupon, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -94,11 +95,11 @@ class CouponController extends Controller
 
             $coupon->delete();
 
-            return response()->json(['message' => 'Deleted successfully'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

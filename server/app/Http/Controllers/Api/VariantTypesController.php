@@ -7,6 +7,7 @@ use App\Models\VariantType;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class VariantTypesController extends Controller
@@ -16,9 +17,9 @@ class VariantTypesController extends Controller
         try {
             $variantTypes = VariantType::all();
 
-            return response()->json(['message' => 'success', 'data' => $variantTypes]);
+            return response()->json($variantTypes, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -29,57 +30,52 @@ class VariantTypesController extends Controller
                 'name' => 'required|min:3|max:100'
             ]);
 
-            $variantTypes = VariantType::create($request->all());
+            $variantType = VariantType::create($request->all());
 
-            return response()->json(['message' => 'success', 'data' => $variantTypes], 200);
+            return response()->json($variantType, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function show(string $id)
     {
         try {
-            $variantTypes = VariantType::findOrFail($id);
+            $variantType = VariantType::findOrFail($id);
 
-            return response()->json(['message' => 'success', 'data' => $variantTypes], 200);
+            return response()->json($variantType, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function update(Request $request, string $id)
     {
         try {
-            $variantTypes = VariantType::findOrFail($id);
+            $variantType = VariantType::findOrFail($id);
+            $request->validate(
+                [
+                    'name' => 'required|min:3|max:128',
+                ]
+            );
 
-            if ($variantTypes) {
-                $request->validate(
-                    [
-                        'name' => 'required|min:3|max:128',
-                    ]
-                );
+            $variantType = $variantType->update(
+                [
+                    'name' => $request->name,
+                ]
+            );
 
-                $variantTypes = $variantTypes->update(
-                    [
-                        'name' => $request->name,
-                    ]
-                );
-
-                return response()->json(['message' => 'Update variant type successfully', 'data' => $variantTypes], 200);
-            } else {
-                return response()->json(['message' => 'VariantType not found'], 403);
-            }
+            return response()->json($variantType, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -88,16 +84,12 @@ class VariantTypesController extends Controller
         try {
             $variantTypes = VariantType::findOrFail($id);
 
-            if ($variantTypes) {
-                $variantTypes->delete();
-                return response()->json(['message' => 'Variant type deleted successfully'], 200);
-            } else {
-                return response()->json(['message' => 'Variant type not found'], 403);
-            }
+            $variantTypes->delete();
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
