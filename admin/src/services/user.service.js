@@ -13,7 +13,6 @@ const UserService = {
     getUser: async (id) => {
         try {
             const res = await request.get(`users/${id}`);
-            console.log(res.data);
             return res.data;
         } catch (err) {
             console.log("Error: ", err);

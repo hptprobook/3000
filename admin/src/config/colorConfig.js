@@ -5,6 +5,10 @@ const color = {
         dark: '#EDF2F7',
         light: '#EDF2F7'
     },
+    backgroundColorSub: {
+        dark: '#111927',
+        light: '#EDF2F7'
+    },
     textGray: '#a0aec0',
 
     secondary: '#FF4136',
