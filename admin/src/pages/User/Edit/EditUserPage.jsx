@@ -18,16 +18,16 @@ const CustomGrid = styled(Grid)(({ theme }) => ({
 }));
 const EditUserPage = () => {
     const { id } = useParams();
-    const [inputValue1, setInputValue1] = useState('');
-    const [inputValue2, setInputValue2] = useState('');
     const [loadData, setLoadData] = useState(false);
 
+    const [inputValue1, setInputValue1] = useState('');
+    const [inputValue2, setInputValue2] = useState('');
     function handleSetValue(funcSet, value) {
         funcSet(value);
         console.log(value);
     }
     const dispatch = useDispatch();
-    const users = useSelector((state) => state.users.users.data);
+    const users = useSelector((state) => state.users.selectedUser);
     const status = useSelector((state) => state.users.status);
     const error = useSelector((state) => state.users.error);
     useEffect(() => {
@@ -47,6 +47,8 @@ const EditUserPage = () => {
         return <div>Error:</div>;
     }
     if (status === "succeeded") {
+        console.log(users)
+
         return (
             <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
                 <ButtonBackFullW label={'Trở lại'} />
@@ -71,7 +73,7 @@ const EditUserPage = () => {
                         <Grid item sm={12} md={6}>
                             <InputNormal
                                 label={'test'}
-                                value={inputValue2}
+                                value={'ád'}
                                 onChange={(e) => handleSetValue(setInputValue2, e.target.value)}
                             />
                         </Grid>
