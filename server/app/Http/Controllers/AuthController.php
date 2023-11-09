@@ -22,20 +22,24 @@ class AuthController extends Controller
             ]);
 
             $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
+            $user = User::where($loginField, $request->login)->first();
 
-            if (Auth::attempt([$loginField => $request->login, 'password' => $request->password])) {
-                $user = Auth::user();
-                $token = $user->createToken('access_token')->plainTextToken;
-
-                return response()->json([
-                    'user' => $user,
-                    'token' => $token,
-                ], Response::HTTP_OK);
-            } else {
-                return response()->json(['error' => 'Login information is incorect'], Response::HTTP_BAD_REQUEST);
+            if (!$user) {
+                return response()->json(['error' => 'Email or phone does not exist.'], Response::HTTP_BAD_REQUEST);
             }
+
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json(['error' => 'Password is incorrect.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $token = $user->createToken('access_token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+            ], Response::HTTP_OK);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['errors' => $e->validator->errors()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return response()->json(['error' => 'Something went wrong!'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -44,18 +48,15 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         try {
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|min:5|max:50',
-                'email' => 'required|nullable|email|unique:users',
-                'phone_number' => 'required|nullable|unique:users',
+                'email' => 'required_without:phone_number|email|unique:users,email',
+                'phone_number' => 'required_without:email|unique:users,phone_number',
                 'password' => 'required',
                 'confirmPassword' => 'required|same:password',
             ]);
 
-            if (!$request->email && !$request->phone_number) {
-                $validator = Validator::make([], []);
-                $validator->errors()->add('email', 'Email or phone number is required.');
-                $validator->errors()->add('phone_number', 'Email or phone number is required.');
+            if ($validator->fails()) {
                 throw new ValidationException($validator);
             }
 
@@ -70,11 +71,12 @@ class AuthController extends Controller
 
             return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['errors' => $e->validator->errors()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
 
@@ -98,7 +100,7 @@ class AuthController extends Controller
 
             return response()->json(['message' => 'Password changed successfully'], Response::HTTP_OK);
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['errors' => $e->validator->errors()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
