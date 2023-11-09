@@ -19,7 +19,7 @@ export const fetchUserById = createAsyncThunk(
     async (userId, { rejectWithValue }) => {
         try {
             const response = await UserService.getUser(userId);
-            return response;
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }

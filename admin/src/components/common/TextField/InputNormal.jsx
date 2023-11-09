@@ -21,7 +21,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
         borderColor: 'rgba(243, 244, 246, 0.04)',
         borderRadius: '12px'
     },
-    '&:hover .MuiOutlinedInput-notchedOutline': {
+    '& .MuiInputBase-root.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
         borderColor: 'rgba(243, 244, 246, 0.04)',
     },
     '&:hover fieldset': {
