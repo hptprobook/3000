@@ -6,8 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -26,9 +29,9 @@ class CartController extends Controller
             }
             $carts = Auth::user()->cart->cart_items()->with('product')->get();
 
-            return response()->json(['message' => 'success', 'data' => $carts], 200);
+            return response()->json($carts, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -40,11 +43,7 @@ class CartController extends Controller
                 'quantity' => 'required|integer|min:1,max:10000'
             ]);
 
-            $product = Product::find($request->product_id);
-
-            if (!$product) {
-                return response()->json(['message' => 'Product not found'], 404);
-            }
+            $product = Product::findOrFail($request->product_id);
 
             $cart = Auth::user()->cart;
 
@@ -60,9 +59,11 @@ class CartController extends Controller
                 ]
             );
 
-            return response()->json(['message' => 'success', 'carts' => $carts], 200);
+            return response()->json($carts, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -71,51 +72,55 @@ class CartController extends Controller
         try {
             $cart = CartItem::with('product')->findOrFail($id);
 
-            if ($cart) {
-                return response()->json(['message' => 'success', 'data' => $cart], 200);
-            } else {
-                return response()->json(['message' => 'Cart not found'], 404);
-            }
+            return response()->json($cart, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function update(Request $request, string $id)
     {
         try {
-            $cartItem = CartItem::find($id);
+            $cartItem = CartItem::findOrFail($id);
 
             if (!$cartItem || $cartItem->cart->user_id !== Auth::id()) {
-                return response()->json(['message' => 'Not found'], 404);
+                return response()->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
             }
 
             $request->validate([
                 'quantity' => 'required|min:1|max:10000'
             ]);
 
-            $cartItem->update($request->all());
+            $cartItem = $cartItem->update($request->all());
 
-            return response()->json(['message' => 'success', 'data' => $cartItem], 200);
+            return response()->json($cartItem, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function destroy(string $id)
     {
         try {
-            $cartItem = CartItem::find($id);
+            $cartItem = CartItem::findOrFail($id);
 
             if (!$cartItem || $cartItem->cart->user_id !== Auth::id()) {
-                return response()->json(['message' => 'Not found'], 404);
+                return response()->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
             }
 
             $cartItem->delete();
 
-            return response()->json(['message' => 'Deleted success'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

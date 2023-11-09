@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Vanthao03596\HCVN\Models\Ward;
 
 class UserController extends Controller
 {
@@ -30,28 +33,30 @@ class UserController extends Controller
 
     public function index()
     {
-        if (auth()->guest()) {
-            return response()->json(['error' => 'Unauthenticated'], 401);
-        }
+        try {
+            $users = User::with(['addresses', 'orders'])->get();
 
-        $users = User::with(['addresses', 'orders'])->get();
-        return response()->json(['message' => 'success', 'data' => $users], 200);
+            return response()->json($users, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function store(Request $request)
     {
-        return response()->json(['message' => 'Api does not exist'], 500);
+        return response()->json(['error' => 'Api does not exist'], Response::HTTP_NOT_FOUND);
     }
 
     public function show($id)
     {
         try {
-            $user = User::with(['addresses', 'orders'])->findOrFail($id);
-            return response()->json(['message' => 'success', 'data' => $user], 200);
+            $user = User::with(['addresses.ward', 'orders'])->findOrFail($id);
+
+            return response()->json($user, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -60,15 +65,29 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            $request->validate(
+            $validatedData = $request->validate(
                 [
                     'name' => 'required|string|max:255',
                     'email' => 'string|email|max:255|unique:users,email,' . $id,
                     'role' => 'in:USER,ADMIN',
                     'phone_number' => 'min:9|max:10',
                     'gender' => 'in:male,female,other',
-                    'birth_date' => 'date_format:Y/m/d'
+                    'birth_date' => 'date_format:Y/m/d',
+                    'ward_id' => 'required|integer|min:1|max:30000',
+                    'street' => 'required|string|min:4|max:128'
                 ]
+            );
+
+            $wardExists = Ward::where('id', $validatedData['ward_id'])->exists();
+            if (!$wardExists) {
+                return response()->json([
+                    'error' => 'The provided ward_id does not exist in the database.'
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            $address = Address::updateOrCreate(
+                ['user_id' => $user->id, 'ward_id' => $validatedData['ward_id']],
+                ['name' => $validatedData['name'], 'phone' => $validatedData['phone'], 'address_info' => $validatedData['street'], 'note' => $validatedData['note']]
             );
 
             $user = $user->update([
@@ -78,15 +97,16 @@ class UserController extends Controller
                 'phone_number' => $request->phone_number,
                 'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
+                'address_id' => $address->id
             ]);
 
-            return response()->json(['message' => 'success', 'data' => $user], 200);
+            return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => $e->getMessage()], 400);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -109,11 +129,26 @@ class UserController extends Controller
 
             $user->fill($validatedData)->save();
 
-            return response()->json(['message' => 'User profile updated successfully.', 'data' => $user], 200);
+            return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => 'Validation error.', 'errors' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => 'Server error.', 'error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateToAdmin($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->update(['role' => 'ADMIN']);
+            $user->assignRole('ADMIN');
+
+            return response()->json($user, Response::HTTP_CREATED);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -123,16 +158,16 @@ class UserController extends Controller
             $user = User::findOrFail($id);
 
             if ($user->id == Auth::id()) {
-                return response()->json(['message' => 'Can not delete this user'], 400);
+                return response()->json(['error' => 'Can not delete this user'], Response::HTTP_BAD_REQUEST);
             }
 
             $user->delete();
 
-            return response()->json(['message' => 'Deleted successfully'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

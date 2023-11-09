@@ -4,14 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
-use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Order;
-use App\Models\OrderDetail;
 use App\Models\Product;
+use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Vanthao03596\HCVN\Models\Ward;
@@ -25,15 +25,15 @@ class OrderController extends Controller
             $orders = $user->orders;
 
             if (!$orders) {
-                return response()->json(['message' => 'Orders is empty'], 404);
+                return response()->json(['error' => 'Orders is empty'], Response::HTTP_NOT_FOUND);
             }
 
             $user = Auth::user();
-            $orders = $user->orders()->with(['order_details', 'address'])->get();
+            $orders = $user->orders()->with(['order_details', 'address,ward'])->get();
 
-            return response()->json(['message' => 'success', 'data' => $orders], 200);
+            return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -57,9 +57,8 @@ class OrderController extends Controller
             $wardExists = Ward::where('id', $validatedData['ward_id'])->exists();
             if (!$wardExists) {
                 return response()->json([
-                    'message' => 'Order creation failed',
                     'error' => 'The provided ward_id does not exist in the database.'
-                ], 422);
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
             $address = Address::updateOrCreate(
@@ -126,10 +125,13 @@ class OrderController extends Controller
 
 
             DB::commit();
-            return response()->json(['message' => 'Order successfully created', 'data' => $order->load('order_details')], 200);
+            return response()->json($order->load('order_details'), Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Order creation failed', 'error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -139,13 +141,11 @@ class OrderController extends Controller
         try {
             $order = Auth::user()->orders()->with(['order_details', 'address'])->findOrFail($id);
 
-            if (!$order) {
-                return response()->json(['message' => 'Order not found'], 404);
-            }
-
-            return response()->json(['message' => 'success', 'data' => $order], 200);
+            return response()->json($order, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -166,10 +166,16 @@ class OrderController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Order status updated successfully', 'data' => $order], 200);
+            return response()->json($order, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Order status update failed', 'error' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -189,10 +195,12 @@ class OrderController extends Controller
 
             DB::commit();
 
-            return response()->json(['message' => 'Order and order details successfully deleted'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => 'Failed to delete order', 'error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

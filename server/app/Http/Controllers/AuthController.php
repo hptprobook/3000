@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -27,14 +30,14 @@ class AuthController extends Controller
                 return response()->json([
                     'user' => $user,
                     'token' => $token,
-                ]);
+                ], Response::HTTP_OK);
             } else {
-                return response()->json(['error' => 'Email, phone_number or password is incorect'], 401);
+                return response()->json(['error' => 'Login information is incorect'], Response::HTTP_BAD_REQUEST);
             }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
+        } catch (ValidationException $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Something went wrong!'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -53,7 +56,7 @@ class AuthController extends Controller
                 $validator = Validator::make([], []);
                 $validator->errors()->add('email', 'Email or phone number is required.');
                 $validator->errors()->add('phone_number', 'Email or phone number is required.');
-                throw new \Illuminate\Validation\ValidationException($validator);
+                throw new ValidationException($validator);
             }
 
             $user = User::create([
@@ -63,11 +66,13 @@ class AuthController extends Controller
                 'password' => Hash::make($request->input('password')),
             ]);
 
-            return response()->json(['message' => 'success', 'data' => $user], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
+            $user->assignRole('USER');
+
+            return response()->json($user, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -75,21 +80,27 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $validatedData = $request->validate([
-            'currentPassword' => 'required',
-            'newPassword' => 'required|min:6|max:50',
-            'confirmPassword' => 'required|same:newPassword',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'currentPassword' => 'required',
+                'newPassword' => 'required|min:6|max:50',
+                'confirmPassword' => 'required|same:newPassword',
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        if (!Hash::check($validatedData['currentPassword'], $user->password)) {
-            return response()->json(['error' => 'The provided password does not match your current password.'], 422);
+            if (!Hash::check($validatedData['currentPassword'], $user->password)) {
+                return response()->json(['error' => 'The provided password does not match your current password.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $user->password = Hash::make($validatedData['newPassword']);
+            $user->save();
+
+            return response()->json(['message' => 'Password changed successfully'], Response::HTTP_OK);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $user->password = Hash::make($validatedData['newPassword']);
-        $user->save();
-
-        return response()->json(['message' => 'Password changed successfully'], 200);
     }
 }

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 
@@ -16,9 +18,9 @@ class BrandController extends Controller
         try {
             $brands = Brand::all();
 
-            return response()->json(['message' => "success", 'data' => $brands], 200);
+            return response()->json($brands, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -42,76 +44,70 @@ class BrandController extends Controller
                 ]
             );
 
-            return response()->json(['message' => 'Create brand successfully', 'data' => $brand], 200);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($brand, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function show(string $id)
     {
         try {
-            $brand = Brand::find($id);
+            $brand = Brand::findOrFail($id);
 
-            if ($brand) {
-                return response()->json(['message' => "success", 'data' => $brand], 200);
-            } else {
-                return response()->json(['error' => 'Brand not found'], 422);
-            }
+            return response()->json($brand, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function update(Request $request, string $id)
     {
         try {
-            $brand = Brand::find($id);
+            $brand = Brand::findOrFail($id);
 
-            if ($brand) {
-                $parent_id = $request->parent_id ?? null;
-                $request->validate(
-                    [
-                        'name' => 'required|min:3|max:128',
-                        'parent_id' => 'max:10',
-                        'icon_url' => 'required|max:255'
-                    ]
-                );
+            $parent_id = $request->parent_id ?? null;
+            $request->validate(
+                [
+                    'name' => 'required|min:3|max:128',
+                    'parent_id' => 'max:10',
+                    'icon_url' => 'required|max:255'
+                ]
+            );
 
-                $brand = $brand->update(
-                    [
-                        'name' => $request->name,
-                        'parent_id' => $parent_id,
-                        'icon_url' => $request->icon_url
-                    ]
-                );
+            $brand = $brand->update(
+                [
+                    'name' => $request->name,
+                    'parent_id' => $parent_id,
+                    'icon_url' => $request->icon_url
+                ]
+            );
 
-                return response()->json(['message' => 'Update brand successfully', 'data' => $brand], 200);
-            } else {
-                return response()->json(['message' => 'Brand not found'], 403);
-            }
+            return response()->json($brand, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function destroy(string $id)
     {
         try {
-            $brand = Brand::find($id);
+            $brand = Brand::findOrFail($id);
 
-            if ($brand) {
-                $brand->delete();
-                return response()->json(['message' => 'Brand deleted successfully'], 200);
-            } else {
-                return response()->json(['message' => 'Brand not found'], 403);
-            }
+            $brand->delete();
+            return response()->json(Response::HTTP_NO_CONTENT);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

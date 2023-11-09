@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
@@ -15,9 +17,9 @@ class CategoryController extends Controller
         try {
             $categories = Category::all();
 
-            return response()->json(['message' => "success", 'data' => $categories], 200);
+            return response()->json($categories, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -42,78 +44,71 @@ class CategoryController extends Controller
                 ]
             );
 
-            return response()->json(['message' => 'Create category successfully', 'data' => $category], 200);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json($category, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function show(string $id)
     {
         try {
-            $category = Category::find($id);
+            $category = Category::findOrFail($id);
 
-            if ($category) {
-                return response()->json(['message' => "success", 'data' => $category], 200);
-            } else {
-                return response()->json(['error' => 'Category not found'], 500);
-            }
+            return response()->json($category, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function update(Request $request, string $id)
     {
         try {
-            $category = Category::find($id);
+            $category = Category::findOrFail($id);
 
-            if ($category) {
+            $parent_id = $request->parent_id ?? null;
 
-                $parent_id = $request->parent_id ?? null;
+            $request->validate(
+                [
+                    'name' => 'min:3|max:128',
+                    'parent_id' => 'max:10',
+                    'icon_url' => 'max:255'
+                ]
+            );
 
-                $request->validate(
-                    [
-                        'name' => 'min:3|max:128',
-                        'parent_id' => 'max:10',
-                        'icon_url' => 'max:255'
-                    ]
-                );
+            $category = $category->update(
+                [
+                    'name' => $request->name,
+                    'parent_id' => $parent_id,
+                    'icon_url' => $request->icon_url
+                ]
+            );
 
-                $category = $category->update(
-                    [
-                        'name' => $request->name,
-                        'parent_id' => $parent_id,
-                        'icon_url' => $request->icon_url
-                    ]
-                );
-
-                return response()->json(['message' => 'Update category successfully', 'data' => $category], 200);
-            } else {
-                return response()->json(['message' => 'Category not found'], 403);
-            }
+            return response()->json($category, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function destroy(string $id)
     {
         try {
-            $category = Category::find($id);
+            $category = Category::findOrFail($id);
 
-            if ($category) {
-                $category->delete();
-                return response()->json(['message' => 'Category deleted successfully'], 200);
-            } else {
-                return response()->json(['message' => 'Category not found'], 403);
-            }
+            $category->delete();
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
