@@ -1,8 +1,8 @@
-export default function ProfilePage() {
+export default function CartListPage() {
     return (
         <div>
             <h1>
-                Profile Page
+                Cart List Page
             </h1>
         </div>
     );
