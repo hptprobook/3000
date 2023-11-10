@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SellerController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -23,6 +24,11 @@ Route::post('/changePassword', [AuthController::class, 'changePassword'])->middl
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/addresses/getProvinces', [AddressController::class, 'getProvinces']);
+    Route::get('/addresses/getDistricts/{id}', [AddressController::class, 'getDistricts']);
+    Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
+
     Route::apiResource('users', UserController::class);
 
     Route::apiResource('addresses', AddressController::class);
@@ -46,6 +52,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('coupons', CouponController::class);
 
     Route::apiResource('coupon_usages', CouponUsageController::class);
+
+    Route::apiResource('sellers', SellerController::class);
 
     Route::apiResource('posts', PostController::class);
 });

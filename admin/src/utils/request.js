@@ -16,7 +16,8 @@ export const get = async (path, options = {}) => {
     return response.data;
 };
 export const post = async (path, options = {}) => {
-        const response = await request.post(path, options);
-        return response.data;
+    const response = await request.post(path, options);
+    return response.data;
 };
+
 export default request;

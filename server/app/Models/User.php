@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Coupon::class, 'coupon_usages');
     }
+
+    public function seller()
+    {
+        return $this->hasOne(Seller::class);
+    }
 }

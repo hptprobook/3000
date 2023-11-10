@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAllUsers } from "~/redux/slices/userSlice";
 import TableUser from "../../../components/common/Table/TableUser";
@@ -10,25 +10,32 @@ const ListUserPage = () => {
     const users = useSelector((state) => state.users.users.data);
     const status = useSelector((state) => state.users.status);
     const error = useSelector((state) => state.users.error);
+    const [loadData, setLoadData] = useState(false);
 
     useEffect(() => {
-        if (status === "idle") {
+        if (!loadData) {
             dispatch(fetchAllUsers());
+            if (status !== 'idle') {
+                setLoadData(true);
+            }
         }
-    }, [status, dispatch]);
+    }, [loadData, dispatch, status]);
 
     if (status === "loading") {
         return <div><Loading /></div>;
     }
 
     if (status === "failed") {
-        return <div>Error: {error}</div>;
+        return <div>Error: </div>;
     }
 
     if (status === "succeeded") {
         return (
             <div>
-                <HeaderPage namePage={'Người dùng'} />
+                <HeaderPage
+                    namePage={'Người dùng'}
+                    Breadcrumb={['Người dùng', 'Danh sách']}
+                    ButtonLink='/user/create' />
                 <TableUser data={users} />
             </div>
         );

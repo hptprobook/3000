@@ -1576,6 +1576,1360 @@
                     }
                 ]
             }
+        },
+        "/api/carts": {
+            "get": {
+                "tags": ["Carts"],
+                "summary": "Get all Carts",
+                "operationId": "getCarts",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Carts"],
+                "summary": "Create a new Cart",
+                "operationId": "createCart",
+                "requestBody": {
+                    "description": "Create a new Cart",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["product_id", "quantity"],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or post already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/carts/{id}": {
+            "get": {
+                "tags": ["Carts"],
+                "summary": "Get a Cart by ID",
+                "operationId": "getCart",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Cart to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Carts"],
+                "summary": "Update Cart",
+                "operationId": "updateCart",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Cart to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a Cart by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["product_id", "quantity"],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Post updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or post already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Carts"],
+                "summary": "Delete a Cart by ID",
+                "operationId": "deleteCart",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Cart to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Cart deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Cart not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/orders": {
+            "get": {
+                "tags": ["Orders"],
+                "summary": "Get all Orders",
+                "operationId": "getOrders",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Orders"],
+                "summary": "Create a new Order from Cart",
+                "operationId": "createOrder",
+                "requestBody": {
+                    "description": "Create a new Order from Cart",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "order_type",
+                                    "cart_item_ids",
+                                    "name",
+                                    "phone",
+                                    "ward_id",
+                                    "street",
+                                    "note"
+                                ],
+                                "properties": {
+                                    "order_type": {
+                                        "type": "integer",
+                                        "example": "cart"
+                                    },
+                                    "cart_item_ids": {
+                                        "type": "array",
+                                        "example": [1, 2, 3]
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "0123456789"
+                                    },
+                                    "ward_id": {
+                                        "type": "integer",
+                                        "example": 124
+                                    },
+                                    "street": {
+                                        "type": "string",
+                                        "exapmle": "45/19 Nguyen Viet Xuan"
+                                    },
+                                    "note": {
+                                        "type": "string",
+                                        "exapmle": "Giao vao buoi sang"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or post already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/orders/{id}": {
+            "get": {
+                "tags": ["Orders"],
+                "summary": "Get a Order by ID",
+                "operationId": "getOrder",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Order to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Post not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Orders"],
+                "summary": "Update Order",
+                "operationId": "updateOrder",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Order to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a Cart by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["status"],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "example": "processing"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Post updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or post already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Orders"],
+                "summary": "Delete a Order by ID",
+                "operationId": "deleteOrder",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Order to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Order deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Order not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/sellers": {
+            "get": {
+                "tags": ["Sellers"],
+                "summary": "Get all Sellers",
+                "operationId": "getSellers",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Sellers"],
+                "summary": "Create a new Seller",
+                "operationId": "createSeller",
+                "requestBody": {
+                    "description": "Create a new Seller",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "phone_number",
+                                    "address_id",
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "gmail@gmail.com"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "0123456789"
+                                    },
+                                    "address_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Post created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or post already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/sellers/{id}": {
+            "get": {
+                "tags": ["Sellers"],
+                "summary": "Get a Seller by ID",
+                "operationId": "getSeller",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Seller to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Seller not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Sellers"],
+                "summary": "Update Seller",
+                "operationId": "updateSeller",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Seller to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a Seller by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "phone_number",
+                                    "address_id",
+                                    "user_id"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "gmail@gmail.com"
+                                    },
+                                    "phone_number": {
+                                        "type": "string",
+                                        "example": "0123456789"
+                                    },
+                                    "address_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Seller updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or Seller already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Sellers"],
+                "summary": "Delete a Seller by ID",
+                "operationId": "deleteSeller",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Seller to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Seller deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Seller not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/reviews": {
+            "get": {
+                "tags": ["Reviews"],
+                "summary": "Get all Reviews",
+                "operationId": "getReviews",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Reviews"],
+                "summary": "Create a new Review",
+                "operationId": "createReview",
+                "requestBody": {
+                    "description": "Create a new Review",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["product_id", "rating", "comment"],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Good"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Review created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or Review already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/reviews/{id}": {
+            "get": {
+                "tags": ["Reviews"],
+                "summary": "Get a Review by ID",
+                "operationId": "getReview",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Review to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Review not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Reviews"],
+                "summary": "Update Review",
+                "operationId": "updateReview",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Review to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a Review by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["product_id", "rating", "comment"],
+                                "properties": {
+                                    "product_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Good"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Review updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or Review already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Reviews"],
+                "summary": "Delete a Review by ID",
+                "operationId": "deleteReview",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Review to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Review deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Review not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/coupons": {
+            "get": {
+                "tags": ["Coupons"],
+                "summary": "Get all Coupons",
+                "operationId": "getCoupons",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["Coupons"],
+                "summary": "Create a new Coupon",
+                "operationId": "createCoupon",
+                "requestBody": {
+                    "description": "Create a new Coupon",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "description",
+                                    "start_date",
+                                    "end_date",
+                                    "amount",
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "JD3T2"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Deal 50%"
+                                    },
+                                    "start_date": {
+                                        "type": "date",
+                                        "format": "Y/m/d",
+                                        "example": "YYYY/mm/dd"
+                                    },
+                                    "end_date": {
+                                        "type": "date",
+                                        "format": "Y/m/d",
+                                        "example": "YYYY/mm/dd"
+                                    },
+                                    "amount": {
+                                        "type": "string",
+                                        "example": "50%"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Coupon created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or Coupon already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/coupons/{id}": {
+            "get": {
+                "tags": ["Coupons"],
+                "summary": "Get a Coupon by ID",
+                "operationId": "getCoupon",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Coupon to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Coupon not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["Coupons"],
+                "summary": "Update Coupon",
+                "operationId": "updateCoupon",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Coupon to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a Coupon by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "code",
+                                    "description",
+                                    "start_date",
+                                    "end_date",
+                                    "amount",
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "JD3T2"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Deal 50%"
+                                    },
+                                    "start_date": {
+                                        "type": "date",
+                                        "format": "Y/m/d",
+                                        "example": "YYYY/mm/dd"
+                                    },
+                                    "end_date": {
+                                        "type": "date",
+                                        "format": "Y/m/d",
+                                        "example": "YYYY/mm/dd"
+                                    },
+                                    "amount": {
+                                        "type": "string",
+                                        "example": "50%"
+                                    },
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 100
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Coupon updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or Coupon already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["Coupons"],
+                "summary": "Delete a Coupon by ID",
+                "operationId": "deleteCoupon",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the Coupon to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Coupon deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Coupon not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/coupon_usages": {
+            "get": {
+                "tags": ["CouponUsages"],
+                "summary": "Get all CouponUsages",
+                "operationId": "getCouponUsages",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": ["CouponUsages"],
+                "summary": "Create a new CouponUsage",
+                "operationId": "createCouponUsage",
+                "requestBody": {
+                    "description": "Create a new CouponUsage",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["code", "order_id"],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "JD3T2"
+                                    },
+                                    "order_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "CouponUsage created successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or CouponUsage already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/coupon_usages/{id}": {
+            "get": {
+                "tags": ["CouponUsages"],
+                "summary": "Get a CouponUsage by ID",
+                "operationId": "getCouponUsage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the CouponUsage to retrieve",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "CouponUsage not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": ["CouponUsages"],
+                "summary": "Update CouponUsage",
+                "operationId": "updateCouponUsage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the CouponUsage to update",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update a Coupon by ID",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": ["code", "order_id"],
+                                "properties": {
+                                    "code": {
+                                        "type": "string",
+                                        "example": "JD3T2"
+                                    },
+                                    "order_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "CouponUsage updated successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Wrong input or CouponUsage already exists"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": ["CouponUsages"],
+                "summary": "Delete a CouponUsage by ID",
+                "operationId": "deleteCouponUsage",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID of the CouponUsage to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "CouponUsage deleted successfully"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "CouponUsage not found"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/addresses/getProvinces": {
+            "get": {
+                "tags": ["Addresses"],
+                "summary": "Get all Provinces",
+                "operationId": "getProvinces",
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/addresses/getDistricts/{id}": {
+            "get": {
+                "tags": ["Addresses"],
+                "summary": "Get all districts by province_id",
+                "operationId": "getDistrictsByProvinceID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Province ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/addresses/getWards/{id}": {
+            "get": {
+                "tags": ["Addresses"],
+                "summary": "Get all wards by district_id",
+                "operationId": "getWardsByDistrictID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "District ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully response"
+                    },
+                    "422": {
+                        "description": "Wrong credentials response"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
 

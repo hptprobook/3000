@@ -7,8 +7,8 @@ use App\Models\Coupon;
 use App\Models\CouponUsage;
 use App\Models\Order;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -35,9 +35,9 @@ class CouponUsageController extends Controller
         try {
             $couponUsages = CouponUsage::with(['user', 'coupon', 'order'])->get();
 
-            return response()->json(['message' => 'success', 'data' => $couponUsages], 200);
+            return response()->json($couponUsages, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,18 +55,18 @@ class CouponUsageController extends Controller
             $coupon = Coupon::where('code', $code)->first();
 
             if ($coupon->quantity <= 0) {
-                return response()->json(['message' => 'This coupon is no longer available.'], 400);
+                return response()->json(['error' => 'This coupon is no longer available.'], Response::HTTP_BAD_REQUEST);
             }
 
             if (!$coupon) {
-                return response()->json(['message' => 'Invalid coupon code.'], 404);
+                return response()->json(['error' => 'Invalid coupon code.'], Response::HTTP_BAD_REQUEST);
             }
 
             $existingUsage = CouponUsage::where('coupon_id', $coupon->id)
                 ->where('order_id', $request->order_id)
                 ->exists();
             if ($existingUsage) {
-                return response()->json(['message' => 'This coupon has already been used for this order.'], 400);
+                return response()->json(['error' => 'This coupon has already been used for this order.'], Response::HTTP_BAD_REQUEST);
             }
 
             $order = Order::find($request->order_id);
@@ -84,26 +84,26 @@ class CouponUsageController extends Controller
                 'coupon_id' => $coupon->id,
             ]);
 
-            return response()->json(['message' => 'Coupon applied successfully.', 'data' => $coupon_usage], 200);
+            return response()->json($coupon_usage, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['message' => 'Validation error.', 'errors' => $e->errors()], 422);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
-            return response()->json(['message' => 'Server error.', 'error' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function show(string $id)
     {
-        return response()->json(['message' => 'Api does not exist.'], 500);
+        return response()->json(['error' => 'Api does not exist.'], Response::HTTP_NOT_FOUND);
     }
 
     public function update(Request $request, string $id)
     {
-        return response()->json(['message' => 'Api does not exist.'], 500);
+        return response()->json(['error' => 'Api does not exist.'], Response::HTTP_NOT_FOUND);
     }
 
     public function destroy(string $id)
     {
-        return response()->json(['message' => 'Api does not exist.'], 500);
+        return response()->json(['error' => 'Api does not exist.'], Response::HTTP_NOT_FOUND);
     }
 }

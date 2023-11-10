@@ -1,0 +1,9 @@
+.ButtonBackFullW {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.ButtonBackFullW .ButtonBackLink {
+    padding-left: 12px;
+}

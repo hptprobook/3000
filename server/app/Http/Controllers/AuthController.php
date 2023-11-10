@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -19,41 +22,42 @@ class AuthController extends Controller
             ]);
 
             $loginField = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'phone_number';
+            $user = User::where($loginField, $request->login)->first();
 
-            if (Auth::attempt([$loginField => $request->login, 'password' => $request->password])) {
-                $user = Auth::user();
-                $token = $user->createToken('access_token')->plainTextToken;
-
-                return response()->json([
-                    'user' => $user,
-                    'token' => $token,
-                ]);
-            } else {
-                return response()->json(['error' => 'Email, phone_number or password is incorect'], 401);
+            if (!$user) {
+                return response()->json(['error' => 'Email or phone does not exist.'], Response::HTTP_BAD_REQUEST);
             }
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
+
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json(['error' => 'Password is incorrect.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $token = $user->createToken('access_token')->plainTextToken;
+
+            return response()->json([
+                'user' => $user,
+                'token' => $token,
+            ], Response::HTTP_OK);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->validator->errors()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function register(Request $request)
     {
         try {
-            $request->validate([
+            $validator = Validator::make($request->all(), [
                 'name' => 'required|string|min:5|max:50',
-                'email' => 'required|nullable|email|unique:users',
-                'phone_number' => 'required|nullable|unique:users',
+                'email' => 'required_without:phone_number|email|unique:users,email',
+                'phone_number' => 'required_without:email|unique:users,phone_number',
                 'password' => 'required',
                 'confirmPassword' => 'required|same:password',
             ]);
 
-            if (!$request->email && !$request->phone_number) {
-                $validator = Validator::make([], []);
-                $validator->errors()->add('email', 'Email or phone number is required.');
-                $validator->errors()->add('phone_number', 'Email or phone number is required.');
-                throw new \Illuminate\Validation\ValidationException($validator);
+            if ($validator->fails()) {
+                throw new ValidationException($validator);
             }
 
             $user = User::create([
@@ -63,33 +67,42 @@ class AuthController extends Controller
                 'password' => Hash::make($request->input('password')),
             ]);
 
-            return response()->json(['message' => 'success', 'data' => $user], 201);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json(['error' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
+            $user->assignRole('USER');
+
+            return response()->json($user, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->validator->errors()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
 
 
+
     public function changePassword(Request $request)
     {
-        $validatedData = $request->validate([
-            'currentPassword' => 'required',
-            'newPassword' => 'required|min:6|max:50',
-            'confirmPassword' => 'required|same:newPassword',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'currentPassword' => 'required',
+                'newPassword' => 'required|min:6|max:50',
+                'confirmPassword' => 'required|same:newPassword',
+            ]);
 
-        $user = Auth::user();
+            $user = Auth::user();
 
-        if (!Hash::check($validatedData['currentPassword'], $user->password)) {
-            return response()->json(['error' => 'The provided password does not match your current password.'], 422);
+            if (!Hash::check($validatedData['currentPassword'], $user->password)) {
+                return response()->json(['error' => 'The provided password does not match your current password.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $user->password = Hash::make($validatedData['newPassword']);
+            $user->save();
+
+            return response()->json(['message' => 'Password changed successfully'], Response::HTTP_OK);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->validator->errors()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
-        $user->password = Hash::make($validatedData['newPassword']);
-        $user->save();
-
-        return response()->json(['message' => 'Password changed successfully'], 200);
     }
 }

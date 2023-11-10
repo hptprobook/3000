@@ -1,66 +1,44 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+1. Xác Thực Token Trên Mỗi Yêu Cầu
+   Mỗi khi gửi yêu cầu đến server, bạn nên gửi token này trong header Authorization. Trên server, bạn cần xác thực token này cho mỗi yêu cầu API.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+php
+Copy code
+// Trong Laravel, bạn có thể sử dụng middleware để xác thực token
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+return $request->user();
+});
+Khi token không hợp lệ hoặc đã hết hạn, Laravel sẽ trả về lỗi, và bạn có thể xử lý lỗi này trên client-side để chuyển hướng người dùng ra khỏi các trang cần xác thực.
 
-## About Laravel
+2. Hạn Chế Thời Gian Sống của Token
+   Cung cấp token với một thời gian sống giới hạn (thường là vài giờ) có thể giảm thiểu rủi ro nếu token bị lộ. Laravel Sanctum cho phép bạn cấu hình thời gian sống của token.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+php
+Copy code
+// Trong method createToken khi bạn tạo token
+$token = $user->createToken('access_token')->plainTextToken;
+Bạn có thể cấu hình thời gian sống token trong file cấu hình sanctum.php.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+3. Sử Dụng HTTPS
+   Đảm bảo rằng mọi giao tiếp giữa client và server đều được mã hóa qua HTTPS. Điều này ngăn chặn việc nghe trộm và bắt token trong quá trình truyền.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+4. Kiểm Tra Token Trong Local Storage
+   Trước khi gửi yêu cầu, bạn có thể kiểm tra token trong local storage:
 
-## Learning Laravel
+javascript
+Copy code
+if (!localStorage.getItem('token')) {
+// Chuyển hướng người dùng đến trang đăng nhập
+} 5. Xử Lý Token Hết Hạn hoặc Không Hợp Lệ
+Khi server phát hiện token không hợp lệ hoặc đã hết hạn, nó sẽ trả về một lỗi (ví dụ: 401 Unauthorized). Trên client-side, bạn nên xử lý lỗi này và chuyển hướng người dùng đến trang đăng nhập.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+javascript
+Copy code
+axios.interceptors.response.use(response => response, error => {
+if (error.response.status === 401) {
+// Xử lý token hết hạn hoặc không hợp lệ
+}
+}); 6. Cân Nhắc Sử Dụng Refresh Token
+Để tăng cường bảo mật, bạn có thể cân nhắc sử dụng cơ chế refresh token, nơi mà access token có thời gian sống ngắn và có thể được làm mới bằng refresh token.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Kết Luận
+Bằng cách xác thực token trên server và thực hiện các biện pháp bảo mật khác, bạn có thể đảm bảo rằng ngay cả khi token bị thay đổi hoặc lộ lọt từ local storage, thông tin người dùng và hệ thống của bạn vẫn được bảo vệ.

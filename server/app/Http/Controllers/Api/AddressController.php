@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response;
+use Vanthao03596\HCVN\Models\District;
+use Vanthao03596\HCVN\Models\Province;
 
 class AddressController extends Controller
 {
@@ -14,61 +19,48 @@ class AddressController extends Controller
     {
         try {
             $addresses = Address::all();
-            return response()->json(['message' => 'success', 'addresses' => $addresses], 200);
+            return response()->json($addresses, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function store(Request $request)
+    public function getProvinces()
     {
         try {
-            $validatedData = $request->validate([
-                'user_id' => 'required',
-                'name' => 'required|string|min:3|max:50',
-                'phone' => 'required|string|min:9|max:10',
-                'ward_id' => 'required|exists:wards,id',
-                'address_info' => 'required|string',
-                'note' => 'sometimes|string|nullable',
-            ]);
+            $provinces = Province::all();
 
-            $address = Address::create($validatedData);
-
-            return response()->json(['message' => 'Address created successfully', 'address' => $address], 201);
+            return response()->json($provinces, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(string $id)
+    public function getDistricts(string $id)
     {
         try {
-            $address = Address::findOrFail($id);
-            return response()->json(['message' => 'success', 'address' => $address], 200);
+            $province = Province::findOrFail($id);
+            $districts = $province->districts;
+
+            return response()->json($districts, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function update(Request $request, string $id)
+    public function getWards(string $id)
     {
         try {
-            $address = Address::findOrFail($id);
+            $district = District::findOrFail($id);
+            $wards = $district->wards;
 
-            $validatedData = $request->validate([
-                'user_id' => 'required',
-                'name' => 'required|string|min:3|max:50',
-                'phone' => 'required|string|min:9|max:10',
-                'ward_id' => 'required|exists:wards,id',
-                'address_info' => 'required|string',
-                'note' => 'sometimes|string|nullable',
-            ]);
-
-            $address->update($validatedData);
-
-            return response()->json(['message' => 'Address updated successfully', 'address' => $address], 200);
+            return response()->json($wards, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -78,9 +70,11 @@ class AddressController extends Controller
             $address = Address::findOrFail($id);
             $address->delete();
 
-            return response()->json(['message' => 'Address deleted successfully'], 200);
+            return response()->json(['success' => true], Response::HTTP_NO_CONTENT);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
