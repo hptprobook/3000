@@ -24,6 +24,11 @@ Route::post('/changePassword', [AuthController::class, 'changePassword'])->middl
 
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/addresses/getProvinces', [AddressController::class, 'getProvinces']);
+    Route::get('/addresses/getDistricts/{id}', [AddressController::class, 'getDistricts']);
+    Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
+
     Route::apiResource('users', UserController::class);
 
     Route::apiResource('addresses', AddressController::class);

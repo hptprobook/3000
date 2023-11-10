@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
+use Vanthao03596\HCVN\Models\District;
+use Vanthao03596\HCVN\Models\Province;
 
 class AddressController extends Controller
 {
@@ -23,34 +25,24 @@ class AddressController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function getProvinces()
     {
         try {
-            $validatedData = $request->validate([
-                'user_id' => 'required',
-                'name' => 'required|string|min:3|max:50',
-                'phone' => 'required|string|min:9|max:10',
-                'ward_id' => 'required|exists:wards,id',
-                'address_info' => 'required|string',
-                'note' => 'sometimes|string|nullable',
-            ]);
+            $provinces = Province::all();
 
-            $address = Address::create($validatedData);
-
-            return response()->json($address, Response::HTTP_CREATED);
-        } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json($provinces, Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(string $id)
+    public function getDistricts(string $id)
     {
         try {
-            $address = Address::findOrFail($id);
+            $province = Province::findOrFail($id);
+            $districts = $province->districts;
 
-            return response()->json($address, Response::HTTP_OK);
+            return response()->json($districts, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
@@ -58,25 +50,13 @@ class AddressController extends Controller
         }
     }
 
-    public function update(Request $request, string $id)
+    public function getWards(string $id)
     {
         try {
-            $address = Address::findOrFail($id);
+            $district = District::findOrFail($id);
+            $wards = $district->wards;
 
-            $validatedData = $request->validate([
-                'user_id' => 'required',
-                'name' => 'required|string|min:3|max:50',
-                'phone' => 'required|string|min:9|max:10',
-                'ward_id' => 'required|exists:wards,id',
-                'address_info' => 'required|string',
-                'note' => 'sometimes|string|nullable',
-            ]);
-
-            $address = $address->update($validatedData);
-
-            return response()->json($address, Response::HTTP_CREATED);
-        } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json($wards, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
