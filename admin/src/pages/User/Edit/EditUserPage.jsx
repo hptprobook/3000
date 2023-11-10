@@ -1,4 +1,4 @@
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
 import ButtonBackFullW from '../../../components/common/Button/ButtonBackFullW';
@@ -20,25 +20,31 @@ const EditUserPage = () => {
     const { id } = useParams();
     const [loadData, setLoadData] = useState(false);
 
-    const [inputValue1, setInputValue1] = useState('');
-    const [inputValue2, setInputValue2] = useState('');
     function handleSetValue(funcSet, value) {
         funcSet(value);
         console.log(value);
     }
     const dispatch = useDispatch();
-    const users = useSelector((state) => state.users.selectedUser);
+    const user = useSelector((state) => state.users.selectedUser);
     const status = useSelector((state) => state.users.status);
     const error = useSelector((state) => state.users.error);
+    const [name, setName] = useState('');
+
     useEffect(() => {
         if (!loadData) {
             dispatch(fetchUserById(id));
             if (status !== 'idle') {
+                if (status === 'succeeded') {
+                    setName(user.name);
+                }
                 setLoadData(true);
             }
+
         }
     }, [loadData, dispatch, id, status]);
-
+    function handleEditUser() {
+        console.log(name);
+    }
     if (status === "loading") {
         return <div><Loading /></div>;
     }
@@ -46,13 +52,15 @@ const EditUserPage = () => {
     if (status === "failed") {
         return <div>Error:</div>;
     }
+
     if (status === "succeeded") {
-        console.log(users)
+
+        console.log(user)
 
         return (
             <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
                 <ButtonBackFullW label={'Trở lại'} />
-                <HeaderUser nameUser={'test'} />
+                <HeaderUser nameUser={user.name} role={user.role} />
                 <Box sx={{
                     flexGrow: 1,
                     padding: '32px',
@@ -61,36 +69,48 @@ const EditUserPage = () => {
                         color.backgroundColorSub.dark,
                     borderRadius: '14px'
                 }} >
-                    <Grid container spacing={4}>
+                    <Typography sx={{ color: color.textColor.dark, fontSize: '16px' }}>
+                        Chỉnh sửa
+                    </Typography>
+                    <Grid container spacing={4} sx={{ paddingTop: '32px' }}>
                         <Grid item sm={12} md={6}>
                             <InputNormal
-                                label={'test'}
-                                value={inputValue1}
-                                onChange={(e) => handleSetValue(setInputValue1, e.target.value)}
+                                label={'Họ và tên'}
+                                value={user.name}
+                                onChange={(e) => setName(e.target.value)}
                             />
                         </Grid>
 
+                        {/* <Grid item sm={12} md={6}>
+                            <InputNormal
+                                label={'Email'}
+                                value={user.email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </Grid> */}
+                        {/* <Grid item sm={12} md={6}>
+                            <InputNormal
+                                label={'Số điện thoại'}
+                                value={user.phone__number}
+                                onChange={(e) => setPhone(e.target.value)}
+                                type={'phone'}
+                            />
+                        </Grid> */}
+                        {/* <Grid item sm={12} md={6}>
+                            <InputNormal
+                                label={'Giới tính'}
+                                value={user.phone__number}
+                                onChange={(e) => setPhone(e.target.value)}
+                                type={'phone'}
+                            />
+                        </Grid> */}
                         <Grid item sm={12} md={6}>
                             <InputNormal
-                                label={'test'}
-                                value={'ád'}
-                                onChange={(e) => handleSetValue(setInputValue2, e.target.value)}
+                                label={'Ngày sinh'}
+                                value={user.birth_date || '0001-01-01'}
+                                onChange={(e) => setPhone(e.target.value)}
+                                type={'date'}
                             />
-                        </Grid>
-                        <Grid item sm={12} md={6}>
-                            <InputNormal label={'test'} />
-                        </Grid>
-                        <Grid item sm={12} md={6}>
-                            <InputNormal label={'test'} />
-                        </Grid>
-                        <Grid item sm={12} md={6}>
-                            <InputNormal label={'test'} />
-                        </Grid>
-                        <Grid item sm={12} md={6}>
-                            <InputNormal label={'test'} />
-                        </Grid>
-                        <Grid item sm={12} md={6}>
-                            <InputNormal label={'test'} />
                         </Grid>
                     </Grid>
                     <Box sx={{
@@ -100,7 +120,7 @@ const EditUserPage = () => {
                             color.backgroundColorSub.dark,
                         borderRadius: '14px'
                     }} >
-                        <ButtonNormal label={'Cập nhật'} bg='true' />
+                        <ButtonNormal label={'Cập nhật'} bg='true' onClick={handleEditUser} />
                         <ButtonNormal label={'Hủy'} />
                     </Box>
                 </Box>
