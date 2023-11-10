@@ -10,6 +10,9 @@ const color = {
         light: '#EDF2F7'
     },
     textGray: '#a0aec0',
+    ChipLink: {
+        dark: '#EDF2F7'
+    },
     backgroundChip: {
         dark: '#2d3440'
     },
