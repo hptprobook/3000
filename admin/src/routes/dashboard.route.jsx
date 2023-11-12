@@ -9,6 +9,7 @@ import CreateProductPage from "../pages/Product/Create/CreateProductPage";
 import ListProductPage from "../pages/Product/List/ListProductPage";
 import WarehouseProductPage from "../pages/Product/Warehouse/WarehouseProductPage";
 import ListPostPage from "../pages/Post/List/ListPostPage";
+import ListCategoriesPage from "../pages/Category/List/ListCategoryPage";
 
 function DashboardRoute() {
     return (
@@ -26,7 +27,7 @@ function DashboardRoute() {
                 path="product/warehouse"
                 element={<WarehouseProductPage />}
             />
-            <Route path="" element={<></>} />
+            <Route path="category/list" element={<ListCategoriesPage/>} />
         </Routes>
     );
 }
