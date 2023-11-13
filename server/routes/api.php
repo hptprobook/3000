@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SellerController;
 use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserController;
@@ -29,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/addresses/getProvinces', [AddressController::class, 'getProvinces']);
     Route::get('/addresses/getDistricts/{id}', [AddressController::class, 'getDistricts']);
     Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
+
+    Route::apiResource('/search', SearchController::class);
+    Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
     Route::apiResource('users', UserController::class);
 
