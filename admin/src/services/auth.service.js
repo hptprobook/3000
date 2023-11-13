@@ -1,6 +1,5 @@
 import request from "../utils/request";
 
-
 // const authService = async () => {
 //     try {
 //         const res = await request.get("users");
@@ -16,12 +15,9 @@ const AuthService = {
             const res = await request.post("login", data);
             return res;
         } catch (err) {
-            return err.response.data;
+            return err.response;
         }
-    }
-}
-
-
-
+    },
+};
 
 export default AuthService;

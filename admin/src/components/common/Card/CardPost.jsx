@@ -10,33 +10,37 @@ import ChipPostTag from '../Chip/ChipPostTag';
 import { NavLink } from 'react-router-dom';
 import color from '~/config/colorConfig';
 
-export default function CardPost() {
-    return (
-        <Card sx={{ maxWidth: '100%', borderRadius: '14px', backgroundColor: color.backgroundColorSub.dark }}>
-            <CardMedia
-                sx={{ height: 140 }}
-                image="/static/images/cards/contemplative-reptile.jpg"
-                title="green iguana"
-            />
-            <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                    <ChipPostTag label="hell" />
-                    <ChipPostTag label="hell" />
-                    <ChipPostTag label="hell" />
-                    <ChipPostTag label="hell" />
-                    <ChipPostTag label="hell" />
-                </Typography>
-                <Typography gutterBottom variant="h5" component="div">
-                    <NavLink to='post/edit/1'>
-                        sdasd
-                    </NavLink>
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    Lizards are a widespread group of squamate reptiles, with over 6,000
-                    species, ranging across all continents except Antarctica
-                </Typography>
-            </CardContent>
-
-        </Card>
-    );
+export default function CardPost({ post }) {
+  return (
+    <Card sx={{ maxWidth: '100%', borderRadius: '14px', background: color.backgroundColorSub.dark }}>
+      <CardMedia
+        sx={{ height: 140 }}
+        image={`/static/images/cards/${post.img}`} // Assuming your image files are in the "static/images/cards" folder
+        title={post.title}
+      />
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          <ChipPostTag label={post.tags} /> {/* Assuming post.tags is a comma-separated string */}
+        </Typography>
+        <Typography gutterBottom variant="h5" component="div">
+          <NavLink
+            underline="none"
+            to={`post/edit/${post.id}`}
+            style={{
+              color: color.ChipLink.dark,
+              textDecoration: 'none',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            }}
+          >
+            {post.title}
+          </NavLink>
+        </Typography>
+        <Typography variant="body2" color="GrayText">
+          {post.content}
+        </Typography>
+      </CardContent>
+    </Card>
+  );
 }
