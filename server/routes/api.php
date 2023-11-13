@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\SellerController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -56,4 +57,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sellers', SellerController::class);
 
     Route::apiResource('posts', PostController::class);
+
+    Route::apiResource('settings', SettingController::class);
 });
