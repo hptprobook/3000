@@ -8,9 +8,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
         color: '#edf2f7',
 
     },
-    '&::-webkit-calendar-picker-indicator': {
-        color: 'red',
-    },
     '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
         borderColor: 'rgb(99, 102, 241) !important',
         transition: 'border 0.4s linear',

@@ -10,6 +10,7 @@ import { fetchUserById } from "~/redux/slices/userSlice";
 import ButtonNormal from '../../../components/common/Button/ButtonNormal';
 import { useDispatch, useSelector } from 'react-redux';
 import Loading from '../../../components/common/Loading/Loading';
+import InputEdit from '../../../components/common/TextField/InputEdit';
 
 const CustomGrid = styled(Grid)(({ theme }) => ({
     '& MuiGrid-root>.MuiGrid-item': {
@@ -34,10 +35,10 @@ const EditUserPage = () => {
         if (!loadData) {
             dispatch(fetchUserById(id));
             if (status !== 'idle') {
-                if (status === 'succeeded') {
+                setLoadData(true);
+                if (loadData) {
                     setName(user.name);
                 }
-                setLoadData(true);
             }
 
         }
@@ -53,7 +54,7 @@ const EditUserPage = () => {
         return <div>Error:</div>;
     }
 
-    if (status === "succeeded") {
+    if (loadData) {
 
         console.log(user)
 
@@ -81,6 +82,9 @@ const EditUserPage = () => {
                             />
                         </Grid>
 
+                        <Grid item sm={12} md={6}>
+                            <InputEdit />
+                        </Grid>
                         {/* <Grid item sm={12} md={6}>
                             <InputNormal
                                 label={'Email'}
@@ -107,8 +111,8 @@ const EditUserPage = () => {
                         <Grid item sm={12} md={6}>
                             <InputNormal
                                 label={'Ngày sinh'}
-                                value={user.birth_date || '0001-01-01'}
-                                onChange={(e) => setPhone(e.target.value)}
+                                value={user.birth_date}
+                                // onChange={(e) => setPhone(e.target.value)}
                                 type={'date'}
                             />
                         </Grid>

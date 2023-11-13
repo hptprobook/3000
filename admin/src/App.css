@@ -20,5 +20,5 @@ input:-webkit-autofill:focus {
 }
 
 input[type="date"]::-webkit-calendar-picker-indicator {
-    color: red;
+    display: none !important;
 }
