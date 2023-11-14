@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/addresses/getDistricts/{id}', [AddressController::class, 'getDistricts']);
     Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
 
-    Route::apiResource('/search', SearchController::class);
+    Route::get('/search/{searchTerm}', [SearchController::class, 'search']);
     Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
     Route::apiResource('users', UserController::class);

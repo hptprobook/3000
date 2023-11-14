@@ -17,7 +17,6 @@ class SearchController extends Controller
 {
     public function saveHotSearch(Request $request)
     {
-        return 'haha';
         try {
             $searchTerm = $request->input("searchTerm");
 
@@ -39,10 +38,9 @@ class SearchController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function search(string $searchTerm)
     {
         try {
-            $searchTerm = $request->input('searchTerm');
 
             $products = Product::where('name', 'like', "%$searchTerm%")->get();
             $tags = Tag::where('name', 'like', "%$searchTerm%")->get();
