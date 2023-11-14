@@ -1,30 +1,41 @@
-import { Box, Grid, Typography } from '@mui/material';
+import { Box, Grid, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import ButtonBackFullW from '../../../components/common/Button/ButtonBackFullW';
-import HeaderUser from '../../../components/common/HeaderPage/HeaderUser';
-import { InputNormal } from '../../../components/common/TextField/InputNormal';
+import ButtonBackFullW from '~/components/common/Button/ButtonBackFullW';
+import HeaderUser from '~/components/common/HeaderPage/HeaderUser';
 import styled from '@emotion/styled';
-import color from '../../../config/colorConfig';
+import color from '~/config/colorConfig';
 import { fetchUserById } from "~/redux/slices/userSlice";
-import ButtonNormal from '../../../components/common/Button/ButtonNormal';
+import ButtonNormal from '~/components/common/Button/ButtonNormal';
 import { useDispatch, useSelector } from 'react-redux';
-import Loading from '../../../components/common/Loading/Loading';
-import InputEdit from '../../../components/common/TextField/InputEdit';
+import Loading from '~/components/common/Loading/Loading';
+import InputEdit from '~/components/common/TextField/InputEdit';
+import { BiUser } from 'react-icons/bi';
+import { MdDateRange, MdEdit, MdEmail, MdLocationOn, MdPhone } from 'react-icons/md';
+import SelectEdit from '~/components/common/Select/SelectEdit';
+import ModalAddress from '../../../components/common/Modal/ModalAddress';
 
-const CustomGrid = styled(Grid)(({ theme }) => ({
-    '& MuiGrid-root>.MuiGrid-item': {
-        padding: '0px !important',
+const ButtonEdit = styled(IconButton)(({ theme }) => ({
+    position: 'absolute',
+    right: '16px',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    backgroundColor: color.backgroundColorSub2.dark,
+    '& svg': {
+        color: color.textColor.dark
     }
-}));
+}))
 const EditUserPage = () => {
     const { id } = useParams();
     const [loadData, setLoadData] = useState(false);
-
+    const [openModal, setIsModalOpen] = React.useState(false);
     function handleSetValue(funcSet, value) {
         funcSet(value);
         console.log(value);
     }
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
     const dispatch = useDispatch();
     const user = useSelector((state) => state.users.selectedUser);
     const status = useSelector((state) => state.users.status);
@@ -44,7 +55,7 @@ const EditUserPage = () => {
         }
     }, [loadData, dispatch, id, status]);
     function handleEditUser() {
-        console.log(name);
+        console.log(user);
     }
     if (status === "loading") {
         return <div><Loading /></div>;
@@ -55,11 +66,10 @@ const EditUserPage = () => {
     }
 
     if (loadData) {
-
         console.log(user)
-
         return (
             <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
+                <ModalAddress openModal={openModal} handleClose={handleCloseModal} />
                 <ButtonBackFullW label={'Trở lại'} />
                 <HeaderUser nameUser={user.name} role={user.role} />
                 <Box sx={{
@@ -75,46 +85,61 @@ const EditUserPage = () => {
                     </Typography>
                     <Grid container spacing={4} sx={{ paddingTop: '32px' }}>
                         <Grid item sm={12} md={6}>
-                            <InputNormal
+                            <InputEdit
                                 label={'Họ và tên'}
                                 value={user.name}
+                                icon={<BiUser />}
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </Grid>
-
-                        <Grid item sm={12} md={6}>
-                            <InputEdit />
+                        <Grid item sm={12} md={6} lg={4}>
+                            <InputEdit
+                                label={'Ngày sinh'}
+                                // value={user.name}
+                                type={'date'}
+                                icon={<MdDateRange />}
+                            />
                         </Grid>
-                        {/* <Grid item sm={12} md={6}>
-                            <InputNormal
+                        <Grid item sm={12} md={6} lg={2}>
+                            <SelectEdit
+                                label={'Giới tính'}
+                                data={[
+                                    { id: 'male', name: 'Nam' },
+                                    { id: 'female', name: 'Nữ' },
+                                    { id: 'other', name: 'Khác' },
+                                ]}
+                                value={user.birth_date}
+                            />
+                        </Grid>
+                        <Grid item sm={12} md={6}>
+                            <InputEdit
                                 label={'Email'}
                                 value={user.email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                type={'email'}
+                                icon={<MdEmail />}
                             />
-                        </Grid> */}
-                        {/* <Grid item sm={12} md={6}>
-                            <InputNormal
-                                label={'Số điện thoại'}
-                                value={user.phone__number}
-                                onChange={(e) => setPhone(e.target.value)}
-                                type={'phone'}
-                            />
-                        </Grid> */}
-                        {/* <Grid item sm={12} md={6}>
-                            <InputNormal
-                                label={'Giới tính'}
-                                value={user.phone__number}
-                                onChange={(e) => setPhone(e.target.value)}
-                                type={'phone'}
-                            />
-                        </Grid> */}
+                        </Grid>
                         <Grid item sm={12} md={6}>
-                            <InputNormal
-                                label={'Ngày sinh'}
-                                value={user.birth_date}
-                                // onChange={(e) => setPhone(e.target.value)}
-                                type={'date'}
+                            <InputEdit
+                                label={'Số điện thoại'}
+                                value={user.phone_number}
+                                type={'phone'}
+                                icon={<MdPhone />}
                             />
+                        </Grid>
+                        <Grid item sm={12}>
+                            <div style={{ position: 'relative' }}>
+                                <InputEdit
+                                    label={'Địa chỉ'}
+                                    value={user.phone_number}
+                                    type={'phone'}
+                                    icon={<MdLocationOn />}
+                                />
+                                <ButtonEdit aria-label="Chỉnh sửa" size="lagre" onClick={() => setIsModalOpen(true)}>
+                                    <MdEdit />
+                                </ButtonEdit>
+
+                            </div>
                         </Grid>
                     </Grid>
                     <Box sx={{
