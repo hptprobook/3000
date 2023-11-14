@@ -1,4 +1,4 @@
-import { Avatar, Box, Typography } from '@mui/material';
+import { Avatar, Box, Chip, Typography } from '@mui/material';
 import React from 'react';
 import ButtonAdd from '../Button/ButtonAdd';
 import ButtonExport from '../Button/ButtonExport';
@@ -21,13 +21,16 @@ const HeaderUser = (propCustom) => {
                     }} gutterBottom>
                         {propCustom.nameUser}
                     </Typography>
-                    <Typography variant="h6" sx={{
-                        fontFamily: 'Plus Jakarta Sans, sans-serif !important',
-                        fontWeight: 600,
-                        fontSize: '14px'
-                    }} gutterBottom>
-                        {propCustom.nameUser}
-                    </Typography>
+                    <Chip
+                        sx={{
+                            marginLeft: '12px',
+                            backgroundColor: propCustom.role == 'USER' ? '#162f34' : '#183343',
+                            color: propCustom.role == 'USER' ? '#10b981' : '#d32f2f',
+                            textTransform: 'uppercase',
+                            fontWeight: '600'
+                        }}
+                        label={propCustom.role}
+                    />
                     {/* <Breadcrumb link={propCustom.Breadcrumb} /> */}
                 </div>
             </div>

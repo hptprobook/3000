@@ -54,7 +54,6 @@ export default function LoginPage() {
                 } else {
                     localStorage.setItem('access_token', response.data.token);
                     navigate('/');
-                    console.log(response);
                 }
             });
     }
