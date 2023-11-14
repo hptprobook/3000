@@ -1,6 +1,5 @@
-import { styled } from "@mui/material";
+import styled from "@emotion/styled";
 import React from "react";
-
 import "./style.css";
 
 const CountButton = styled("button")(() => ({
