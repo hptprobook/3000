@@ -12,10 +12,10 @@ import color from '~/config/colorConfig';
 
 export default function CardPost({ post }) {
   return (
-    <Card sx={{ maxWidth: '100%', borderRadius: '14px', background: color.backgroundColorSub.dark }}>
+    <Card sx={{  maxWidth: '100%', borderRadius: '14px', background: color.backgroundColorSub.dark }}>
       <CardMedia
-        sx={{ height: 140 }}
-        image={`/static/images/cards/${post.img}`} // Assuming your image files are in the "static/images/cards" folder
+        sx={{ height: 200 }}
+        image={`../src/assets/img/post/${post.img}`} // Assuming your image files are in the "static/images/cards" folder
         title={post.title}
       />
       <CardContent>
@@ -25,7 +25,7 @@ export default function CardPost({ post }) {
         <Typography gutterBottom variant="h5" component="div">
           <NavLink
             underline="none"
-            to={`post/edit/${post.id}`}
+            to={`/post/edit/${post.id}`}
             style={{
               color: color.ChipLink.dark,
               textDecoration: 'none',
