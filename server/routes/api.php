@@ -11,7 +11,9 @@ use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SellerController;
+use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -28,6 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/addresses/getProvinces', [AddressController::class, 'getProvinces']);
     Route::get('/addresses/getDistricts/{id}', [AddressController::class, 'getDistricts']);
     Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
+
+    Route::get('/search/{searchTerm}', [SearchController::class, 'search']);
+    Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
     Route::apiResource('users', UserController::class);
 
@@ -56,4 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('sellers', SellerController::class);
 
     Route::apiResource('posts', PostController::class);
+
+    Route::apiResource('settings', SettingController::class);
 });

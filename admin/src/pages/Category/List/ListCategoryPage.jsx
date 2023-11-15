@@ -21,7 +21,7 @@ const ListCategoriesPage = () => {
   }
 
   if (status === "failed" || !categories) {
-    console.log(categories.id)
+    console.log(categories)
     return <p>Error loading categories: {categories?.error || "Failed to load categories."}</p>;
   }
 

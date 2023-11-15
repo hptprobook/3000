@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
-import { TextField } from '@mui/material'
+import { TextField, colors } from '@mui/material'
 import React from 'react'
+import color from '../../../config/colorConfig';
 const StyledTextField = styled(TextField)(({ theme }) => ({
     width: '100%',
     '& .MuiFormLabel-root': {
@@ -31,13 +32,15 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
         color: '#edf2f7',
     }
 }));
-export const InputNormal = ({ label, value, onChange }) => {
+export const InputNormal = ({ label, value, onChange, type }) => {
     return (
         <StyledTextField
+            autoComplete='false'
             id="outlined-read-only-input"
             label={label}
             defaultValue={value}
             onChange={onChange}
+            type={type || 'text'}
         />
     )
 }
