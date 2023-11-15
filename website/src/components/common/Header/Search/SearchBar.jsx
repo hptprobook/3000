@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { styled } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import Link from "next/link";
+import { fetchSearch } from "@/redux/slices/searchSlice";
 
 const SearchContainer = styled("div")(() => ({}));
 
@@ -148,6 +150,22 @@ export default function SearchBar() {
         "Trái cây",
         "Thịt, trứng",
     ];
+
+    const searchTerm = searchValue;
+
+    const dispatch = useDispatch();
+    const searchResults = useSelector((state) => state.searchResults);
+    const status = useSelector((state) => state.searchResults.status);
+
+    useEffect(() => {
+        if (status === "idle") {
+            dispatch(fetchSearch(searchTerm));
+        }
+    }, [status, dispatch]);
+
+    if (status === "loading") return <div>Loading...</div>;
+
+    console.log(searchResults);
 
     return (
         <>

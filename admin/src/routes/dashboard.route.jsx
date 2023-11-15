@@ -10,7 +10,8 @@ import ListProductPage from "../pages/Product/List/ListProductPage";
 import WarehouseProductPage from "../pages/Product/Warehouse/WarehouseProductPage";
 import ListPostPage from "../pages/Post/List/ListPostPage";
 import ListCategoriesPage from "../pages/Category/List/ListCategoryPage";
-
+import CreatePostPage from "../pages/Post/Add/CreatePostPage";
+import EditPostPage from "../pages/Post/Edit/EditPostPage";
 function DashboardRoute() {
     return (
         <Routes>
@@ -22,7 +23,8 @@ function DashboardRoute() {
             <Route path="product/create" element={<CreateProductPage />} />
             <Route path="product/list" element={<ListProductPage />} />
             <Route path="post/list" element={<ListPostPage />} />
-            <Route path="post/edit/:id" element={<ListPostPage />} />
+            <Route path="post/create" element={<CreatePostPage />} />
+            <Route path="post/edit/:id" element={<EditPostPage />} />
             <Route
                 path="product/warehouse"
                 element={<WarehouseProductPage />}
