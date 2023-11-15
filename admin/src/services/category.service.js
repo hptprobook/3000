@@ -2,9 +2,12 @@
 
 import request from "../utils/request";
 
+
 const CategoryService = {
   getAllCategories: async () => {
     try {
+      const accessToken = localStorage.getItem("access_token");
+      console.log("Access Token:", accessToken); // Log the access token
       const res = await request.get("categories");
       return res.data;
     } catch (err) {

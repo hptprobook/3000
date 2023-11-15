@@ -1,29 +1,18 @@
 // categoriesSlice.js (Redux slice for categories)
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import CategoryService from "../../services/category.service";
 
-
-
-export const fetchCategories = createAsyncThunk("categories/fetchCategories", async () => {
-  try {
-    console.log('Fetching categories...');
-    //no token
-    const response = await axios.get("http://127.0.0.1:8000/api/categories");
-    //has token
-    // const response = await axios.get("http://127.0.0.1:8000/api/categories", {
-    //   headers: {
-    //     'Authorization': `Bearer ${access_token} `
-    //   }
-    // });
-    // console.log(access_token);
-    console.log('Categories response:', response);
-
-    return response.data;
-  } catch (error) {
-    throw error;
+export const fetchCategories = createAsyncThunk(
+  "categories/fetchCategories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const categories = await CategoryService.getAllCategories();
+      return categories;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
   }
-});
+);
 
 const categoriesSlice = createSlice({
   name: "categories",
@@ -35,14 +24,12 @@ const categoriesSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        console.log('Categories fetched successfully:', action.payload);
         state.status = "succeeded";
         state.data = action.payload;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
-        console.error('Error fetching categories:', action.error.message);
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload;
       });
   },
 });
