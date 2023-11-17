@@ -1,10 +1,10 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
-import { SvgIconProps } from "@mui/material/SvgIcon";
-
 const PrimaryButton = styled("button")(() => ({
     display: "flex",
     justifyContent: "center",
+    textAlign: "left",
+    lineHeight: "22px",
     alignItems: "center",
     padding: "8px 14px",
     border: "none",
@@ -27,11 +27,22 @@ const PrimaryButton = styled("button")(() => ({
     },
 }));
 
-export default function PrimaryBtn({ icon, text, isActive = false }) {
+export default function PrimaryBtn({
+    icon,
+    text,
+    isActive = false,
+    fullWidth = false,
+}) {
     const activeClass = isActive ? "active" : "";
 
     return (
-        <PrimaryButton className={activeClass}>
+        <PrimaryButton
+            sx={{
+                ...(fullWidth ? { width: "100%" } : {}),
+                ...(fullWidth ? { justifyContent: "flex-start" } : "center"),
+            }}
+            className={activeClass}
+        >
             {icon} <span style={{ paddingLeft: "6px" }}>{text}</span>
         </PrimaryButton>
     );

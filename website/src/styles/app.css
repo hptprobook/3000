@@ -1,1 +1,6 @@
-
+.appContainer {
+    width: var(--max-width);
+    display: flex;
+    margin: 0 auto;
+    border-radius: 8px;
+}

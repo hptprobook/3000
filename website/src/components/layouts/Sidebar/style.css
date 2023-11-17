@@ -1,0 +1,22 @@
+.appSidebar {
+    margin-right: 12px;
+    margin-top: 15px;
+    height: 90vh;
+    overflow-y: auto;
+}
+
+.appSidebar::-webkit-scrollbar {
+    display: none;
+}
+
+.appSidebar__categories {
+    background-color: var(--white-color);
+    border-radius: 3px;
+    padding: 8px 6px;
+}
+
+.appSidebar__astra {
+    background-color: var(--white-color);
+    border-radius: 3px;
+    margin-top: 15px;
+}

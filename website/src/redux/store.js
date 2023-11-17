@@ -9,6 +9,6 @@ export const store = configureStore({
         users: userReducer,
         categories: categoriesReducer,
         products: productReducer,
-        searchResults: searchReducer,
+        search: searchReducer,
     },
 });
