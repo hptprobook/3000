@@ -41,17 +41,17 @@ const FormSelectEdit = styled(FormControl)(({ theme }) => ({
         color: color.textColor.dark
     }
 }))
-export default function SelectEditAddress({ label, id, data, onChange }) {
+export default function SelectEditAddress({ label, id, data, onChange, value, loading }) {
     const [select, setSelect] = React.useState('');
     React.useEffect(() => {
         setSelect('');
-
     }, [data]);
 
     return (
         <FormSelectEdit variant="filled" fullWidth sx={{ m: 1, minWidth: 120 }}>
             <InputLabel id={id}>{label}</InputLabel>
             <Select
+                disabled={!loading ? true : false}
                 labelId={id}
                 id="demo-simple-select-filled"
                 value={select}

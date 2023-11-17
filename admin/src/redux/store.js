@@ -5,7 +5,7 @@ import categoriesReducer from "./slices/categoriesSlice";
 
 import addressSlice from "./slices/addressSlice";
 import uploadReducer from "./slices/uploadSlice";
-
+import productsReducer from "./slices/productSlice";
 
 export const store = configureStore({
     reducer: {
@@ -14,5 +14,7 @@ export const store = configureStore({
         categories: categoriesReducer,
         address: addressSlice,
         upload: uploadReducer,
+        products: productsReducer,
+
     },
 });
