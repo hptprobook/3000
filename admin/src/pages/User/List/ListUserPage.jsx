@@ -7,11 +7,10 @@ import Loading from "../../../components/common/Loading/Loading";
 
 const ListUserPage = () => {
     const dispatch = useDispatch();
-    const users = useSelector((state) => state.users.users.data);
+    const users = useSelector((state) => state.users.users);
     const status = useSelector((state) => state.users.status);
     const error = useSelector((state) => state.users.error);
     const [loadData, setLoadData] = useState(false);
-
     useEffect(() => {
         if (!loadData) {
             dispatch(fetchAllUsers());

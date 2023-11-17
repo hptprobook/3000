@@ -23,8 +23,8 @@ const BootstrapButton = styled(Button)(({ bg }) => ({
     },
 }));
 
-export default function ButtonNormal({ label, bg }) {
+export default function ButtonNormal({ label, bg, onClick }) {
     return (
-        <BootstrapButton variant="contained" bg={bg}>{label}</BootstrapButton>
+        <BootstrapButton variant="contained" onClick={onClick} bg={bg}>{label}</BootstrapButton>
     )
 }

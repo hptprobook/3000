@@ -3,15 +3,22 @@
 * {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji" !important;
 }
-.nav-link{
+
+.nav-link {
     text-decoration: none;
 }
+
 /* Tắt tùy chỉnh autofill của trình duyệt */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
     background-color: transparent !important;
 }
+
 .pad64px {
     padding: 64px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none !important;
 }

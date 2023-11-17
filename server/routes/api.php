@@ -22,17 +22,16 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::get('/search', [SearchController::class, 'search']);
+Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
-
+Route::apiResource('products', ProductController::class)->only(['index', 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/addresses/getProvinces', [AddressController::class, 'getProvinces']);
     Route::get('/addresses/getDistricts/{id}', [AddressController::class, 'getDistricts']);
     Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
-
-    Route::apiResource('/search', SearchController::class);
-    Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
     Route::apiResource('users', UserController::class);
 
@@ -44,7 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('variant_types', VariantTypesController::class);
 
-    Route::apiResource('products', ProductController::class);
+    Route::apiResource('products', ProductController::class)->except(['index', 'show']);
 
     Route::apiResource('reviews', ReviewController::class);
 

@@ -17,7 +17,6 @@ class SearchController extends Controller
 {
     public function saveHotSearch(Request $request)
     {
-        return 'haha';
         try {
             $searchTerm = $request->input("searchTerm");
 
@@ -39,15 +38,15 @@ class SearchController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function search(Request $request)
     {
         try {
-            $searchTerm = $request->input('searchTerm');
 
-            $products = Product::where('name', 'like', "%$searchTerm%")->get();
-            $tags = Tag::where('name', 'like', "%$searchTerm%")->get();
-            $brands = Brand::where('name', 'like', "%$searchTerm%")->get();
-            $categories = Category::where('name', 'like', "%$searchTerm%")->get();
+            $q = $request->input('q');
+            $products = Product::where('name', 'like', "%$q%")->get();
+            $tags = Tag::where('name', 'like', "%$q%")->get();
+            $brands = Brand::where('name', 'like', "%$q%")->get();
+            $categories = Category::where('name', 'like', "%$q%")->get();
 
             $results = [
                 'products' => $products,

@@ -15,7 +15,7 @@ const posts = [
         "Aliquam dapibus elementum nulla at malesuada. Ut mi nisl, aliquet non mollis vel, feugiat non nibh.",
         author_id: 1,
         tags: "Programming",
-        img: "img1.jpg",
+        img: "man-pushing-virtual-programming-language-button-digital-background-63199792.webp",
     },
     {
         id: 2,
@@ -23,7 +23,7 @@ const posts = [
         content: "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
         author_id: 2,
         tags: "Productivity",
-        img: "img2.jpg",
+        img: "cute-baby-animals-1558535060.jpg",
     },
     {
         id: 3,
@@ -31,7 +31,7 @@ const posts = [
         content: "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
         author_id: 3,
         tags: "Reptile",
-        img: "img3.jpg",
+        img: "shouts-animals-watch-baby-hemingway.webp",
     },
     {
         id: 4,
@@ -39,7 +39,7 @@ const posts = [
         content: "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
         author_id: 4,
         tags: "Productivity",
-        img: "img4.jpg",
+        img: "WR202206_GiraffeTranslocation_012_360559_reduced.jpg",
     },
 ];
 

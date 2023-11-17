@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "~/redux/slices/categoriesSlice";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
+import { Box } from "@mui/material";
 
 const ListCategoriesPage = () => {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ const ListCategoriesPage = () => {
   }
 
   if (status === "failed" || !categories) {
-    console.log(categories.id)
+    console.log(categories)
     return <p>Error loading categories: {categories?.error || "Failed to load categories."}</p>;
   }
 
@@ -32,11 +33,11 @@ const ListCategoriesPage = () => {
                 Breadcrumb={["Phân loại", "Danh sách"]}
                 ButtonLink="/category/create"
       />
-      <ul>
+        <Box sx={{ width: '100%', mt: '16px', backgroundColor: '#111927', borderRadius: '13px' }}>
         {categories.map((category) => (
           <li key={category.id}>{category.name}</li>
         ))}
-      </ul>
+      </Box>
     </>
   );
 };
