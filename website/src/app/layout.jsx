@@ -1,7 +1,10 @@
 import { Inter } from "next/font/google";
 import "@/styles/globals.css";
+import "@/styles/app.css";
 import Header from "@/components/layouts/Header/Header";
 import { Providers } from "@/redux/provider";
+import Sidebar from "@/components/layouts/Sidebar/Sidebar";
+import { Grid } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,7 +20,14 @@ export default function RootLayout({ children }) {
             <body className={inter.className}>
                 <Providers>
                     <Header />
-                    {children}
+                    <Grid className="appContainer" container>
+                        <Grid item xs={2} sx={{}}>
+                            <Sidebar />
+                        </Grid>
+                        <Grid sx={{ backgroundColor: "red" }} item xs={10}>
+                            {children}
+                        </Grid>
+                    </Grid>
                 </Providers>
             </body>
         </html>

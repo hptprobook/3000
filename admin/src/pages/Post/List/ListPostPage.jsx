@@ -48,7 +48,6 @@ const ListPostPage = () => {
     // const posts = useSelector((state) => state.posts.posts.data); // Update the selector for posts
     // const status = useSelector((state) => state.posts.status); // Update the selector for posts
     // const error = useSelector((state) => state.posts.error); // Update the selector for posts
-    console.log(posts);
     return (
         <>
             <HeaderPage

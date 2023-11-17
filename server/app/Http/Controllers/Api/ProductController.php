@@ -45,17 +45,22 @@ class ProductController extends Controller
                 'images' => 'required|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
-                'status' => 'required',
-                'quantity' => 'required|numeric|between:0,10000'
+                'quantity' => 'required|integer'
             ]);
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
             }
 
-            $product = Product::create($request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity'
-            ]));
+            $data = $request->only([
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status',
+            ]);
+
+            if ($request->has('quantity')) {
+                $data['quantity'] = $request->quantity;
+            }
+
+            $product = Product::create($data);
 
             if ($request->has('brand_ids') && is_array($request->brand_ids)) {
                 $product->brands()->attach($request->brand_ids);

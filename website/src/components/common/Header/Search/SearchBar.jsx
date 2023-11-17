@@ -5,7 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { styled } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
 import Link from "next/link";
-import { fetchSearch } from "@/redux/slices/searchSlice";
+import { fetchAllProducts } from "@/redux/slices/productSlice";
+import removeDiacritics from "remove-diacritics";
+import { useRouter } from "next/navigation";
 
 const SearchContainer = styled("div")(() => ({}));
 
@@ -67,7 +69,7 @@ const SearchSuggestion = styled("div")(() => ({
     top: "105%",
     right: "0",
     minHeight: "100px",
-    zIndex: "9999999",
+    zIndex: "999999999999",
     backgroundColor: "#fff",
     border: "1px solid #eeeeee",
     boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)",
@@ -99,11 +101,6 @@ export default function SearchBar() {
     const searchContainerRef = useRef(null);
     const suggestionRef = useRef(null);
 
-    const handleChange = (e) => {
-        setSearchValue(e.target.value);
-        console.log(e.target.value);
-    };
-
     const handleClickOutside = (e) => {
         if (
             searchContainerRef.current &&
@@ -122,18 +119,6 @@ export default function SearchBar() {
         };
     }, []);
 
-    const handleClick = () => {
-        console.log(searchValue);
-    };
-
-    const handleBlur = () => {
-        setShowSuggestions(false);
-    };
-
-    const handleFocus = () => {
-        setShowSuggestions(true);
-    };
-
     const searchRecommendedItem = [
         "Siêu sale",
         "Khoẻ đẹp",
@@ -151,62 +136,120 @@ export default function SearchBar() {
         "Thịt, trứng",
     ];
 
-    const searchTerm = searchValue;
-
     const dispatch = useDispatch();
-    const searchResults = useSelector((state) => state.searchResults);
-    const status = useSelector((state) => state.searchResults.status);
+    const products = useSelector((state) => state.products);
+    const status = useSelector((state) => state.products.status);
+    const [loadData, setLoadData] = useState(false);
+    const [filteredProducts, setFilteredProducts] = useState([]);
+    const [emptyInput, setEmptyInput] = useState(false);
+    const inputRef = useRef(null);
 
     useEffect(() => {
-        if (status === "idle") {
-            dispatch(fetchSearch(searchTerm));
+        if (!loadData) {
+            dispatch(fetchAllProducts());
+            if (status !== "idle") {
+                setLoadData(true);
+            }
         }
-    }, [status, dispatch]);
+    }, [loadData, dispatch, status]);
 
-    if (status === "loading") return <div>Loading...</div>;
+    const handleFocus = () => {
+        setShowSuggestions(true);
+    };
 
-    console.log(searchResults);
+    const handleChange = (e) => {
+        const inputValue = e.target.value;
+
+        if (inputValue.length > 0) {
+            setEmptyInput(true);
+        } else {
+            setEmptyInput(false);
+        }
+
+        setSearchValue(inputValue);
+
+        const normalizedInput = removeDiacritics(inputValue.toLowerCase());
+
+        setFilteredProducts(
+            products.products
+                .filter((product) =>
+                    removeDiacritics(product.name.toLowerCase()).includes(
+                        normalizedInput
+                    )
+                )
+                .slice(0, 5)
+        );
+    };
+
+    const router = useRouter();
+
+    const handleSearchSubmit = (e) => {
+        e.preventDefault();
+        router.push(`/search/${searchValue.toLowerCase()}`);
+        setShowSuggestions(false);
+
+        if (inputRef.current) {
+            inputRef.current.blur();
+        }
+    };
+
+    const handleSuggestionClick = () => {
+        setShowSuggestions(false);
+
+        if (inputRef.current) {
+            inputRef.current.blur();
+        }
+    };
 
     return (
         <>
             <SearchContainer ref={searchContainerRef}>
-                <SearchInputContainer>
-                    <SearchIcon
-                        sx={{
-                            mx: 2,
-                            color: "#909098",
-                        }}
-                    />
+                <form onSubmit={handleSearchSubmit}>
+                    <SearchInputContainer>
+                        <SearchIcon
+                            sx={{
+                                mx: 2,
+                                color: "#909098",
+                            }}
+                        />
 
-                    <SearchInput
-                        type="text"
-                        onChange={handleChange}
-                        onFocus={handleFocus}
-                        value={searchValue}
-                        placeholder="Tìm kiếm sản phẩm ..."
-                    />
+                        <SearchInput
+                            type="text"
+                            onChange={handleChange}
+                            onFocus={handleFocus}
+                            value={searchValue}
+                            placeholder="Tìm kiếm sản phẩm ..."
+                        />
 
-                    <SearchBtn type="button" onClick={handleClick}>
-                        Tìm kiếm
-                    </SearchBtn>
+                        <SearchBtn type="submit">Tìm kiếm</SearchBtn>
 
-                    {showSuggestions && (
-                        <SearchSuggestion ref={suggestionRef}>
-                            <h4>Tìm kiếm sản phẩm</h4>
-                            <ul className="SearchSuggestion">
-                                <li>
-                                    <Link href={"/"}>dây chuyền chữ thập</Link>
-                                </li>
-                                <li>
-                                    <Link href={"/"}>giày thép gai</Link>
-                                </li>
-                                <li>
-                                    <Link href={"/"}>vương miện suy vong</Link>
-                                </li>
-                            </ul>
-                        </SearchSuggestion>
-                    )}
-                </SearchInputContainer>
+                        {showSuggestions && (
+                            <SearchSuggestion ref={suggestionRef}>
+                                <h4>Tìm kiếm sản phẩm</h4>
+                                <ul className="SearchSuggestion">
+                                    {filteredProducts.length > 0 ? (
+                                        filteredProducts.map((product) => (
+                                            <li
+                                                key={product.id}
+                                                onClick={handleSuggestionClick}
+                                            >
+                                                <Link
+                                                    href={`/search/${product.name.toLowerCase()}`}
+                                                >
+                                                    {product.name.toLowerCase()}
+                                                </Link>
+                                            </li>
+                                        ))
+                                    ) : (
+                                        <div style={{ textAlign: "center" }}>
+                                            Không tìm thấy kết quả
+                                        </div>
+                                    )}
+                                </ul>
+                            </SearchSuggestion>
+                        )}
+                    </SearchInputContainer>
+                </form>
 
                 <SearchRecomended>
                     {searchRecommendedItem.map((item, i) => (

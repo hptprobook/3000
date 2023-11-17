@@ -25,12 +25,9 @@ const ProductService = {
     },
 };
 
-const handleRequest = async (endpoint, config = {}) => {
+const handleRequest = async (endpoint, params = {}) => {
     try {
-        const res = await request({
-            url: endpoint,
-            ...config,
-        });
+        const res = await request.get(endpoint, { params });
         return res.data;
     } catch (err) {
         console.error(`Error fetching data from ${endpoint}:`, err);
