@@ -137,6 +137,22 @@ export default function Sidebar() {
                     />
                 ))}
             </div>
+
+            <div className="appSidebar__astra">
+                <PrimaryBtn
+                    icon={
+                        <Image
+                            src={
+                                "https://salt.tikicdn.com/cache/100x100/ts/upload/08/2f/14/fd9d34a8f9c4a76902649d04ccd9bbc5.png.webp"
+                            }
+                            width={32}
+                            height={32}
+                        />
+                    }
+                    text={"Bán hàng cùng Tiki"}
+                    fullWidth={true}
+                />
+            </div>
         </div>
     );
 }

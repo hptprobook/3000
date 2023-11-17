@@ -20,14 +20,7 @@ export default function RootLayout({ children }) {
             <body className={inter.className}>
                 <Providers>
                     <Header />
-                    <Grid className="appContainer" container>
-                        <Grid item xs={2} sx={{}}>
-                            <Sidebar />
-                        </Grid>
-                        <Grid sx={{ backgroundColor: "red" }} item xs={10}>
-                            {children}
-                        </Grid>
-                    </Grid>
+                    {children}
                 </Providers>
             </body>
         </html>
