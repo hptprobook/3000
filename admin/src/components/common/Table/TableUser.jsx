@@ -48,10 +48,8 @@ export default function TableUser(props) {
     const dataActive = userData.filter(item => item.status === 'active');
     const dataBan = userData.filter(item => item.status === 'ban');
     const handleSearch = (searchValue) => {
-        // Tạo một biểu thức chính quy để tìm kiếm "searchValue" trong các dữ liệu
         const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
 
-        // Sử dụng phương pháp `filter` để tạo một mảng kết quả
 
         const result = dataSearch.filter(item => regex.test(item.name));
         setUserData(result);
