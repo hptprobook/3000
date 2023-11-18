@@ -5,7 +5,7 @@
     overflow-y: scroll;
     z-index: 9999;
     position: sticky;
-    top: 0;
+    top: 16px;
 }
 
 .appSidebar::-webkit-scrollbar {
