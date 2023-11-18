@@ -7,7 +7,7 @@ import InputSearch from "../../../components/common/TextField/InputSearch";
 import SelectFilterProduct from "../../../components/common/Select/SelectFilterProduct";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategories } from "../../../redux/slices/productSlice";
-import { setStatus } from "../../../redux/slices/categoriesSlice";
+// import { setStatus } from "../../../redux/slices/categoriesSlice";
 
 export default function ListProductPage() {
     const dispatch = useDispatch();
