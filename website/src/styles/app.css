@@ -3,21 +3,10 @@
     display: flex;
     margin: 0 auto;
     border-radius: 8px;
-    height: 100vh;
+    height: 4000px;
 }
 
 .appContainer__content {
     margin-top: 16px;
-    height: 4000px;
-    overflow-y: scroll;
-}
-
-.content {
-    height: 2000px;
-}
-
-.content h1 {
-    position: sticky !important;
-    color: red;
-    top: 0 !important;
+    /* margin-left: 12px; */
 }

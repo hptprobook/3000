@@ -1,11 +1,11 @@
 .appSidebar {
     margin-right: 12px;
     margin-top: 15px;
-    height: 88vh;
+    height: calc(100vh - 20px);
     overflow-y: scroll;
     z-index: 9999;
     position: sticky;
-    top: 0;
+    top: 16px;
 }
 
 .appSidebar::-webkit-scrollbar {
@@ -14,7 +14,7 @@
 
 .appSidebar__categories {
     background-color: var(--white-color);
-    border-radius: 3px;
+    border-radius: 8px;
     padding: 8px 6px;
 }
 
@@ -26,7 +26,7 @@
 
 .appSidebar__astra {
     background-color: var(--white-color);
-    border-radius: 3px;
+    border-radius: 8px;
     margin-top: 15px;
     padding: 8px 6px;
 }

@@ -149,7 +149,7 @@ export default function Sidebar() {
                             height={32}
                         />
                     }
-                    text={"Bán hàng cùng Tiki"}
+                    text={"Bán hàng cùng 3000i"}
                     fullWidth={true}
                 />
             </div>

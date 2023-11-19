@@ -79,6 +79,8 @@
         --link-color: #0069ff;
 
         --text-color: #333;
+        --span-color: #ff424e;
+        --link-color: #2184ff;
     }
 }
 
@@ -92,7 +94,6 @@ html,
 body {
     max-width: 100%;
     margin: 0 auto;
-    overflow-x: hidden;
     background-color: #f5f5f5;
     font-family: Inter, Helvetica, Arial, sans-serif !important;
 }
