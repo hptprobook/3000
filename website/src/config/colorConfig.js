@@ -3,4 +3,6 @@ export default color = {
         dark: "#000000",
         light: "#fff",
     },
+    spanColor: "#ff424e",
+    linkColor: "#2184ff",
 };
