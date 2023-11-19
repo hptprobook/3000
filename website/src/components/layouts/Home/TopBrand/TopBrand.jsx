@@ -1,86 +1,86 @@
-import React, { useEffect, useState } from "react";
-import "./style.css";
 import ProductTab from "@/components/common/Tabs/ProductTab/ProductTab";
+import React from "react";
+import "./style.css";
 
-export default function BestSeller() {
+export default function TopBrand() {
     const tabs = [
         {
-            title: "Sinh lý nam",
+            title: "Nhà sách Happy Live",
             products: [
                 {
                     id: 1,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 2,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 3,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 4,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 4,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 5,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 3,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 6,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 2,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 7,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 8,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 9,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
                 {
                     id: 10,
-                    name: "Tinh chất hàu New Zealand Good Health Oyster Plus tăng cường sinh lý nam giới | 3wolves",
+                    name: "Bí Mật Của Phan Thiên Ân",
                     rate: 5,
                     price: 245000,
-                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/dc/f9/25/5c9de14acfd98defbad87450077c1752.jpg.webp",
+                    imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp",
                 },
             ],
         },
         {
-            title: "Phụ kiện thể thao khác",
+            title: "Nestle",
             products: [
                 {
                     id: 1,
@@ -99,7 +99,7 @@ export default function BestSeller() {
             ],
         },
         {
-            title: "Bàn ghế làm việc",
+            title: "Vinamilk",
             products: [
                 {
                     id: 3,
@@ -111,7 +111,7 @@ export default function BestSeller() {
             ],
         },
         {
-            title: "Nồi chiên",
+            title: "Thời trang 5s",
             products: [
                 {
                     id: 4,
@@ -125,8 +125,8 @@ export default function BestSeller() {
     ];
 
     return (
-        <div className="appContainer__bestSeller">
-            <h4>Sản phẩm bán chạy</h4>
+        <div className="appContainer__topBrand">
+            <h4>Thương hiệu nổi bật</h4>
             <ProductTab tabs={tabs} />
         </div>
     );

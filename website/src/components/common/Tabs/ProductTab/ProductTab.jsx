@@ -43,7 +43,6 @@ export default function ProductTab({ tabs }) {
 
     return (
         <StyledProductTab className="appContainer__ProductTab">
-            <h4>Sản phẩm bán chạy</h4>
             <div className="tabs" style={{ marginTop: "12px" }}>
                 {tabs.map((tab, index) => (
                     <StyledButtonTab

@@ -6,6 +6,9 @@ import "@/styles/app.css";
 import Banner from "@/components/layouts/Home/Banner/Banner";
 import FlashSale from "@/components/layouts/Home/FlashSale/FlashSale";
 import BestSeller from "@/components/layouts/Home/BestSeller/BestSeller";
+import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/RecommendedProduct";
+import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
+import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
 
 export default function Home() {
     return (
@@ -22,6 +25,9 @@ export default function Home() {
                 <Banner />
                 <FlashSale />
                 <BestSeller />
+                <RecommendedProduct />
+                <TopBrand />
+                <MainListProduct />
             </Grid>
         </Grid>
     );

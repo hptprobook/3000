@@ -5,6 +5,7 @@ import "./style.css";
 
 const StyledProductItem = styled("div")(() => ({
     padding: "0 8px 8px 8px",
+    backgroundColor: "#fff",
     "& .img": {
         width: "100%",
         aspectRatio: "1/1",
@@ -14,6 +15,7 @@ const StyledProductItem = styled("div")(() => ({
         fontSize: "12px",
         lineHeight: "20px",
         display: "-webkit-box",
+        height: "44px",
         WebkitLineClamp: 2,
         webkitBoxOrient: "vertical !important",
         overflow: "hidden",
@@ -24,11 +26,16 @@ const StyledProductItem = styled("div")(() => ({
         fontWeight: "500",
         borderBottom: "1px solid #dddde3",
         paddingBottom: "12px",
+        marginTop: "4px",
         span: {
             fontSize: "13px",
             position: "relative",
             top: "-4px",
         },
+    },
+    "& .rate": {
+        display: "flex",
+        alignItems: "center",
     },
     "& .ship": {
         marginTop: "8px",
@@ -37,7 +44,14 @@ const StyledProductItem = styled("div")(() => ({
     },
 }));
 
-export default function ProductItem({ name, price, imgUrl, rate }) {
+export default function ProductItem({
+    name,
+    price,
+    imgUrl,
+    rate,
+    sold = 0,
+    discount = 0,
+}) {
     function truncateString(str, num) {
         if (str.length > num) {
             return str.slice(0, num) + "...";
@@ -103,10 +117,33 @@ export default function ProductItem({ name, price, imgUrl, rate }) {
                 }}
             />
             <p className="name">{truncatedName}</p>
-            <div className="rate">{renderRating(rate)}</div>
-            <p className="price">
+            <div className="rate">
+                {renderRating(rate)}{" "}
+                {sold != 0 && (
+                    <span style={{ fontSize: "11px", color: "#9c9ca3" }}>
+                        | Đã bán {sold}
+                    </span>
+                )}
+            </div>
+            <div
+                className="price"
+                style={{ display: "flex", alignItems: "center" }}
+            >
                 {formatPriceToVND(price)} <span>₫</span>
-            </p>
+                {discount > 0 && (
+                    <div
+                        style={{
+                            fontSize: "12px",
+                            backgroundColor: "#f5f5fa",
+                            borderRadius: "8px",
+                            padding: "2px 4px",
+                            marginLeft: "4px",
+                        }}
+                    >
+                        -{discount}%
+                    </div>
+                )}
+            </div>
             <p className="ship">{calculateShippingDate()}</p>
         </StyledProductItem>
     );
