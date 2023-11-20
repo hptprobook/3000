@@ -3,8 +3,6 @@ import "@/styles/globals.css";
 import "@/styles/app.css";
 import Header from "@/components/layouts/Header/Header";
 import { Providers } from "@/redux/provider";
-import Sidebar from "@/components/layouts/Sidebar/Sidebar";
-import { Grid } from "@mui/material";
 
 const inter = Inter({ subsets: ["latin"] });
 

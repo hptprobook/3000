@@ -3,16 +3,31 @@
 import Sidebar from "@/components/layouts/Sidebar/Sidebar";
 import { Grid } from "@mui/material";
 import "@/styles/app.css";
-import Banner from "@/components/common/Home/Banner/Banner";
+import Banner from "@/components/layouts/Home/Banner/Banner";
+import FlashSale from "@/components/layouts/Home/FlashSale/FlashSale";
+import BestSeller from "@/components/layouts/Home/BestSeller/BestSeller";
+import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/RecommendedProduct";
+import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
+import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
 
 export default function Home() {
     return (
         <Grid className="appContainer" container>
-            <Grid item xs={2} className="appContainer__sidebar">
+            <Grid
+                item
+                xs={2.2}
+                className="appContainer__sidebar"
+                sx={{ paddingRight: "12px" }}
+            >
                 <Sidebar />
             </Grid>
-            <Grid item xs={10} className="appContainer__content">
+            <Grid item xs={9.8} className="appContainer__content">
                 <Banner />
+                <FlashSale />
+                <BestSeller />
+                <RecommendedProduct />
+                <TopBrand />
+                <MainListProduct />
             </Grid>
         </Grid>
     );
