@@ -7,7 +7,7 @@ import InputSearch from "../../../components/common/TextField/InputSearch";
 import SelectFilterProduct from "../../../components/common/Select/SelectFilterProduct";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategories } from "../../../redux/slices/productSlice";
-import { setStatus } from "../../../redux/slices/categoriesSlice";
+// import { setStatus } from "../../../redux/slices/categoriesSlice";
 
 export default function ListProductPage() {
     const dispatch = useDispatch();
@@ -32,17 +32,27 @@ export default function ListProductPage() {
                 Breadcrumb={["Sản phẩm", "Danh sách"]}
                 ButtonLink="/product/create"
             />
-            <Box sx={{ width: '100%', mt: '16px', backgroundColor: color.backgroundColorSub.dark, borderRadius: '13px' }}>
-                <Box sx={{ padding: '32px 0' }}>
-                    <Box sx={{
-                        padding: '0 16px 16px',
-                        borderBottom: '1px solid ' + color.colorHover.hoverGray
-                    }}>
+            <Box
+                sx={{
+                    width: "100%",
+                    mt: "16px",
+                    backgroundColor: color.backgroundColorSub.dark,
+                    borderRadius: "13px",
+                }}
+            >
+                <Box sx={{ padding: "32px 0" }}>
+                    <Box
+                        sx={{
+                            padding: "0 16px 16px",
+                            borderBottom:
+                                "1px solid " + color.colorHover.hoverGray,
+                        }}
+                    >
                         <InputSearch />
                     </Box>
                     <SelectFilterProduct />
                 </Box>
             </Box>
         </Box>
-    )
+    );
 }
