@@ -124,11 +124,16 @@ export default function MainListProduct() {
     const [displayCount, setDisplayCount] = useState(6);
     const increment = 6;
 
-    const showMoreProducts = () => {
-        setDisplayCount((prevDisplayCount) => prevDisplayCount + increment);
-    };
-
     const displayedItems = items.slice(0, displayCount);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const showMoreProducts = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setDisplayCount((prevDisplayCount) => prevDisplayCount + increment);
+            setIsLoading(false);
+        }, 500); // Chờ 0.5 giây
+    };
 
     return (
         <div className="appContainer__mainListProduct">
@@ -137,7 +142,7 @@ export default function MainListProduct() {
                     backgroundColor: "#fff",
                     borderRadius: "5px",
                     marginBottom: "10px",
-                    padding: "20px 0",
+                    padding: "20px 12px",
                 }}
             >
                 Gợi ý hôm nay
@@ -164,7 +169,10 @@ export default function MainListProduct() {
                         marginTop: "12px",
                     }}
                 >
-                    <SeeMoreBtn onClick={showMoreProducts} text={"Xem thêm"} />
+                    <SeeMoreBtn
+                        onClick={showMoreProducts}
+                        text={isLoading ? "Đang tải..." : "Xem thêm"}
+                    />
                 </div>
             )}
         </div>
