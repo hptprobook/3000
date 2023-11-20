@@ -1,0 +1,18 @@
+.appContainer__ProductTab .swiper-button-prev,
+.appContainer__ProductTab .swiper-button-next {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.appContainer__ProductTab .swiper-button-disabled {
+    display: none;
+}
+
+.appContainer__ProductTab .swiper-button-prev:after,
+.appContainer__ProductTab .swiper-button-next:after {
+    font-size: 14px;
+    font-weight: 700;
+}

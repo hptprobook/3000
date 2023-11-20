@@ -19,6 +19,15 @@ const AddressService = {
             throw err;
         }
     },
+    getWards: async (id) => {
+        try {
+            const res = await request.get(`addresses/getWards/${id}`);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
 };
 
 export default AddressService;

@@ -28,6 +28,9 @@ const color = {
     },
     secondary: '#FF4136',
     background: {
+        button: {
+            hoverNoBg: '#19212f',
+        },
         dark: '#333333'
     },
     text: '#333333',

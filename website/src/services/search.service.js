@@ -11,8 +11,10 @@ const handleRequest = async (endpoint, params = {}) => {
 };
 
 const SearchService = {
-    searchWithKeyword: async (searchTerm) => {
-        return handleRequest("search");
+    searchWithKeyword: async (q) => {
+        const endpoint = `search?q=${encodeURIComponent(q)}`;
+
+        return handleRequest(endpoint);
     },
 };
 

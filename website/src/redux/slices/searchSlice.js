@@ -2,10 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import SearchService from "@/services/search.service";
 
 export const fetchSearch = createAsyncThunk(
-    "search/fetchData",
-    async (searchTerm, { rejectWithValue }) => {
+    "search/fetchSearch",
+    async (q, { rejectWithValue }) => {
         try {
-            const response = await SearchService.searchWithKeyword(searchTerm);
+            const response = await SearchService.searchWithKeyword(q);
             return response;
         } catch (err) {
             return rejectWithValue(
@@ -15,16 +15,14 @@ export const fetchSearch = createAsyncThunk(
     }
 );
 
-const initialState = {
-    searchResults: [],
-    selectedSearch: null,
-    status: "idle",
-    error: null,
-};
-
 const searchSlice = createSlice({
     name: "search",
-    initialState,
+    initialState: {
+        results: [],
+        selected: null,
+        status: "idle",
+        error: null,
+    },
     reducers: {},
     extraReducers: (builder) => {
         builder
@@ -34,7 +32,7 @@ const searchSlice = createSlice({
             })
             .addCase(fetchSearch.fulfilled, (state, action) => {
                 state.status = "succeeded";
-                state.searchResults = action.payload;
+                state.results = action.payload;
             })
             .addCase(fetchSearch.rejected, (state, action) => {
                 state.status = "failed";

@@ -1,0 +1,34 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "next/babel",
+        "next/core-web-vitals"
+    ],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 12,
+        "sourceType": "module"
+    },
+    "rules": {
+        // Định nghĩa các quy tắc cụ thể tại đây
+        // Ví dụ: "react/react-in-jsx-scope": "off" nếu bạn đang sử dụng Next.js với React 17 trở lên
+    }
+}
+
+// {
+//     "extends": ["next/babel", "next/core-web-vitals"]
+// }

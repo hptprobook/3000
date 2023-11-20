@@ -1,9 +1,34 @@
 "use client";
 
+import Sidebar from "@/components/layouts/Sidebar/Sidebar";
+import { Grid } from "@mui/material";
+import "@/styles/app.css";
+import Banner from "@/components/layouts/Home/Banner/Banner";
+import FlashSale from "@/components/layouts/Home/FlashSale/FlashSale";
+import BestSeller from "@/components/layouts/Home/BestSeller/BestSeller";
+import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/RecommendedProduct";
+import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
+import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
+
 export default function Home() {
     return (
-        <div className="children" style={{ height: "400px" }}>
-            Content
-        </div>
+        <Grid className="appContainer" container>
+            <Grid
+                item
+                xs={2.2}
+                className="appContainer__sidebar"
+                sx={{ paddingRight: "12px" }}
+            >
+                <Sidebar />
+            </Grid>
+            <Grid item xs={9.8} className="appContainer__content">
+                <Banner />
+                <FlashSale />
+                <BestSeller />
+                <RecommendedProduct />
+                <TopBrand />
+                <MainListProduct />
+            </Grid>
+        </Grid>
     );
 }

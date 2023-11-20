@@ -25,6 +25,17 @@ export const fetchDistricts = createAsyncThunk(
         }
     }
 );
+export const fetchWards = createAsyncThunk(
+    "provinces/fetchWards",
+    async (districtId, { rejectWithValue }) => {
+        try {
+            const response = await AddressService.getWards(districtId);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
 export const setStatus = createAction('address/setStatus');
 const initialState = {
     address: [],
@@ -58,6 +69,17 @@ const addressSlice = createSlice({
                 state.districts = action.payload;
             })
             .addCase(fetchDistricts.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(fetchWards.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchWards.fulfilled, (state, action) => {
+                state.status = "wards already";
+                state.wards = action.payload;
+            })
+            .addCase(fetchWards.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             })

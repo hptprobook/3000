@@ -1,0 +1,32 @@
+.appSidebar {
+    margin-right: 12px;
+    margin-top: 15px;
+    height: calc(100vh - 20px);
+    overflow-y: scroll;
+    z-index: 9999;
+    position: sticky;
+    top: 16px;
+}
+
+.appSidebar::-webkit-scrollbar {
+    display: none;
+}
+
+.appSidebar__categories {
+    background-color: var(--white-color);
+    border-radius: 8px;
+    padding: 8px 6px;
+}
+
+.appSidebar__categories h4,
+.appSidebar__astra h4 {
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.appSidebar__astra {
+    background-color: var(--white-color);
+    border-radius: 8px;
+    margin-top: 15px;
+    padding: 8px 6px;
+}

@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, CardContent, Grid, Paper, TextField, ImageList, ImageListItem, Typography } from "@mui/material";
+import { Box, Button, CardContent, Grid, Paper, Typography } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import { uploadFileToServer } from '../../../services/uploadFileToServer'; // Adjust the import path
 import { uploadFailure, uploadStart, uploadSuccess } from '../../../redux/slices/uploadSlice';
+import color from '../../../config/colorConfig';
+import InputEdit from '../../../components/common/TextField/InputEdit';
+import ButtonNormal from '~/components/common/Button/ButtonNormal';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -18,23 +21,15 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-const StyledTextField = styled(TextField)({
-    width: '100%',
-    marginBottom: '20px',
-});
-
-const DetailText = styled('div')({
-    padding: '20px',
-    fontSize: '20px',
-});
-
 export default function CreatePostPage() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [coverImage, setCoverImage] = useState(null);
-    const [backupImages, setBackupImages] = useState([]);
-    const [backupFileNames, setBackupFileNames] = useState([]);
+    const fileInputRef = useRef(null);
 
+    const handleButtonClick = () => {
+        fileInputRef.current.click();
+    };
     const dispatch = useDispatch();
     const uploading = useSelector((state) => state.upload.uploading);
 
@@ -50,30 +45,7 @@ export default function CreatePostPage() {
         const file = e.target.files[0];
         setCoverImage(file);
     };
-
-    const handleBackupImageChange = (e) => {
-        const files = e.target.files;
-        const newBackupImages = [...backupImages];
-        const newBackupFileNames = [...backupFileNames];
-
-        for (let i = 0; i < files.length; i++) {
-            newBackupImages.push(files[i]);
-            newBackupFileNames.push(files[i].name);
-        }
-
-        setBackupImages(newBackupImages);
-        setBackupFileNames(newBackupFileNames);
-    };
-
-    const handleRemoveBackupImage = (index) => {
-        const newBackupImages = [...backupImages];
-        const newBackupFileNames = [...backupFileNames];
-        newBackupImages.splice(index, 1);
-        newBackupFileNames.splice(index, 1);
-        setBackupImages(newBackupImages);
-        setBackupFileNames(newBackupFileNames);
-    };
-
+    console.log(coverImage)
     const handleUpload = async () => {
         if (!coverImage || !title || !description) return;
 
@@ -83,18 +55,10 @@ export default function CreatePostPage() {
             const uploadedCoverImage = await uploadFileToServer(coverImage);
             dispatch(uploadSuccess(uploadedCoverImage));
 
-            // Perform backup image uploads
-            for (let i = 0; i < backupImages.length; i++) {
-                const uploadedBackupImage = await uploadFileToServer(backupImages[i]);
-                // You can dispatch an action here to handle the uploaded backup image if needed.
-            }
-
             // Reset state and show success message
             setCoverImage(null);
             setTitle('');
             setDescription('');
-            setBackupImages([]);
-            setBackupFileNames([]);
 
             // Display a success message or redirect to a success page.
         } catch (error) {
@@ -109,92 +73,95 @@ export default function CreatePostPage() {
                 Breadcrumb={["Bài viết", "Tạo bài viết"]}
                 ButtonLink="/post/create"
             />
-            <Paper variant="elevation" sx={{ maxWidth: '100%', marginTop: '50px' }}>
+            <Paper variant="elevation" sx={{ maxWidth: '100%', marginTop: '50px', background: color.backgroundColorSub.dark, }}>
                 <CardContent>
                     <Grid container rowSpacing={1}>
                         <Grid item xs={8} md={6}>
-                            <DetailText>
+                            <Typography sx={{
+                                padding: '20px',
+                                fontSize: '20px',
+                                color: color.textColor.dark
+                            }}>
                                 Chi tiết cơ bản
-                            </DetailText>
+                            </Typography>
                         </Grid>
                         <Grid item xs={6} xl={2}>
-                            <StyledTextField
-                                id="title-input"
-                                label="Tiêu đề"
-                                type="text"
-                                variant="outlined"
-                                value={title}
-                                onChange={handleTitleChange}
-                            />
-                            <StyledTextField
-                                id="description-input"
-                                label="Mô tả ngắn"
-                                type="text"
-                                variant="outlined"
-                                value={description}
-                                onChange={handleDescriptionChange}
-                            />
+                            <Grid>
+                                <InputEdit
+                                    id="title-input"
+                                    label="Tiêu đề"
+                                    type="text"
+                                    variant="outlined"
+                                    value={title}
+                                    onChange={handleTitleChange}
+                                />
+                            </Grid>
+                            <Grid>
+                                <InputEdit
+                                    id="description-input"
+                                    label="Mô tả ngắn"
+                                    type="text"
+                                    variant="outlined"
+                                    value={description}
+                                    onChange={handleDescriptionChange}
+                                />
+                            </Grid>
                         </Grid>
                     </Grid>
                 </CardContent>
                 <CardContent>
                     <Grid container rowSpacing={1}>
                         <Grid item xs={8} md={6}>
-                            <DetailText>
+                            <Typography
+                                sx={{
+                                    padding: '20px',
+                                    fontSize: '20px',
+                                    color: color.textColor.dark
+                                }}
+                            >
                                 Bìa ảnh bài viết
-                            </DetailText>
+                            </Typography>
                         </Grid>
                         <Grid item xs={6} xl={2}>
-                            <Button component="label" variant="contained">
-                                Upload cover image
-                                <VisuallyHiddenInput type="file" accept="image/*" onChange={handleCoverImageChange} />
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-                <CardContent>
-                    <Grid container rowSpacing={1}>
-                        <Grid item xs={8} md={6}>
-                            <DetailText>
-                                Hình ảnh phụ (backup)
-                            </DetailText>
-                        </Grid>
-                        <Grid item xs={6} xl={2}>
-                            <Button component="label" variant="contained">
-                                Upload backup images
-                                <VisuallyHiddenInput type="file" accept="image/*" multiple onChange={handleBackupImageChange} />
-                            </Button>
+                            <Box
+                                sx={{
+                                    flexGrow: 1,
+                                    marginTop: '32px',
+                                    backgroundColor: color.backgroundColorSub.dark,
+                                    borderRadius: '14px'
+                                }} >
+                                <ButtonNormal
+                                    variant="contained" 
+                                    label={'Đăng bìa ảnh'}
+                                    bg='true'   
+                                    onClick={handleButtonClick}>
+                                    Đăng bìa ảnh
+                                </ButtonNormal>
+                                <VisuallyHiddenInput
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleCoverImageChange}
+                                />
+                            </Box>
                         </Grid>
                     </Grid>
                 </CardContent>
                 {coverImage && (
-                    <CardContent>
-                        <Typography variant="subtitle1">Cover Image:</Typography>
-                        <img src={URL.createObjectURL(coverImage)} alt="Cover" style={{ maxWidth: '100%' }} />
+                    <CardContent sx={{
+                    width: '900px',
+                    height: '400px',
+                    }}>
+                        <Typography variant="subtitle1">Ảnh bìa:</Typography>
+                        <img 
+                        src={URL.createObjectURL(coverImage)} 
+                        alt="Cover" 
+                        style={{ maxWidth: '100%' }}
+                         />
                     </CardContent>
                 )}
-                {backupImages.length > 0 && (
-                    <CardContent>
-                        <Typography variant="subtitle1">Backup Images:</Typography>
-                        <ImageList rowHeight={160} cols={3}>
-                            {backupImages.map((image, index) => (
-                                <ImageListItem key={index}>
-                                    <img src={URL.createObjectURL(image)} alt={`Backup ${index + 1}`} />
-                                    <Button variant="contained" onClick={() => handleRemoveBackupImage(index)}>
-                                        Remove
-                                    </Button>
-                                    <Typography variant="body2" color="textSecondary">{backupFileNames[index]}</Typography>
-                                </ImageListItem>
-                            ))}
-                        </ImageList>
-                    </CardContent>
-                )}
-                <CardContent>
-                    <Button variant="contained" onClick={handleUpload} disabled={uploading}>
-                        {uploading ? 'Uploading...' : 'Upload'}
-                    </Button>
-                </CardContent>
-            </Paper>
+                
+            </Paper >
         </>
     );
 }

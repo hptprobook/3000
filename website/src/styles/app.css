@@ -1,1 +1,12 @@
+.appContainer {
+    width: var(--max-width);
+    display: flex;
+    margin: 0 auto;
+    border-radius: 8px;
+    height: 4000px;
+}
 
+.appContainer__content {
+    margin-top: 16px;
+    /* margin-left: 12px; */
+}
