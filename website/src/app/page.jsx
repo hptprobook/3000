@@ -9,6 +9,8 @@ import BestSeller from "@/components/layouts/Home/BestSeller/BestSeller";
 import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/RecommendedProduct";
 import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
 import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
+import Footer from "@/components/layouts/Footer/Footer";
+import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 
 export default function Home() {
     return (
@@ -28,6 +30,7 @@ export default function Home() {
                 <RecommendedProduct />
                 <TopBrand />
                 <MainListProduct />
+                <HomeFooter />
             </Grid>
         </Grid>
     );

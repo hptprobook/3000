@@ -63,7 +63,7 @@ export default function ProductTab({ tabs }) {
                 >
                     {tabs[activeTab].products.map((product) => (
                         <SwiperSlide key={product.id} className="product">
-                            <Link href={"/"}>
+                            <Link href={`product/detail/${product.id}`}>
                                 <ProductItem
                                     name={product.name}
                                     price={product.price}
