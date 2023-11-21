@@ -12,6 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import styled from '@emotion/styled';
+import ChipFilter from '../Chip/ChipFilter';
 const CheckedCategoryCustom = styled(ListItem)(({ theme }) => ({
 }))
 const MenuCategoryCustom = styled(Menu)(({ theme }) => ({
@@ -89,9 +90,7 @@ export default function SelectFilterProduct() {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorElStatus, setAnchorElStatus] = React.useState(null);
 
-    const [checkedCategory, setChecked] = React.useState([0]);
-
-    const [fillerList, setFilterList] = React.useState(null);
+    const [checkedCategory, setChecked] = React.useState([]);
 
     const handleToggleCategory = (value) => () => {
         const currentIndex = checkedCategory.indexOf(value);
@@ -104,9 +103,7 @@ export default function SelectFilterProduct() {
         }
         setChecked(newChecked);
     };
-    React.useEffect(() => {
-        map
-    }, [checkedCategory]);
+
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -121,7 +118,6 @@ export default function SelectFilterProduct() {
     const handleCloseStatus = () => {
         setAnchorElStatus(null);
     };
-
     const open = Boolean(anchorEl);
     const open2 = Boolean(anchorElStatus);
     const id = open ? 'simple-popover' : undefined;
@@ -129,11 +125,28 @@ export default function SelectFilterProduct() {
     return (
         <Box>
             <div className='ProductPage__filter' style={{ borderBottom: '1px solid' + color.colorHover.hoverGray }}>
-                <p style={{ margin: 0, color: color.textGray, fontSize: '14px' }}>
-                    Không có thẻ lọc áp dụng
-                </p>
+                {checkedCategory.length > 0 ? (
+                    checkedCategory.map((item) => {
+                        const filteredCategories = FakeCategories.filter((itemCat) => item === itemCat.id);
+
+                        return filteredCategories.map((filteredItemCat) => (
+                            <ChipFilter
+                                key={filteredItemCat.id} // Make sure to use a unique key for each element
+                                label={'Loại:' + filteredItemCat.name}
+                                funC={handleToggleCategory(filteredItemCat.id)}
+                            />
+                        ));
+                    }).flat() // Use flat() to flatten the nested arrays
+                ) : (
+                    <p style={{ margin: 0, color: color.textGray, fontSize: '14px' }}>
+                        Không có thẻ lọc áp dụng
+                    </p>
+                )}
+
+
+
             </div>
-            <div className='ProductPage__filter'>
+            <div>
                 <>
                     <ButtonOpenSelect
                         id={id}
