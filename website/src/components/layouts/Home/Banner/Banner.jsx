@@ -3,8 +3,6 @@ import React from "react";
 import "./style.css";
 import Link from "next/link";
 import Image from "next/image";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 
 export default function Banner() {
     const fakeData = [

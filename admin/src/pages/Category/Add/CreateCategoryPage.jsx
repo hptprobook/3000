@@ -1,6 +1,80 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
+import InputEdit from "../../../components/common/TextField/InputEdit";
+import ButtonNormal from "../../../components/common/Button/ButtonNormal";
+import { Grid } from "@mui/material";
 
 export default function CreateCategoryPage() {
-    return <div>CreateCategoryPage</div>;
+  const [categoryData, setCategoryData] = useState({
+    name: "",
+    parent_id: null,
+    icon_url: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCategoryData({
+      ...categoryData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission here.
+
+    // Clear the form fields after submission if needed.
+    setCategoryData({
+      name: "",
+      parent_id: null,
+      icon_url: "",
+    });
+  };
+
+  return (
+    <div className="create-category-page">
+      <h2>Tạo phân loại</h2>
+      <form onSubmit={handleSubmit}>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <InputEdit
+              type="text"
+              name="name"
+              label="Tên"
+              value={categoryData.name}
+              onChange={handleInputChange}
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <InputEdit
+              type="number"
+              name="parent_id"
+              label="Phân loại cha"
+              value={categoryData.parent_id || ""}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <InputEdit
+              type="text"
+              name="icon_url"
+            label="Đường dẫn"
+              value={categoryData.icon_url}
+              onChange={handleInputChange}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <ButtonNormal
+              variant="contained"
+              label={"Thêm"}
+              bg="true"
+              type="submit"
+              sx={{ marginTop: "16px" }}
+            ></ButtonNormal>
+          </Grid>
+        </Grid>
+      </form>
+    </div>
+  );
 }

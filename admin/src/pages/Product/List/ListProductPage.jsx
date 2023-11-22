@@ -7,6 +7,7 @@ import InputSearch from "../../../components/common/TextField/InputSearch";
 import SelectFilterProduct from "../../../components/common/Select/SelectFilterProduct";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategories } from "../../../redux/slices/productSlice";
+import TableProduct from "../../../components/common/Table/TableProduct";
 // import { setStatus } from "../../../redux/slices/categoriesSlice";
 
 export default function ListProductPage() {
@@ -40,7 +41,7 @@ export default function ListProductPage() {
                     borderRadius: "13px",
                 }}
             >
-                <Box sx={{ padding: "32px 0" }}>
+                <Box sx={{ padding: "32px 0 0" }}>
                     <Box
                         sx={{
                             padding: "0 16px 16px",
@@ -51,6 +52,7 @@ export default function ListProductPage() {
                         <InputSearch />
                     </Box>
                     <SelectFilterProduct />
+                    <TableProduct />
                 </Box>
             </Box>
         </Box>
