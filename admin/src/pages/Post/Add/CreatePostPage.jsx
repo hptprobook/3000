@@ -8,6 +8,8 @@ import { uploadFailure, uploadStart, uploadSuccess } from '../../../redux/slices
 import color from '../../../config/colorConfig';
 import InputEdit from '../../../components/common/TextField/InputEdit';
 import ButtonNormal from '~/components/common/Button/ButtonNormal';
+import { CKEditor } from '@ckeditor/ckeditor5-react';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -131,9 +133,9 @@ export default function CreatePostPage() {
                                     borderRadius: '14px'
                                 }} >
                                 <ButtonNormal
-                                    variant="contained" 
+                                    variant="contained"
                                     label={'Đăng bìa ảnh'}
-                                    bg='true'   
+                                    bg='true'
                                     onClick={handleButtonClick}>
                                     Đăng bìa ảnh
                                 </ButtonNormal>
@@ -149,18 +151,44 @@ export default function CreatePostPage() {
                 </CardContent>
                 {coverImage && (
                     <CardContent sx={{
-                    width: '900px',
-                    height: '400px',
+                        width: '900px',
+                        height: '400px',
                     }}>
                         <Typography variant="subtitle1">Ảnh bìa:</Typography>
-                        <img 
-                        src={URL.createObjectURL(coverImage)} 
-                        alt="Cover" 
-                        style={{ maxWidth: '100%' }}
-                         />
+                        <img
+                            src={URL.createObjectURL(coverImage)}
+                            alt="Cover"
+                            style={{ maxWidth: '100%' }}
+                        />
                     </CardContent>
                 )}
-                
+
+                <div className="App">
+                    <h2>Using CKEditor&nbsp;5 build in React</h2>
+                    <CKEditor
+                    sx={{
+                        backgroundColor: color.backgroundColorSub2.dark,
+
+                    }}
+                        editor={ClassicEditor}
+                        data="<p>Hello from CKEditor&nbsp;5!</p>"
+                        onReady={editor => {
+                            // You can store the "editor" and use when it is needed.
+                            console.log('Editor is ready to use!', editor);
+                        }}
+                        onChange={(event, editor) => {
+                            const data = editor.getData();
+                            console.log({ event, editor, data });
+                        }}
+                        onBlur={(event, editor) => {
+                            console.log('Blur.', editor);
+                        }}
+                        onFocus={(event, editor) => {
+                            console.log('Focus.', editor);
+                        }}
+                    />
+                </div>
+
             </Paper >
         </>
     );
