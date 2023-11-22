@@ -81,6 +81,7 @@
         --text-color: #333;
         --span-color: #ff424e;
         --link-color: #2184ff;
+        --font-family: Inter, Helvetica, Arial, sans-serif !important;
     }
 }
 

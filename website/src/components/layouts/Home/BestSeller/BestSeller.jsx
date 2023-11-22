@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import ProductTab from "@/components/common/Tabs/ProductTab/ProductTab";

@@ -21,7 +21,7 @@ export default function HomeFooter() {
                 },
             }}
         >
-            <Grid xs={3}>
+            <Grid xs={3} item>
                 <h4>Hỗ trợ khách hàng</h4>
                 <p style={{ marginTop: "12px" }}>
                     <Link href={""}>Hotline: 19001009</Link>
@@ -43,7 +43,7 @@ export default function HomeFooter() {
                     <Link href={""}>Phương thức thanh toán</Link>
                 </p>
             </Grid>
-            <Grid xs={3}>
+            <Grid xs={3} item>
                 <h4>Về 3000</h4>
                 <p style={{ marginTop: "12px" }}>
                     {" "}
@@ -66,7 +66,7 @@ export default function HomeFooter() {
                     <Link href={""}>Điều khoản sử dụng</Link>
                 </p>
             </Grid>
-            <Grid xs={3}>
+            <Grid xs={3} item>
                 <h4>Hợp tác và liên kết</h4>
                 <p style={{ marginTop: "12px" }}>
                     {" "}
@@ -77,7 +77,7 @@ export default function HomeFooter() {
                     <Link href={""}>Bán hàng cùng 3000</Link>
                 </p>
             </Grid>
-            <Grid xs={3}>
+            <Grid xs={3} item>
                 <h4>Kết nối với chúng tôi</h4>
                 <Link href={""}>Fb</Link>
                 <Link href={""}>Zalo</Link>

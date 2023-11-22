@@ -1,5 +1,4 @@
-"use client";
-
+import React from "react";
 import Sidebar from "@/components/layouts/Sidebar/Sidebar";
 import { Grid } from "@mui/material";
 import "@/styles/app.css";
@@ -9,7 +8,6 @@ import BestSeller from "@/components/layouts/Home/BestSeller/BestSeller";
 import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/RecommendedProduct";
 import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
 import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
-import Footer from "@/components/layouts/Footer/Footer";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 
 export default function Home() {
