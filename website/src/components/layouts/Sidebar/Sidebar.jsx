@@ -129,9 +129,8 @@ export default function Sidebar() {
                 <h4>Danh mục</h4>
 
                 {categories.map((category, i) => (
-                    <Link href={`/category/${category.id}`}>
+                    <Link href={`/category/${category.id}`} key={i}>
                         <PrimaryBtn
-                            key={i}
                             icon={
                                 <Image
                                     src={category.icon}
