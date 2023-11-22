@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LoginForm from "../../TextField/Login/LoginForm";
 import LoginButton from "../../Button/LoginButton/LoginButton";
 import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
-import GoogleIcon from "@mui/icons-material/Google";
 import Link from "next/link";
-import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "@/redux/slices/authSlice";
 
 const LoginModal = ({ isOpen, onClose }) => {
+    const dispatch = useDispatch();
+    const { loading, error } = useSelector((state) => state.auth);
+    const [login, setLogin] = useState("");
+    const [password, setPassword] = useState("");
+
     if (!isOpen) return null;
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        dispatch(loginUser({ login, password }));
+    };
 
     return (
         <div className="loginModal">
@@ -24,12 +34,19 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </p>
                 <div style={{ display: "flex" }}>
                     <div style={{ width: "70%", padding: "24px 80px 0 0" }}>
-                        <form>
+                        <form onSubmit={handleLogin}>
                             <LoginForm
                                 label={"Số điện thoại / Email"}
                                 type={"text"}
+                                value={login}
+                                onChange={(e) => setLogin(e.target.value)}
                             />
-                            <LoginForm label={"Mật khẩu"} type={"password"} />
+                            <LoginForm
+                                label={"Mật khẩu"}
+                                type={"password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
                             <LoginButton text={"Đăng nhập"} />
                         </form>
                         <div
