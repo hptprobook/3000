@@ -1,11 +1,9 @@
-import request, { getCsrfToken } from "../utils/request";
+import request from "../utils/request";
 
 const AuthService = {
     login: async (data) => {
         try {
-            // await getCsrfToken();
             const res = await request.post("login", data);
-            console.log(res);
             return res;
         } catch (err) {
             console.log(err.response);

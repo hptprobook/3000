@@ -7,24 +7,30 @@ import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/redux/slices/authSlice";
+import CirLoading from "../../Loading/CircularLoading/CirLoading";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
     const { loading, error } = useSelector((state) => state.auth);
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
+    const notify = () => toast.success("Đăng nhập thành công !");
 
     if (!isOpen) return null;
 
     const handleLogin = async (e) => {
         e.preventDefault();
         dispatch(loginUser({ login, password }));
+        notify();
     };
 
     return (
         <div className="loginModal">
             <div className="loginModal__backdrop" onClick={onClose}></div>
             <div className="loginModal__content">
+                {loading && <CirLoading />}
                 <button className="loginModal__closeBtn" onClick={onClose}>
                     <CancelIcon sx={{ fontSize: "32px" }} />
                 </button>
