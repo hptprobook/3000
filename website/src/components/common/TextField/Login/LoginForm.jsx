@@ -1,11 +1,13 @@
 import React from "react";
 import TextField from "@mui/material/TextField";
 
-export default function LoginForm({ label, type }) {
+export default function LoginForm({ label, type, onChange, value }) {
     return (
         <>
             <TextField
+                onChange={onChange}
                 type={type}
+                value={value}
                 sx={{
                     width: "100%",
                     marginTop: "12px",

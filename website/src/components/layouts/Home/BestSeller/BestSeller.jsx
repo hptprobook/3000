@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from "react";
 import "./style.css";
 import ProductTab from "@/components/common/Tabs/ProductTab/ProductTab";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllProducts } from "@/redux/slices/productSlice";
 
 export default function BestSeller() {
     const tabs = [
