@@ -4,6 +4,7 @@ import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
 const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
+axios.defaults.withCredentials = true;
 
 const request = axios.create({
     baseURL,
@@ -12,6 +13,14 @@ const request = axios.create({
         Authorization: accessToken ? `Bearer ${accessToken}` : "",
     },
 });
+
+export const getCsrfToken = async () => {
+    try {
+        await request.get("/sanctum/csrf-cookie");
+    } catch (error) {
+        console.error("Lỗi khi lấy CSRF token:", error);
+    }
+};
 
 export const get = async (path, options = {}) => {
     try {

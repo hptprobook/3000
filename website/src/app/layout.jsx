@@ -1,4 +1,6 @@
 import { Inter } from "next/font/google";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "@/styles/globals.css";
 import "@/styles/app.css";
 import Header from "@/components/layouts/Header/Header";
@@ -17,6 +19,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
+                    <ToastContainer />
                     <Header />
                     {children}
                 </Providers>

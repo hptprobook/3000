@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import { Grid, Button } from "@mui/material";
 import ProductItem from "@/components/common/Home/ProductItem/ProductItem";
 import SeeMoreBtn from "@/components/common/Button/SeeMore/SeeMoreBtn";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllProducts } from "@/redux/slices/productSlice";
 
 export default function MainListProduct() {
     const items = [
@@ -121,10 +123,23 @@ export default function MainListProduct() {
         },
     ];
 
+    const dispatch = useDispatch();
+    const products = useSelector((state) => state.products.products);
+    const status = useSelector((state) => state.products.status);
+    const [loadData, setLoadData] = useState(false);
+    useEffect(() => {
+        if (!loadData) {
+            dispatch(fetchAllProducts());
+            if (status !== "idle") {
+                setLoadData(true);
+            }
+        }
+    }, [loadData, dispatch, status]);
+
     const [displayCount, setDisplayCount] = useState(6);
     const increment = 6;
 
-    const displayedItems = items.slice(0, displayCount);
+    const displayedItems = products.slice(0, displayCount);
     const [isLoading, setIsLoading] = useState(false);
 
     const showMoreProducts = () => {
@@ -152,9 +167,9 @@ export default function MainListProduct() {
                     <Grid item xs={2} key={i}>
                         <ProductItem
                             name={item.name}
-                            imgUrl={item.imgUrl}
+                            imgUrl={item.thumbnail}
                             price={item.price}
-                            rate={item.rate}
+                            rate={4}
                             discount={item.discount}
                             sold={item.sold}
                         />

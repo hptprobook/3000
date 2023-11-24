@@ -22,7 +22,7 @@ const StyledLoginButton = styled("button")(() => ({
 export default function LoginButton({ text }) {
     return (
         <>
-            <StyledLoginButton>{text}</StyledLoginButton>
+            <StyledLoginButton type="submit">{text}</StyledLoginButton>
         </>
     );
 }

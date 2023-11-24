@@ -8,8 +8,8 @@ const initialState = {
     access_token: null,
 };
 
-export const login = createAsyncThunk(
-    "auth/login",
+export const loginUser = createAsyncThunk(
+    "auth/loginUser",
     async (userData, thunkAPI) => {
         try {
             const response = await AuthService.login(userData);
@@ -47,15 +47,15 @@ const authSlice = createSlice({
     initialState,
     extraReducers: (builder) => {
         builder
-            .addCase(login.pending, (state) => {
+            .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = false;
             })
-            .addCase(login.rejected, (state) => {
+            .addCase(loginUser.rejected, (state) => {
                 state.error = true;
                 state.loading = false;
             })
-            .addCase(login.fulfilled, (state, action) => {
+            .addCase(loginUser.fulfilled, (state, action) => {
                 state.error = false;
                 state.loading = false;
                 state.user = action.payload.user;

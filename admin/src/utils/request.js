@@ -2,6 +2,8 @@ import axios from "axios";
 
 const baseURL = import.meta.env.VITE_REACT_API_URL;
 const accessToken = localStorage.getItem("access_token");
+axios.defaults.withCredentials = true;
+axios.defaults.withXSRFToken = true;
 
 const request = axios.create({
     baseURL,
