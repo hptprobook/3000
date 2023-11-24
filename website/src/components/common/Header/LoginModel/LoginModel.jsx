@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import CancelIcon from "@mui/icons-material/Cancel";
 import LoginForm from "../../TextField/Login/LoginForm";
@@ -8,23 +9,86 @@ import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "@/redux/slices/authSlice";
 import CirLoading from "../../Loading/CircularLoading/CirLoading";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useFormik, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import SignupForm from "../../TextField/SignupForm/SignupForm";
+
+const validateLogin = (value) => {
+    let error;
+    if (!value) {
+        error = "Trường này không được để trống";
+    } else if (
+        !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value) ||
+        !/^\d{10,11}$/.test(value)
+    ) {
+        error = "Phải là email hợp lệ hoặc số điện thoại (10-11 chữ số)";
+    }
+    return error;
+};
+
+const loginSchema = Yup.object().shape({
+    login: Yup.string()
+        .required("Trường này không được để trống")
+        .test("test-login", "Email hoặc số điện thoại không hợp lệ", (value) =>
+            validateLogin(value)
+        ),
+    password: Yup.string()
+        .min(6, "Mật khẩu phải có ít nhất 6 ký tự")
+        .required("Mật khẩu là bắt buộc"),
+});
 
 const LoginModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
-    const { loading, error } = useSelector((state) => state.auth);
-    const [login, setLogin] = useState("");
-    const [password, setPassword] = useState("");
-    const notify = () => toast.success("Đăng nhập thành công !");
+    const { loading, user, error } = useSelector((state) => state.auth);
+    const [isToastShown, setToastShown] = useState(false);
+    const [isLogin, setIsLogin] = useState(true);
 
-    if (!isOpen) return null;
+    const formik = useFormik({
+        initialValues: {
+            login: "",
+            password: "",
+        },
+        validationSchema: loginSchema,
+        onSubmit: async (values, { setSubmitting, setErrors }) => {
+            await dispatch(
+                loginUser({
+                    login: values.login,
+                    password: values.password,
+                })
+            );
 
-    const handleLogin = async (e) => {
+            setSubmitting(false);
+        },
+    });
+
+    useEffect(() => {
+        if (error == "Email or phone does not exist.") {
+            formik.setErrors({ login: "Tên tài khoản không chính xác" });
+        } else {
+            formik.setErrors({ password: "Mật khẩu không chính xác" });
+        }
+    }, [error, formik.setErrors]);
+
+    useEffect(() => {
+        if (!isOpen) {
+            setToastShown(false);
+        } else if (isOpen && user && !isToastShown) {
+            onClose();
+            toast.success("Đăng nhập thành công !");
+            setToastShown(true);
+        }
+    }, [isOpen, user, onClose, isToastShown]);
+
+    const toggleForm = (e) => {
         e.preventDefault();
-        dispatch(loginUser({ login, password }));
-        notify();
+        setIsLogin(!isLogin);
     };
+
+    if (!isOpen) {
+        return null;
+    }
 
     return (
         <div className="loginModal">
@@ -34,42 +98,87 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <button className="loginModal__closeBtn" onClick={onClose}>
                     <CancelIcon sx={{ fontSize: "32px" }} />
                 </button>
-                <h2>Xin chào</h2>
+                <h2 onClick={formik.handleSubmit}>Xin chào</h2>
                 <p style={{ marginTop: "12px" }}>
                     Đăng nhập hoặc tạo tài khoản
                 </p>
                 <div style={{ display: "flex" }}>
                     <div style={{ width: "70%", padding: "24px 80px 0 0" }}>
-                        <form onSubmit={handleLogin}>
-                            <LoginForm
-                                label={"Số điện thoại / Email"}
-                                type={"text"}
-                                value={login}
-                                onChange={(e) => setLogin(e.target.value)}
-                            />
-                            <LoginForm
-                                label={"Mật khẩu"}
-                                type={"password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <LoginButton text={"Đăng nhập"} />
-                        </form>
-                        <div
-                            style={{
-                                textAlign: "center",
-                                marginTop: "24px",
-                            }}
-                        >
-                            <Link
-                                href={""}
-                                style={{
-                                    color: "var(--link-color)",
-                                }}
-                            >
-                                Tạo tài khoản
-                            </Link>
-                        </div>
+                        {isLogin ? (
+                            <>
+                                <form onSubmit={formik.handleSubmit}>
+                                    <LoginForm
+                                        label={"Số điện thoại / Email"}
+                                        type={"text"}
+                                        name="login"
+                                        value={formik.values.login}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={
+                                            formik.touched.login &&
+                                            Boolean(formik.errors.login)
+                                        }
+                                        helperText={
+                                            formik.touched.login &&
+                                            formik.errors.login
+                                        }
+                                    />
+                                    <LoginForm
+                                        label={"Mật khẩu"}
+                                        type={"password"}
+                                        name="password"
+                                        value={formik.values.password}
+                                        onChange={formik.handleChange}
+                                        onBlur={formik.handleBlur}
+                                        error={
+                                            formik.touched.password &&
+                                            Boolean(formik.errors.password)
+                                        }
+                                        helperText={
+                                            formik.touched.password &&
+                                            formik.errors.password
+                                        }
+                                    />
+                                    <LoginButton text={"Đăng nhập"} />
+                                </form>
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        marginTop: "24px",
+                                    }}
+                                >
+                                    <Link
+                                        href={"#"}
+                                        style={{
+                                            color: "var(--link-color)",
+                                        }}
+                                        onClick={toggleForm}
+                                    >
+                                        Tạo tài khoản
+                                    </Link>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <SignupForm />
+                                <div
+                                    style={{
+                                        textAlign: "center",
+                                        marginTop: "24px",
+                                    }}
+                                >
+                                    <Link
+                                        href={"#"}
+                                        style={{
+                                            color: "var(--link-color)",
+                                        }}
+                                        onClick={toggleForm}
+                                    >
+                                        Đăng nhập
+                                    </Link>
+                                </div>
+                            </>
+                        )}
 
                         <div style={{ marginTop: "20px" }}>
                             <h4 style={{ textAlign: "center" }}>

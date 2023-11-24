@@ -26,6 +26,10 @@ Route::get('/search', [SearchController::class, 'search']);
 Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
 Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+Route::get('/categories/best-seller', [CategoryController::class, 'bestSeller']);
+Route::get('/brands/top-brands', [BrandController::class, 'topBrand']);
+
+Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
 

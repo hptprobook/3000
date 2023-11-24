@@ -23,6 +23,28 @@ class CategoryController extends Controller
         }
     }
 
+    public function bestSeller()
+    {
+        try {
+            $categories = Category::with('products')->get()->map(function ($category) {
+                $totalSold = $category->products->sum('sold');
+                return [
+                    'category' => $category,
+                    'total_sold' => $totalSold,
+                ];
+            })->sortByDesc('total_sold')->take(5);
+
+            return response()->json($categories, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function recommended()
+    {
+        //
+    }
+
     public function store(Request $request)
     {
         try {

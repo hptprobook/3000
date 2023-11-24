@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
@@ -7,11 +8,14 @@ import CameraIcon from "@mui/icons-material/Camera";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-
-import "./style.css";
 import CountBtn from "../../Button/CountButton/CountButton";
-import { Box } from "@mui/material";
+import { Box, List } from "@mui/material";
 import LoginModal from "../LoginModel/LoginModel";
+import useAuth from "@/hooks/useAuth";
+import { logoutUser } from "@/redux/slices/authSlice";
+import "./style.css";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 const UserBarContainer = styled("div")(() => ({}));
 
@@ -47,9 +51,19 @@ const UserBarAddress = styled("div")(() => ({
 
 export default function UserBar() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+    const isLoggedIn = useAuth();
+    const dispatch = useDispatch();
 
     const handleLoginClick = () => {
-        setIsLoginModalOpen(true);
+        if (!isLoggedIn) {
+            setIsLoginModalOpen(true);
+        }
+    };
+
+    const handleLogout = async () => {
+        if (isLoggedIn) {
+            dispatch(logoutUser());
+        }
     };
 
     const handleCloseModal = () => {
@@ -75,13 +89,78 @@ export default function UserBar() {
                             isActive={false}
                         />
                     </Link>
-                    <div onClick={handleLoginClick}>
+                    <Box
+                        onClick={handleLoginClick}
+                        sx={{
+                            position: "relative",
+                            "&:hover > .account__menu": {
+                                display: "block !important",
+                            },
+                        }}
+                    >
                         <PrimaryBtn
                             icon={<SentimentSatisfiedAltIcon />}
                             text="Tài khoản"
                             isActive={false}
                         />
-                    </div>
+                        {isLoggedIn && (
+                            <Box
+                                className="account__menu"
+                                sx={{
+                                    display: "none",
+                                    position: "absolute",
+                                    height: "174px",
+                                    bottom: "-176px",
+                                    width: "248px",
+                                    right: 0,
+                                    padding: "16px 0",
+                                    backgroundColor: "#fff",
+                                    boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
+                                    borderRadius: "5px",
+                                    zIndex: "999999",
+                                    fontSize: "14px",
+                                    "& a p": {
+                                        padding: "10px 24px",
+                                        "&:hover": {
+                                            backgroundColor: "#e5e5e5",
+                                        },
+                                    },
+                                    "& .account__menu--logout": {
+                                        padding: "10px 24px",
+                                        "&:hover": {
+                                            backgroundColor: "#e5e5e5",
+                                        },
+                                        cursor: "pointer",
+                                    },
+                                    "&::after": {
+                                        content: "''",
+                                        position: "absolute",
+                                        width: "100%",
+                                        top: "-6px",
+                                        right: 0,
+                                        height: "20px",
+                                        backgroundColor: "transparent",
+                                    },
+                                }}
+                            >
+                                <Link href={"/"}>
+                                    <p>Thông tin tài khoản</p>
+                                </Link>
+                                <Link href={"/"}>
+                                    <p>Đơn hàng của tôi</p>
+                                </Link>
+                                <Link href={"/"}>
+                                    <p>Trung tâm hỗ trợ</p>
+                                </Link>
+                                <div
+                                    onClick={handleLogout}
+                                    className="account__menu--logout"
+                                >
+                                    Đăng xuất
+                                </div>
+                            </Box>
+                        )}
+                    </Box>
                 </UserBarLink>
 
                 <div style={{ paddingLeft: "16px" }}>
