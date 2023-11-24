@@ -85,7 +85,7 @@ export default function UserBar() {
                     <Link href={"/"}>
                         <PrimaryBtn
                             icon={<CameraIcon />}
-                            text="Astra"
+                            text="Tin tức"
                             isActive={false}
                         />
                     </Link>

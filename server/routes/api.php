@@ -30,6 +30,8 @@ Route::get('/categories/best-seller', [CategoryController::class, 'bestSeller'])
 Route::get('/brands/top-brands', [BrandController::class, 'topBrand']);
 
 Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
+Route::apiResource('settings', SettingController::class)->only(['index', 'show']);
+
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -65,5 +67,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('posts', PostController::class);
 
-    Route::apiResource('settings', SettingController::class);
+    Route::apiResource('settings', SettingController::class)->except(['index', 'show']);
 });
