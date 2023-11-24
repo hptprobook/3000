@@ -1,7 +1,8 @@
 import React from "react";
 import { Box, colors } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
-import "./style.css";
+
+import CKEditorComponent from "../../../components/common/CKEditor/CKEditor";
 
 export default function CreateProductPage() {
     return (
@@ -10,6 +11,9 @@ export default function CreateProductPage() {
                 namePage={"Tạo mới"}
                 Breadcrumb={["Sản phẩm", "Tạo"]}
             />
+            <Box>
+                <CKEditorComponent />
+            </Box>
         </Box>
     );
 }
