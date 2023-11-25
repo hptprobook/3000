@@ -6,8 +6,10 @@ const AuthService = {
             const res = await request.post("login", data);
             return res;
         } catch (err) {
-            console.log(err.response);
-            return err.response;
+            return {
+                error: true,
+                message: err.response?.data?.error || "Lỗi đăng nhập",
+            };
         }
     },
     register: async (data) => {
@@ -15,8 +17,11 @@ const AuthService = {
             const res = await request.post("register", data);
             return res.data;
         } catch (err) {
-            console.log(err);
-            return err.response;
+            // console.log("register err: ", err.response);
+            return {
+                error: true,
+                message: err.response?.data?.errors.email,
+            };
         }
     },
     logout: async () => {
@@ -24,7 +29,6 @@ const AuthService = {
             await axios.post("/api/logout");
             return;
         } catch (err) {
-            console.log(err.response);
             return err.response;
         }
     },

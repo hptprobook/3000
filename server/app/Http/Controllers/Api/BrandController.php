@@ -24,6 +24,23 @@ class BrandController extends Controller
         }
     }
 
+    public function topBrand()
+    {
+        try {
+            $brands = Brand::with('products')->get()->map(function ($brands) {
+                $totalSold = $brands->products->sum('sold');
+                return [
+                    'brands' => $brands,
+                    'total_sold' => $totalSold,
+                ];
+            })->sortByDesc('total_sold')->take(5);
+
+            return response()->json($brands, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function store(Request $request)
     {
         try {
