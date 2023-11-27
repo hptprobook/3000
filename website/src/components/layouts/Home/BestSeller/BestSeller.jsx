@@ -18,11 +18,6 @@ export default function BestSeller() {
         }
     }, []);
 
-    console.log(
-        "🚀 ~ file: BestSeller.jsx:12 ~ BestSeller ~ bestSeller:",
-        bestSeller
-    );
-
     return (
         <div className="appContainer__bestSeller">
             <h4>Sản phẩm bán chạy</h4>

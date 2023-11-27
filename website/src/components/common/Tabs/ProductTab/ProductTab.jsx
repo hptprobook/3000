@@ -55,21 +55,24 @@ export default function ProductTab({ tabs }) {
                 ))}
             </div>
             <div className="tabContent">
-                <Swiper
+                {/* <Swiper
                     slidesPerView={6}
                     spaceBetween={8}
                     navigation={true}
                     modules={[Navigation]}
                 >
                     {tabs[activeTab] &&
-                        tabs[activeTab]?.products.map((product) => (
-                            <SwiperSlide key={product.id} className="product">
+                        tabs[activeTab]?.products.map((product, i) => (
+                            <SwiperSlide
+                                key={i}
+                                className={`product productSwiper${product.name}`}
+                            >
                                 <Link
                                     href={`/product/detail/${encodeURIComponent(
                                         product.name
                                             .toLowerCase()
                                             .replace(/ /g, "-")
-                                    )}-${product.id}`}
+                                    )}-${encodeURIComponent(product.id)}`}
                                 >
                                     <ProductItem
                                         name={product.name}
@@ -80,7 +83,10 @@ export default function ProductTab({ tabs }) {
                                 </Link>
                             </SwiperSlide>
                         ))}
-                </Swiper>
+                </Swiper> */}
+                {tabs[activeTab]?.products.map((product, i) => (
+                    <a href={product.id}>{product.name}</a>
+                ))}
             </div>
         </StyledProductTab>
     );

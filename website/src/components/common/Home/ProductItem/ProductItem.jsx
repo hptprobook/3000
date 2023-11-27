@@ -108,9 +108,10 @@ export default function ProductItem({
     return (
         <StyledProductItem>
             <Link
-                href={`/product/detail/${encodeURIComponent(
-                    name.toLowerCase().replace(/ /g, "-")
-                )}-${id}`}
+                // href={`/product/detail/${encodeURIComponent(
+                //     name.toLowerCase().replace(/ /g, "-")
+                // )}-${id}`}
+                href={"haha"}
             >
                 {imgUrl && <img src={imgUrl} alt={name} className="img" />}
                 <img
