@@ -85,7 +85,7 @@ const FakeCategories = [
 ];
 
 
-export default function SelectFilterProduct() {
+export default function SelectCategoryCreate() {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorElStatus, setAnchorElStatus] = React.useState(null);
@@ -119,43 +119,15 @@ export default function SelectFilterProduct() {
         setAnchorElStatus(null);
     };
     const open = Boolean(anchorEl);
-    const open2 = Boolean(anchorElStatus);
     const id = open ? 'simple-popover' : undefined;
-    const id2 = open2 ? 'simple-popover2' : undefined;
     return (
         <Box>
-            <div className='ProductPage__filter' style={{ borderBottom: '1px solid' + color.colorHover.hoverGray }}>
-                {checkedCategory.length > 0 ? (
-                    checkedCategory.map((item) => {
-                        const filteredCategories = FakeCategories.filter((itemCat) => item === itemCat.id);
-
-                        return filteredCategories.map((filteredItemCat) => (
-                            <ChipFilter
-                                key={filteredItemCat.id} // Make sure to use a unique key for each element
-                                label={'Loại:' + filteredItemCat.name}
-                                funC={handleToggleCategory(filteredItemCat.id)}
-                            />
-                        ));
-                    }).flat() // Use flat() to flatten the nested arrays
-                ) : (
-                    <p style={{ margin: 0, color: color.textGray, fontSize: '14px' }}>
-                        Không có thẻ lọc áp dụng
-                    </p>
-                )}
-
-
-
-            </div>
-            <div
-                style={{
-                    display: 'flex'
-                }}
-            >
-
+            <div>
                 <ButtonOpenSelect
                     id={id}
                     onClick={handleClick}
-                    label='Loại'
+                    label='Nhãn sản phẩm'
+                    custom='true'
                 />
                 <MenuCategoryCustom
                     id={id}
@@ -198,24 +170,30 @@ export default function SelectFilterProduct() {
                         })}
                     </List>
                 </MenuCategoryCustom>
-                <ButtonOpenSelect id={id2} onClick={handleClickStatus} label='Trạng thái' />
-                <Popover
-                    id={id2}
-                    open={open2}
-                    anchorEl={anchorElStatus}
-                    onClose={handleCloseStatus}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                >
-                    <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
-                </Popover>
             </div>
+            <div className='ProductPage__filter' style={{ borderBottom: '1px solid' + color.colorHover.hoverGray }}>
+                {checkedCategory.length > 0 ? (
+                    checkedCategory.map((item) => {
+                        const filteredCategories = FakeCategories.filter((itemCat) => item === itemCat.id);
+
+                        return filteredCategories.map((filteredItemCat) => (
+                            <ChipFilter
+                                key={filteredItemCat.id} // Make sure to use a unique key for each element
+                                label={'Loại:' + filteredItemCat.name}
+                                funC={handleToggleCategory(filteredItemCat.id)}
+                            />
+                        ));
+                    }).flat() // Use flat() to flatten the nested arrays
+                ) : (
+                    <p style={{ margin: 0, color: color.textGray, fontSize: '14px' }}>
+                        Không có nhãn sản phẩm được chọn
+                    </p>
+                )}
+
+
+
+            </div>
+
         </Box >
     );
 }

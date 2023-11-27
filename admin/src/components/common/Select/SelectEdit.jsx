@@ -40,7 +40,7 @@ const FormSelectEdit = styled(FormControl)(({ theme }) => ({
         color: color.textColor.dark
     }
 }))
-export default function SelectEdit({ label, data, value, onChange }) {
+export default function SelectEdit({ label, data, value }) {
     const [select, setSelect] = React.useState(value == null ? 'null' : value);
 
     const handleChange = (event) => {
@@ -55,10 +55,8 @@ export default function SelectEdit({ label, data, value, onChange }) {
                 value={select}
                 onChange={(event) => {
                     handleChange(event);
-                    onChange(event);
                 }}
             >
-                <MenuItem value='null'>Trống</MenuItem>
                 {data.map((item) => (
                     <MenuItem key={item.id} value={item.id}>
                         {item.name}
