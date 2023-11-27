@@ -166,6 +166,7 @@ export default function MainListProduct() {
                 {displayedItems.map((item, i) => (
                     <Grid item xs={2} key={i}>
                         <ProductItem
+                            id={item.id}
                             name={item.name}
                             imgUrl={item.thumbnail}
                             price={item.price}

@@ -13,13 +13,15 @@ export default function BestSeller() {
     );
 
     useEffect(() => {
-        if (!loadData) {
+        if (!bestSeller || bestSeller.length === 0) {
             dispatch(fetchBestSellerCategory());
-            if (loading) {
-                setLoadData(true);
-            }
         }
-    }, [loadData, dispatch, loading]);
+    }, []);
+
+    console.log(
+        "🚀 ~ file: BestSeller.jsx:12 ~ BestSeller ~ bestSeller:",
+        bestSeller
+    );
 
     return (
         <div className="appContainer__bestSeller">

@@ -57,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('brands', BrandController::class);
 
-    Route::apiResource('categories', CategoryController::class)->except(['index', 'show', 'mainCategories', 'bestSeller']);
+    Route::apiResource('categories', CategoryController::class)->except(['index', 'show', 'mainCategories', 'bestSeller', 'recommended']);
 
     Route::apiResource('variant_types', VariantTypesController::class);
 

@@ -61,10 +61,16 @@ export default function ProductTab({ tabs }) {
                     navigation={true}
                     modules={[Navigation]}
                 >
-                    {tabs[activeTab]?.products &&
-                        tabs[activeTab].products.map((product) => (
+                    {tabs[activeTab] &&
+                        tabs[activeTab]?.products.map((product) => (
                             <SwiperSlide key={product.id} className="product">
-                                <Link href={`product/detail/${product.id}`}>
+                                <Link
+                                    href={`/product/detail/${encodeURIComponent(
+                                        product.name
+                                            .toLowerCase()
+                                            .replace(/ /g, "-")
+                                    )}-${product.id}`}
+                                >
                                     <ProductItem
                                         name={product.name}
                                         price={product.price}
