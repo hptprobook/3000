@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import "./style.css";
 import InputEdit from "../../../components/common/TextField/InputEdit";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 
 export default function CreateCategoryPage() {
   const [categoryData, setCategoryData] = useState({
@@ -32,8 +33,11 @@ export default function CreateCategoryPage() {
   };
 
   return (
-    <div className="create-category-page">
-      <h2>Tạo phân loại</h2>
+    <Box>
+      <HeaderPage
+        namePage={"Tạo mới"}
+        Breadcrumb={["Phân loại", "Tạo"]}
+      />
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -59,7 +63,7 @@ export default function CreateCategoryPage() {
             <InputEdit
               type="text"
               name="icon_url"
-            label="Đường dẫn"
+              label="Đường dẫn"
               value={categoryData.icon_url}
               onChange={handleInputChange}
             />
@@ -75,6 +79,6 @@ export default function CreateCategoryPage() {
           </Grid>
         </Grid>
       </form>
-    </div>
+    </Box>
   );
 }
