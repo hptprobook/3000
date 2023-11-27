@@ -1,0 +1,7 @@
+.tox .tox-menu {
+    background-color: #0e1320 !important;
+}
+
+.tox .tox-collection--list .tox-collection__item {
+    padding: 8px !important;
+}

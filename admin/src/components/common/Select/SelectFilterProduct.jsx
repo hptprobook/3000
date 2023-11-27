@@ -146,55 +146,58 @@ export default function SelectFilterProduct() {
 
 
             </div>
-            <div>
-                <>
-                    <ButtonOpenSelect
-                        id={id}
-                        onClick={handleClick}
-                        label='Loại'
-                    />
-                    <MenuCategoryCustom
-                        id={id}
-                        aria-labelledby="demo-positioned-button"
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                    >
-                        <List sx={{ width: '100%', maxWidth: 360, bgcolor: color.backgroundColorSub.dark, paddingTop: 0, }}>
-                            {FakeCategories.map((item) => {
-                                const labelId = `checkbox-list-label-${item.id}`;
+            <div
+                style={{
+                    display: 'flex'
+                }}
+            >
 
-                                return (
-                                    <ListItem
-                                        key={item.id}
-                                        disablePadding
-                                    >
-                                        <ListItemButton role={undefined} onClick={handleToggleCategory(item.id)} dense>
-                                            <ListItemIcon>
-                                                <Checkbox
-                                                    edge="start"
-                                                    checked={checkedCategory.indexOf(item.id) !== -1}
-                                                    tabIndex={-1}
-                                                    disableRipple
-                                                    inputProps={{ 'aria-labelledby': labelId }}
-                                                />
-                                            </ListItemIcon>
-                                            <ListItemText id={labelId} primary={`Line item ${item.name}`} />
-                                        </ListItemButton>
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
-                    </MenuCategoryCustom>
-                </>
+                <ButtonOpenSelect
+                    id={id}
+                    onClick={handleClick}
+                    label='Loại'
+                />
+                <MenuCategoryCustom
+                    id={id}
+                    aria-labelledby="demo-positioned-button"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                >
+                    <List sx={{ width: '100%', maxWidth: 360, bgcolor: color.backgroundColorSub.dark, paddingTop: 0, }}>
+                        {FakeCategories.map((item) => {
+                            const labelId = `checkbox-list-label-${item.id}`;
+
+                            return (
+                                <ListItem
+                                    key={item.id}
+                                    disablePadding
+                                >
+                                    <ListItemButton role={undefined} onClick={handleToggleCategory(item.id)} dense>
+                                        <ListItemIcon>
+                                            <Checkbox
+                                                edge="start"
+                                                checked={checkedCategory.indexOf(item.id) !== -1}
+                                                tabIndex={-1}
+                                                disableRipple
+                                                inputProps={{ 'aria-labelledby': labelId }}
+                                            />
+                                        </ListItemIcon>
+                                        <ListItemText id={labelId} primary={`Line item ${item.name}`} />
+                                    </ListItemButton>
+                                </ListItem>
+                            );
+                        })}
+                    </List>
+                </MenuCategoryCustom>
                 <ButtonOpenSelect id={id2} onClick={handleClickStatus} label='Trạng thái' />
                 <Popover
                     id={id2}
