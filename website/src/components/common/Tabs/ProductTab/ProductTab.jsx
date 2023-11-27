@@ -50,7 +50,7 @@ export default function ProductTab({ tabs }) {
                         className={`tab ${index === activeTab ? "active" : ""}`}
                         onClick={() => setActiveTab(index)}
                     >
-                        {tab.title}
+                        {tab.name}
                     </StyledButtonTab>
                 ))}
             </div>
@@ -61,18 +61,19 @@ export default function ProductTab({ tabs }) {
                     navigation={true}
                     modules={[Navigation]}
                 >
-                    {tabs[activeTab].products.map((product) => (
-                        <SwiperSlide key={product.id} className="product">
-                            <Link href={`product/detail/${product.id}`}>
-                                <ProductItem
-                                    name={product.name}
-                                    price={product.price}
-                                    rate={product.rate}
-                                    imgUrl={product.imgUrl}
-                                />
-                            </Link>
-                        </SwiperSlide>
-                    ))}
+                    {tabs[activeTab]?.products &&
+                        tabs[activeTab].products.map((product) => (
+                            <SwiperSlide key={product.id} className="product">
+                                <Link href={`product/detail/${product.id}`}>
+                                    <ProductItem
+                                        name={product.name}
+                                        price={product.price}
+                                        rate={product.average_rating}
+                                        imgUrl={product.thumbnail}
+                                    />
+                                </Link>
+                            </SwiperSlide>
+                        ))}
                 </Swiper>
             </div>
         </StyledProductTab>

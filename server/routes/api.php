@@ -19,20 +19,32 @@ use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
+// Auth
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+
+// Search
 Route::get('/search', [SearchController::class, 'search']);
 Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
+// Product
+Route::get('/products/recommended', [ProductController::class, 'withReview']);
 Route::apiResource('products', ProductController::class)->only(['index', 'show']);
-Route::get('/categories/best-seller', [CategoryController::class, 'bestSeller']);
+
+// Brand
 Route::get('/brands/top-brands', [BrandController::class, 'topBrand']);
 
-Route::apiResource('categories', CategoryController::class)->only(['index', 'show']);
+// Category
+// Route::apiResource('categories', CategoryController::class)->only(['index', 'show', 'bestSeller', 'mainCategories']);
+Route::get('/categories/recommended', [CategoryController::class, 'recommended']);
+Route::get('/categories/best-seller', [CategoryController::class, 'bestSeller']);
+Route::get('/categories/main', [CategoryController::class, 'mainCategories']);
+
+// Setting
 Route::apiResource('settings', SettingController::class)->only(['index', 'show']);
 
-
+// Middleware
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/addresses/getProvinces', [AddressController::class, 'getProvinces']);
@@ -45,7 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('brands', BrandController::class);
 
-    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('categories', CategoryController::class)->except(['index', 'show', 'mainCategories', 'bestSeller']);
 
     Route::apiResource('variant_types', VariantTypesController::class);
 

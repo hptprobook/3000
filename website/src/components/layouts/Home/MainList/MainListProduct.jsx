@@ -169,7 +169,7 @@ export default function MainListProduct() {
                             name={item.name}
                             imgUrl={item.thumbnail}
                             price={item.price}
-                            rate={4}
+                            rate={item.average_rating}
                             discount={item.discount}
                             sold={item.sold}
                         />

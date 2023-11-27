@@ -9,6 +9,8 @@ import "swiper/css";
 import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import FlashSaleProduct from "@/components/common/Home/FlashSaleProduct/FlashSaleProduct";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllProducts } from "@/redux/slices/productSlice";
 
 export default function FlashSale() {
     const [timeLeft, setTimeLeft] = useState({
@@ -45,78 +47,18 @@ export default function FlashSale() {
         return () => clearTimeout(timer);
     }, []);
 
-    const items = [
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-        },
-    ];
+    const dispatch = useDispatch();
+    const [loadData, setLoadData] = useState(false);
+    const { products, loading, error } = useSelector((state) => state.products);
+
+    useEffect(() => {
+        if (!loadData) {
+            dispatch(fetchAllProducts());
+            if (loading) {
+                setLoadData(true);
+            }
+        }
+    }, [loadData, dispatch, loading]);
 
     return (
         <div className="appContainer__flashSale">
@@ -165,17 +107,21 @@ export default function FlashSale() {
                     navigation={true}
                     modules={[Navigation]}
                 >
-                    {items.map((item, i) => (
-                        <SwiperSlide key={i}>
-                            <Link href={"/"}>
-                                <FlashSaleProduct
-                                    discount={item.discount}
-                                    imgUrl={item.imgUrl}
-                                    price={item.price}
-                                />
-                            </Link>
-                        </SwiperSlide>
-                    ))}
+                    {[...products]
+                        .sort((a, b) => b.discount - a.discount)
+                        .slice(0, 12)
+                        .map((item) => (
+                            <SwiperSlide key={item.id}>
+                                <Link href={"/"}>
+                                    <FlashSaleProduct
+                                        discount={item.discount}
+                                        name={item.name}
+                                        imgUrl={item.thumbnail}
+                                        price={item.price}
+                                    />
+                                </Link>
+                            </SwiperSlide>
+                        ))}
                 </Swiper>
             </div>
         </div>
