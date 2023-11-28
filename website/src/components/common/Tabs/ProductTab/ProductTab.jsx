@@ -8,6 +8,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import Link from "next/link";
 import "./style.css";
+import Slider from "react-slick";
 
 const StyledProductTab = styled("div")(() => ({
     "& .tabContent": {
@@ -40,6 +41,13 @@ const StyledButtonTab = styled("button")(() => ({
 
 export default function ProductTab({ tabs }) {
     const [activeTab, setActiveTab] = useState(0);
+    const settings = {
+        dots: false,
+        infinite: false,
+        speed: false,
+        slidesToShow: 6,
+        slidesToScroll: 6,
+    };
 
     return (
         <StyledProductTab className="appContainer__ProductTab">
@@ -61,24 +69,22 @@ export default function ProductTab({ tabs }) {
                     navigation={true}
                     modules={[Navigation]}
                     className="ProductTabSwiper"
+                    slideToClickedSlide={6}
                 >
                     {tabs[activeTab] &&
                         tabs[activeTab]?.products.map((product) => (
                             <SwiperSlide key={product.id}>
-                                <Link
-                                    href={`/product/detail/${encodeURIComponent(
+                                <ProductItem
+                                    name={product.name}
+                                    price={product.price}
+                                    rate={product.average_rating}
+                                    imgUrl={product.thumbnail}
+                                    href={`/product/${encodeURIComponent(
                                         product.name
                                             .toLowerCase()
                                             .replace(/ /g, "-")
                                     )}-${encodeURIComponent(product.id)}`}
-                                >
-                                    <ProductItem
-                                        name={product.name}
-                                        price={product.price}
-                                        rate={product.average_rating}
-                                        imgUrl={product.thumbnail}
-                                    />
-                                </Link>
+                                />
                             </SwiperSlide>
                         ))}
                 </Swiper>

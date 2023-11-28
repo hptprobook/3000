@@ -52,7 +52,7 @@ export default function ProductItem({
     rate,
     sold = 0,
     discount = 0,
-    id,
+    href,
 }) {
     function truncateString(str, num) {
         if (str.length > num) {
@@ -107,12 +107,7 @@ export default function ProductItem({
 
     return (
         <StyledProductItem>
-            <Link
-                // href={`/product/detail/${encodeURIComponent(
-                //     name.toLowerCase().replace(/ /g, "-")
-                // )}-${id}`}
-                href={"haha"}
-            >
+            <Link href={href}>
                 {imgUrl && <img src={imgUrl} alt={name} className="img" />}
                 <img
                     src="https://salt.tikicdn.com/ts/tka/69/cf/22/1be823299ae34c7ddcd922e73abd4909.png"
