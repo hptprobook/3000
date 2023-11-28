@@ -8,121 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "@/redux/slices/productSlice";
 
 export default function MainListProduct() {
-    const items = [
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-        {
-            discount: 31,
-            imgUrl: "https://salt.tikicdn.com/cache/280x280/ts/product/73/dc/71/36ba3b8865b9879b5649c95bb26d8f32.jpg.webp",
-            price: 489000,
-            sold: 100,
-            rate: 5,
-            name: "Nồi Cơm Điện Tử Kangaroo KG595 (1.8L) - Đen- Hàng chính hãng",
-        },
-    ];
-
     const dispatch = useDispatch();
     const products = useSelector((state) => state.products.products);
     const status = useSelector((state) => state.products.status);
@@ -166,17 +51,21 @@ export default function MainListProduct() {
                 {displayedItems.map((item, i) => (
                     <Grid item xs={2} key={i}>
                         <ProductItem
+                            id={item.id}
                             name={item.name}
                             imgUrl={item.thumbnail}
                             price={item.price}
-                            rate={4}
+                            rate={item.average_rating}
                             discount={item.discount}
                             sold={item.sold}
+                            href={`/product/${encodeURIComponent(
+                                item.name.toLowerCase().replace(/ /g, "-")
+                            )}-${encodeURIComponent(item.id)}`}
                         />
                     </Grid>
                 ))}
             </Grid>
-            {displayCount < items.length && (
+            {displayCount < products.length && (
                 <div
                     style={{
                         display: "flex",

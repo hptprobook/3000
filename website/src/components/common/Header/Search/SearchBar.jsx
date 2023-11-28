@@ -193,13 +193,30 @@ export default function SearchBar() {
         }
     };
 
-    const handleSuggestionClick = () => {
+    const handleSuggestionClick = (item) => {
+        const searchItem = typeof item === "string" ? item : item.name;
+        setSearchValue(searchItem);
         setShowSuggestions(false);
 
         if (inputRef.current) {
             inputRef.current.blur();
         }
+
+        router.push(`/search/${searchItem.toLowerCase()}`);
     };
+
+    const handleRecommendedItemClick = (item) => {
+        setSearchValue(item);
+        router.push(`/search/${item.toLowerCase()}`);
+    };
+
+    const defaultSuggestions = [
+        "Sản phẩm nổi bật",
+        "Xu hướng",
+        "Khuyến mãi",
+        "Mới nhất",
+        "Phổ biến",
+    ];
 
     return (
         <>
@@ -227,16 +244,30 @@ export default function SearchBar() {
                             <SearchSuggestion ref={suggestionRef}>
                                 <h4>Tìm kiếm sản phẩm</h4>
                                 <ul className="SearchSuggestion">
-                                    {filteredProducts.length > 0 ? (
-                                        filteredProducts.map((product) => (
+                                    {(searchValue.trim() === ""
+                                        ? defaultSuggestions
+                                        : filteredProducts
+                                    ).length > 0 ? (
+                                        (searchValue.trim() === ""
+                                            ? defaultSuggestions
+                                            : filteredProducts
+                                        ).map((item, index) => (
                                             <li
-                                                key={product.id}
-                                                onClick={handleSuggestionClick}
+                                                key={index}
+                                                onClick={() =>
+                                                    handleSuggestionClick(item)
+                                                }
                                             >
                                                 <Link
-                                                    href={`/search/${product.name.toLowerCase()}`}
+                                                    href={`/search/${
+                                                        typeof item === "string"
+                                                            ? item.toLowerCase()
+                                                            : item.name.toLowerCase()
+                                                    }`}
                                                 >
-                                                    {product.name.toLowerCase()}
+                                                    {typeof item === "string"
+                                                        ? item
+                                                        : item.name}
                                                 </Link>
                                             </li>
                                         ))
@@ -253,13 +284,13 @@ export default function SearchBar() {
 
                 <SearchRecomended>
                     {searchRecommendedItem.map((item, i) => (
-                        <Link
-                            style={{ marginRight: "12px" }}
-                            href={"/"}
+                        <div
+                            style={{ marginRight: "12px", cursor: "pointer" }}
+                            onClick={() => handleRecommendedItemClick(item)}
                             key={i}
                         >
                             {item}
-                        </Link>
+                        </div>
                     ))}
                 </SearchRecomended>
             </SearchContainer>

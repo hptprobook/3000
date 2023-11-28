@@ -24,6 +24,31 @@ class BrandController extends Controller
         }
     }
 
+    public function topBrand()
+    {
+        try {
+            $sortedBrands = Brand::with(['products.reviews'])->get()->map(function ($brand) {
+                // Tính toán đánh giá trung bình cho mỗi sản phẩm
+                $brand->products->each(function ($product) {
+                    $product->average_rating = $product->reviews->avg('rating') ?: 0;
+                });
+
+                return [
+                    'brand' => $brand,
+                    'total_sold' => $brand->products->sum('sold'),
+                ];
+            })->sortByDesc('total_sold')->take(5);
+
+            $brands = $sortedBrands->pluck('brand');
+
+            return response()->json($brands, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
     public function store(Request $request)
     {
         try {

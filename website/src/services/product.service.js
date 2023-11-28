@@ -13,6 +13,10 @@ const ProductService = {
         return handleRequest("products", { method: "post", data: productData });
     },
 
+    getRecommendedProduct: async () => {
+        return handleRequest("products/recommended");
+    },
+
     updateProduct: async (productId, productData) => {
         return handleRequest(`products/${productId}`, {
             method: "put",

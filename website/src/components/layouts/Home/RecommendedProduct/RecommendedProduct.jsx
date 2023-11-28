@@ -1,6 +1,9 @@
+"use client";
 import ProductTab from "@/components/common/Tabs/ProductTab/ProductTab";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRecommendedCategory } from "@/redux/slices/categorySlice";
 
 export default function RecommendedProduct() {
     const tabs = [
@@ -124,10 +127,25 @@ export default function RecommendedProduct() {
         },
     ];
 
+    const dispatch = useDispatch();
+    const [loadData, setLoadData] = useState(false);
+    const { recommended, loading, error } = useSelector(
+        (state) => state.categories
+    );
+
+    useEffect(() => {
+        if (!loadData) {
+            dispatch(fetchRecommendedCategory());
+            if (loading) {
+                setLoadData(true);
+            }
+        }
+    }, [loadData, dispatch, loading]);
+
     return (
         <div className="appContainer__recommended">
             <h4>Bạn có thể thích</h4>
-            <ProductTab tabs={tabs} />
+            <ProductTab tabs={recommended} />
         </div>
     );
 }

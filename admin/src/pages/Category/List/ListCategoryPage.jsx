@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import Loading from "../../../components/common/Loading/Loading";
-import { Box, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Divider, Grid, Tab, Tabs, Typography } from "@mui/material";
 import PropTypes from 'prop-types';
 import TableDataCategory from "../../../components/common/Table/TableDataCategory";
+import InputSearch from "../../../components/common/TextField/InputSearch";
 function a11yProps(index) {
     return {
         id: `simple-tab-${index}`,
@@ -44,7 +45,14 @@ const ListCategoriesPage = () => {
     const categories = useSelector((state) => state.categories.data);
     const status = useSelector((state) => state.categories.status);
     const error = useSelector((state) => state.categories.error);
+    const [filteredCategories, setFilteredCategories] = useState(categories); // State to store filtered categories
 
+    const handleSearch = (searchValue) => {
+        const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
+
+        const result = categories.filter(item => regex.test(item.name));
+        setFilteredCategories(result);
+    };
     useEffect(() => {
         dispatch(fetchCategoriesAsync());
     }, [dispatch]);
@@ -120,10 +128,16 @@ const ListCategoriesPage = () => {
                         <Tab label="Cấm" {...a11yProps(2)} />
                     </Tabs>
                 </Box>
-
+                <Divider sx={{ borderColor: '#fff' }} />
+                <Grid container spacing={0} sx={{ padding: '32px 0', margin: 0 }}>
+                    <Grid item xs={12} sx={{ p: '0 12px' }}>
+                        <InputSearch onChange={handleSearch} />
+                    </Grid>
+                </Grid>
                 <CustomTabPanel index={0} value={value}>
-                    <TableDataCategory data={categories} />
+                    <TableDataCategory data={filteredCategories} /> {/* Use filteredCategories here */}
                 </CustomTabPanel>
+
                 <CustomTabPanel align='center' colSpan={7} index={1} value={value}>
                     trống
                 </CustomTabPanel>

@@ -50,10 +50,8 @@ class AuthController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'name' => 'required|string|min:5|max:50',
-                'email' => 'required_without:phone_number|email|unique:users,email',
-                'phone_number' => 'required_without:email|unique:users,phone_number',
-                'password' => 'required',
-                'confirmPassword' => 'required|same:password',
+                'email' => 'required_without:email|unique:users,email',
+                'password' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -63,11 +61,8 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
-                'phone_number' => $request->input('phone_number'),
                 'password' => Hash::make($request->input('password')),
             ]);
-
-            $user->assignRole('USER');
 
             return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
