@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import InputEdit from "../../../components/common/TextField/InputEdit";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
+import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
+import SelectEdit from "../../../components/common/Select/SelectEdit";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 
 export default function CreateCategoryPage() {
+  const dispatch = useDispatch();
+  const categories = useSelector((state) => state.categories.data); // Access categories from Redux store
+
   const [categoryData, setCategoryData] = useState({
     name: "",
     parent_id: null,
@@ -31,9 +38,20 @@ export default function CreateCategoryPage() {
     });
   };
 
+  useEffect(() => {
+    // Fetch categories when the component mounts
+    dispatch(fetchCategoriesAsync());
+  }, [dispatch]);
+
   return (
-    <div className="create-category-page">
-      <h2>Tạo phân loại</h2>
+    <Box>
+      <HeaderPage
+        namePage={"Tạo mới"}
+        Breadcrumb={["Phân loại", "Tạo"]}
+      />
+      <Box sx={{
+                marginTop: '32px'
+            }}></Box>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -47,19 +65,18 @@ export default function CreateCategoryPage() {
             />
           </Grid>
           <Grid item xs={12}>
-            <InputEdit
-              type="number"
-              name="parent_id"
-              label="Phân loại cha"
-              value={categoryData.parent_id || ""}
-              onChange={handleInputChange}
+          <SelectEdit
+              label={'Phân loại'}
+              data={categories} // Use categories fetched from Redux store
+              value={categoryData.category_id} // Assuming this holds the selected category ID
+              onChange={(e) => handleInputChange(e)} // Assuming the select value should be stored in category_id
             />
           </Grid>
           <Grid item xs={12}>
             <InputEdit
               type="text"
               name="icon_url"
-            label="Đường dẫn"
+              label="Đường dẫn"
               value={categoryData.icon_url}
               onChange={handleInputChange}
             />
@@ -75,6 +92,6 @@ export default function CreateCategoryPage() {
           </Grid>
         </Grid>
       </form>
-    </div>
+    </Box>
   );
 }
