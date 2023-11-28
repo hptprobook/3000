@@ -5,7 +5,6 @@ export const fetchCategoriesAsync = createAsyncThunk(
   'categories/fetchCategories',
   async (_, thunkAPI) => {
     try {
-      console.log('Fetching categories...');
       const res = await CategoryService.getAllCategories();
       // Extracting only the necessary data from the response
       return res.data; // Assuming res.data contains the categories array
