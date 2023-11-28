@@ -19,7 +19,9 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
-                    <ToastContainer />
+                    <ToastContainer
+                        style={{ zIndex: "9999999999999999999999999" }}
+                    />
                     <Header />
                     {children}
                 </Providers>

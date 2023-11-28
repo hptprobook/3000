@@ -51,7 +51,7 @@ const FlashSaleItem = styled("div")(() => ({
     },
 }));
 
-export default function FlashSaleProduct({ discount, imgUrl, price }) {
+export default function FlashSaleProduct({ discount, imgUrl, price, name }) {
     const formatPriceToVND = (price) => {
         return price.toLocaleString("vi-VN");
     };
@@ -59,7 +59,7 @@ export default function FlashSaleProduct({ discount, imgUrl, price }) {
     return (
         <FlashSaleItem>
             <div className="imageThumbnail">
-                <img src={imgUrl} alt="" />
+                <img src={imgUrl} alt={name} />
                 <span>-{discount}%</span>
             </div>
             <div className="price">

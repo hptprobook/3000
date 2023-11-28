@@ -2,6 +2,7 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
 import "./style.css";
+import Link from "next/link";
 
 const StyledProductItem = styled("div")(() => ({
     padding: "0 8px 8px 8px",
@@ -51,6 +52,7 @@ export default function ProductItem({
     rate,
     sold = 0,
     discount = 0,
+    href,
 }) {
     function truncateString(str, num) {
         if (str.length > num) {
@@ -105,46 +107,48 @@ export default function ProductItem({
 
     return (
         <StyledProductItem>
-            {imgUrl && <img src={imgUrl} alt={name} className="img" />}
-            <img
-                src="https://salt.tikicdn.com/ts/tka/69/cf/22/1be823299ae34c7ddcd922e73abd4909.png"
-                alt="Chính hãng"
-                style={{
-                    width: "90px",
-                    height: "20px",
-                    objectFit: "cover",
-                    marginTop: "8px",
-                }}
-            />
-            <p className="name">{truncatedName}</p>
-            <div className="rate">
-                {renderRating(rate)}{" "}
-                {sold != 0 && (
-                    <span style={{ fontSize: "11px", color: "#9c9ca3" }}>
-                        | Đã bán {sold}
-                    </span>
-                )}
-            </div>
-            <div
-                className="price"
-                style={{ display: "flex", alignItems: "center" }}
-            >
-                {formatPriceToVND(price)} <span>₫</span>
-                {discount > 0 && (
-                    <div
-                        style={{
-                            fontSize: "12px",
-                            backgroundColor: "#f5f5fa",
-                            borderRadius: "8px",
-                            padding: "2px 4px",
-                            marginLeft: "4px",
-                        }}
-                    >
-                        -{discount}%
-                    </div>
-                )}
-            </div>
-            <p className="ship">{calculateShippingDate()}</p>
+            <Link href={href}>
+                {imgUrl && <img src={imgUrl} alt={name} className="img" />}
+                <img
+                    src="https://salt.tikicdn.com/ts/tka/69/cf/22/1be823299ae34c7ddcd922e73abd4909.png"
+                    alt="Chính hãng"
+                    style={{
+                        width: "90px",
+                        height: "20px",
+                        objectFit: "cover",
+                        marginTop: "8px",
+                    }}
+                />
+                <p className="name">{truncatedName}</p>
+                <div className="rate">
+                    {renderRating(rate)}{" "}
+                    {sold != 0 && (
+                        <span style={{ fontSize: "11px", color: "#9c9ca3" }}>
+                            | Đã bán {sold}
+                        </span>
+                    )}
+                </div>
+                <div
+                    className="price"
+                    style={{ display: "flex", alignItems: "center" }}
+                >
+                    {formatPriceToVND(price)} <span>₫</span>
+                    {discount > 0 && (
+                        <div
+                            style={{
+                                fontSize: "12px",
+                                backgroundColor: "#f5f5fa",
+                                borderRadius: "8px",
+                                padding: "2px 4px",
+                                marginLeft: "4px",
+                            }}
+                        >
+                            -{discount}%
+                        </div>
+                    )}
+                </div>
+                <p className="ship">{calculateShippingDate()}</p>
+            </Link>
         </StyledProductItem>
     );
 }

@@ -15,9 +15,8 @@ const AuthService = {
     register: async (data) => {
         try {
             const res = await request.post("register", data);
-            return res.data;
+            return res;
         } catch (err) {
-            // console.log("register err: ", err.response);
             return {
                 error: true,
                 message: err.response?.data?.errors.email,

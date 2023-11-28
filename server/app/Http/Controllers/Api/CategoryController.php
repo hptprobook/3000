@@ -23,16 +23,33 @@ class CategoryController extends Controller
         }
     }
 
+    public function mainCategories()
+    {
+        try {
+            $mainCategories = Category::where('parent_id', 0)->get();
+
+            return response()->json($mainCategories, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function bestSeller()
     {
         try {
-            $categories = Category::with('products')->get()->map(function ($category) {
-                $totalSold = $category->products->sum('sold');
+            $sortedCategories = Category::with(['products.reviews'])->get()->map(function ($category) {
+                // Tính toán đánh giá trung bình cho mỗi sản phẩm
+                $category->products->each(function ($product) {
+                    $product->average_rating = $product->reviews->avg('rating') ?: 0;
+                });
+
                 return [
                     'category' => $category,
-                    'total_sold' => $totalSold,
+                    'total_sold' => $category->products->sum('sold'),
                 ];
             })->sortByDesc('total_sold')->take(5);
+
+            $categories = $sortedCategories->pluck('category');
 
             return response()->json($categories, Response::HTTP_OK);
         } catch (Exception $e) {
@@ -40,10 +57,30 @@ class CategoryController extends Controller
         }
     }
 
+
+
     public function recommended()
     {
-        //
+        try {
+            $categories = Category::with(['products.reviews'])->get()->map(function ($category) {
+                // Tính toán đánh giá trung bình cho mỗi sản phẩm
+                $category->products->each(function ($product) {
+                    $product->average_rating = $product->reviews->avg('rating') ?: 0;
+                });
+
+                // Tính toán đánh giá trung bình cho mỗi danh mục
+                $category->average_rating = $category->products->avg('average_rating') ?: 0;
+
+                return $category;
+            })->sortByDesc('average_rating')->take(5);
+
+            return response()->json($categories, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
+
+
 
     public function store(Request $request)
     {

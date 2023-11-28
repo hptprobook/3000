@@ -21,13 +21,42 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::with(['brands', 'category', 'tags', 'images', 'reviews'])->get();
+            $products = Product::with(['reviews', 'images'])
+                // Thêm trường đánh giá trung bình
+                ->withCount(['reviews as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(rating),0)'));
+                }])
+                ->get();
+
+            // Chuyển đổi trường average_rating thành số thực
+            $products->each(function ($product) {
+                $product->average_rating = (float) $product->average_rating;
+            });
 
             return response()->json($products, Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function withReview()
+    {
+        try {
+            $products = Product::with(['reviews', 'images', 'category'])
+                // Thêm trường đánh giá trung bình vào mỗi sản phẩm
+                ->withCount(['reviews as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(rating),0)'));
+                }])
+                // Sắp xếp sản phẩm theo đánh giá trung bình
+                ->orderBy('average_rating', 'desc')
+                ->get();
+
+            return response()->json($products, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public function store(Request $request)
     {
@@ -91,7 +120,6 @@ class ProductController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 
     public function show(string $id)
     {

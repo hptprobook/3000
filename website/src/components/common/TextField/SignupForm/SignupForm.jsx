@@ -1,10 +1,11 @@
 import { useFormik } from "formik";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LoginForm from "../Login/LoginForm";
 import * as Yup from "yup";
 import LoginButton from "../../Button/LoginButton/LoginButton";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "@/redux/slices/authSlice";
+import { toast } from "react-toastify";
 
 const registerSchema = Yup.object().shape({
     name: Yup.string()
@@ -22,9 +23,9 @@ const registerSchema = Yup.object().shape({
         .oneOf([Yup.ref("password"), null], "Mật khẩu không khớp"),
 });
 
-export default function SignupForm() {
+export default function SignupForm({ onRegister }) {
     const dispatch = useDispatch();
-    const { loading, error } = useSelector((state) => state.auth);
+    const { loading, error, registerData } = useSelector((state) => state.auth);
 
     const registerFormik = useFormik({
         initialValues: {
@@ -42,9 +43,17 @@ export default function SignupForm() {
                     password: values.password,
                 })
             );
+
             setSubmitting(false);
         },
     });
+
+    useEffect(() => {
+        if (registerData) {
+            toast.success("Đăng ký thành công !");
+            onRegister();
+        }
+    }, [registerData]);
 
     useEffect(() => {
         if (error) {

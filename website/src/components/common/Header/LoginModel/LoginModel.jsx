@@ -7,7 +7,7 @@ import LoginButton from "../../Button/LoginButton/LoginButton";
 import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "@/redux/slices/authSlice";
+import { clearRegisterData, loginUser } from "@/redux/slices/authSlice";
 import CirLoading from "../../Loading/CircularLoading/CirLoading";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -41,13 +41,15 @@ const loginSchema = Yup.object().shape({
 
 const LoginModal = ({ isOpen, onClose }) => {
     const dispatch = useDispatch();
-    const { loading, user, error } = useSelector((state) => state.auth);
+    const { loading, user, error, registerData } = useSelector(
+        (state) => state.auth
+    );
     const [isToastShown, setToastShown] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
 
     const formik = useFormik({
         initialValues: {
-            login: "",
+            login: registerData?.email && "",
             password: "",
         },
         validationSchema: loginSchema,
@@ -62,8 +64,6 @@ const LoginModal = ({ isOpen, onClose }) => {
             setSubmitting(false);
         },
     });
-
-    console.log(error);
 
     useEffect(() => {
         if (error == "Email or phone does not exist.") {
@@ -85,6 +85,11 @@ const LoginModal = ({ isOpen, onClose }) => {
 
     const toggleForm = (e) => {
         e.preventDefault();
+        setIsLogin(!isLogin);
+        dispatch(clearRegisterData());
+    };
+
+    const onRegister = () => {
         setIsLogin(!isLogin);
     };
 
@@ -162,7 +167,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                             </>
                         ) : (
                             <>
-                                <SignupForm />
+                                <SignupForm onRegister={onRegister} />
                                 <div
                                     style={{
                                         textAlign: "center",
