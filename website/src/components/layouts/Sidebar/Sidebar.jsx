@@ -63,7 +63,6 @@ export default function Sidebar() {
         <div className="appSidebar">
             <div className="appSidebar__categories">
                 <h4>Danh mục</h4>
-
                 {parentCategories.map((category) => (
                     <Link href={`/category/${category.id}`} key={category.id}>
                         <PrimaryBtn
