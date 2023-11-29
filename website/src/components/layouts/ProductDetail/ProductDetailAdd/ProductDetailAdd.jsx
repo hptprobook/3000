@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import HorizontalRuleIcon from "@mui/icons-material/HorizontalRule";
-import { useVariantSelection } from "@/hooks/useVariantSelection";
 
 const StyledProductDetailAdd = styled("div")(() => ({
     width: "100%",
