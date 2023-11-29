@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, colors } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import TinyEditor from "../../../components/common/TinyEditor/TinyEditor";
@@ -13,21 +13,47 @@ import SelectCategoryCreate from "../../../components/common/Select/SelectCatego
 import { v4 } from 'uuid';
 import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
 }));
 export default function CreateProductPage() {
+
+    // khai báo các hàm liên quan đến fecth data 
+    const dispatch = useDispatch();
+    const categories = useSelector((state) => state.categories.data);
+    const statusLoad = useSelector((state) => state.categories.status);
+    const error = useSelector((state) => state.users.error);
+
+    // khai báo các hàm liên quan đến dữ liệu
     const [thumbnail, setThumbnail] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState('');
     const [creatError, setCreateError] = useState(true);
 
+    const [selectedCategory, setSelectedCategory] = useState('');
+
     const [name, setName] = useState('');
     const [errorName, setErrorName] = useState('');
+
     const [quantity, setQuantity] = useState('');
     const [errorQuantity, setErrorQuantity] = useState('');
+
+    const [price, setPrice] = useState('');
+    const [errorPrice, setErrorPrice] = useState('');
+
+    const [discount, setDiscount] = useState('');
+    const [errorDiscount, setErrorDiscount] = useState('');
+
     const [description, setDescription] = useState('');
 
+    // lấy dữ liệu về category và tag
+    useEffect(() => {
+        dispatch(fetchCategoriesAsync());
+    }, [dispatch]);
+
+    console.log(categories)
     // hande check error input
     const handleCheckError = (field, value) => {
         switch (field) {
@@ -42,7 +68,51 @@ export default function CreateProductPage() {
                     setErrorName('');
                 }
             }
+                break;
+
             // Add more cases for other fields if needed
+            case 'quantity': {
+                if (value === '') {
+                    setErrorQuantity('Số lượng không được để trống!');
+                }
+                else if (value < 0) {
+                    setErrorQuantity('Số lượng không được nhỏ hơn 0!');
+                }
+                else {
+                    setErrorQuantity('');
+                }
+            }
+                break;
+            case 'price': {
+                if (value === '') {
+                    setErrorPrice('Giá không được để trống!');
+                }
+                else if (value < 1) {
+                    setErrorPrice('Giá không được nhỏ hơn 1!');
+                }
+                else {
+                    setErrorPrice('');
+                }
+            }
+                break;
+            case 'discount': {
+                if (value === '') {
+                    setErrorDiscount('Giảm giá không được để trống!');
+                }
+                else if (value < 0) {
+                    setErrorDiscount('Giảm giá không được nhỏ hơn 1!');
+                }
+                else if (value > 100) {
+                    setErrorDiscount('Giảm giá không được lớn hơn 100!');
+                }
+                else if (isNaN(value)) {
+                    setErrorDiscount('Giảm giá không hợp lệ!');
+                }
+                else {
+                    setErrorDiscount('');
+                }
+            }
+                break;
 
             default:
                 return false; // Default to no error
@@ -50,7 +120,6 @@ export default function CreateProductPage() {
     };
 
 
-    console.log(name)
     // upload ảnh
     const handleUploadThumnail = () => {
         const thumbnailRef = ref(storageFirebase, `product_image/${v4()}`);
@@ -74,8 +143,6 @@ export default function CreateProductPage() {
                 // Handle unsuccessful uploads
             },
             () => {
-                // Handle successful uploads on complete
-                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     console.log('File available at', downloadURL);
                     setThumbnailUrl(downloadURL);
@@ -83,6 +150,10 @@ export default function CreateProductPage() {
             }
         );
     };
+
+    // debug
+
+    console.log(selectedCategory)
 
     return (
         <Box>
@@ -96,7 +167,7 @@ export default function CreateProductPage() {
                 <InfoBox title="Thông tin cơ bản">
                     <DivMargin>
                         <InputEdit
-                            // onBlur={(e) => setName(e.target.value)}
+                            id={name}
                             onBlur={(event) => {
                                 setName(event.target.value);
                                 handleCheckError('name', event.target.value)
@@ -109,20 +180,39 @@ export default function CreateProductPage() {
                     </DivMargin>
                     <DivMargin>
                         <InputEdit
+                            id={quantity}
+                            onBlur={(event) => {
+                                setQuantity(event.target.value);
+                                handleCheckError('quantity', event.target.value)
+                            }}
                             label={'Số lượng'}
                             type='number'
+                            error={errorQuantity ? true : false}
+                            helperText={errorQuantity}
                         />
                     </DivMargin>
                     <DivMargin>
                         <InputEdit
+                            id={price}
+                            onBlur={(event) => {
+                                setPrice(event.target.value);
+                                handleCheckError('price', event.target.value)
+                            }}
                             label={'Giá tiền'}
-                            type='number'
+                            error={errorPrice ? true : false}
+                            helperText={errorPrice}
                         />
                     </DivMargin>
                     <DivMargin>
                         <InputEdit
+                            id={discount}
+                            onBlur={(event) => {
+                                setDiscount(event.target.value);
+                                handleCheckError('discount', event.target.value)
+                            }}
                             label={'Discount'}
-                            type='number'
+                            error={errorDiscount ? true : false}
+                            helperText={errorDiscount}
                         />
                     </DivMargin>
                 </InfoBox>
@@ -130,12 +220,10 @@ export default function CreateProductPage() {
                     <DivMargin>
                         <SelectEdit
                             label={'Phân loại'}
-                            data={[
-                                { id: 'male', name: 'Nam' },
-                                { id: 'female', name: 'Nữ' },
-                                { id: 'other', name: 'Khác' },
-                            ]}
-                            value={'male'}
+                            data={categories}
+                            value={''}
+                            onChange={(e) => setSelectedCategory(e.target.value)}
+                            error={'Loi'}
                         />
                     </DivMargin>
                     <DivMargin>
@@ -149,14 +237,41 @@ export default function CreateProductPage() {
                             value={'male'}
                         />
                     </DivMargin>
+
+                </InfoBox>
+                <InfoBox title="Nhãn sản phẩm">
+                    <DivMargin>
+                        <Typography
+                            variant="p"
+                            component="p"
+                            sx={{
+                                marginBottom: '12px',
+                                color: color.textGray
+                            }}
+                        >
+                            Thêm nhãn sản phẩm(Không bắt buộc)
+                        </Typography>
+                        <InputEdit
+                            id={'tag'}
+
+                            // onBlur={(event) => {
+                            //     setPrice(event.target.value);
+                            //     handleCheckError('price', event.target.value)
+                            // }}
+                            label={'Thêm nhãn sản phẩm'}
+                        // error={errorPrice ? true : false}
+                        // helperText={errorPrice}
+                        />
+                    </DivMargin>
                     <DivMargin>
                         <SelectCategoryCreate />
                     </DivMargin>
                 </InfoBox>
                 <InfoBox title="Hình ảnh">
                     <DivMargin>
-                        {/* {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
-                        <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} /> */}
+                        {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
+                        <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
+                        <button onClick={(e) => handleUploadThumnail()}>upload</button>
                         <ImageDropZone />
                     </DivMargin>
                 </InfoBox>

@@ -50,8 +50,8 @@ export default function CreateCategoryPage() {
         Breadcrumb={["Phân loại", "Tạo"]}
       />
       <Box sx={{
-                marginTop: '32px'
-            }}></Box>
+        marginTop: '32px'
+      }}></Box>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
@@ -65,7 +65,7 @@ export default function CreateCategoryPage() {
             />
           </Grid>
           <Grid item xs={12}>
-          <SelectEdit
+            <SelectEdit
               label={'Phân loại'}
               data={categories} // Use categories fetched from Redux store
               value={categoryData.category_id} // Assuming this holds the selected category ID
