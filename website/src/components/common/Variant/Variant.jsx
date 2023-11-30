@@ -3,8 +3,8 @@ import { styled } from "@mui/material/styles";
 
 const StyledVariant = styled("span")(({ isActive }) => ({
     padding: "6px 12px",
-    border: isActive ? "1px solid #d9d7d7" : "1px solid transparent",
-    outline: isActive ? "none" : "2px solid #0a68ff",
+    border: !isActive ? "1px solid #d9d7d7" : "1px solid transparent",
+    outline: !isActive ? "none" : "2px solid #0a68ff",
     borderRadius: "8px",
     color: "#2b2440",
     fontSize: "14px",
@@ -27,11 +27,19 @@ const StyledVariant = styled("span")(({ isActive }) => ({
     },
 }));
 
-export default function Variant({ text, onClick, isActive }) {
-    console.log("🚀 ~ file: Variant.jsx:31 ~ Variant ~ isActive:", isActive);
+export default function Variant({ text, onActiveChange, onClick, isActive }) {
+    const handleClick = () => {
+        if (!isActive) {
+            onActiveChange(text);
+        }
+        if (onClick) {
+            onClick();
+        }
+    };
+
     return (
         <>
-            <StyledVariant onClick={onClick} isActive={!isActive}>
+            <StyledVariant onClick={handleClick} isActive={isActive}>
                 {text}
                 {isActive && (
                     <img
