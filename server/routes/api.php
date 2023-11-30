@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SellerController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -44,6 +45,8 @@ Route::apiResource('categories', CategoryController::class)->only(['index', 'sho
 
 // Setting
 Route::apiResource('settings', SettingController::class)->only(['index', 'show']);
+
+Route::apiResource('tags', TagController::class);
 
 // Middleware
 Route::middleware('auth:sanctum')->group(function () {

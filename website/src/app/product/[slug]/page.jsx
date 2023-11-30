@@ -8,6 +8,9 @@ import ProductDetailSlider from "@/components/layouts/ProductDetail/Slider/Produ
 import { Grid } from "@mui/material";
 import React from "react";
 import { VariantProvider } from "@/provider/VariantContext";
+import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
+import request from "@/utils/request";
+import ProductService from "@/services/product.service";
 
 export default function ProductDetail({ params }) {
     const productId = params.slug ? params.slug.split("-").pop() : null;
@@ -90,22 +93,39 @@ export default function ProductDetail({ params }) {
                             <ProductDetailMain />
                         </div>
                     </Grid>
-                    <Grid item xs={3.5}>
+                    <Grid item xs={3.5} sx={{ paddingLeft: "12px" }}>
                         <ProductDetailAdd />
                     </Grid>
                 </VariantProvider>
             </Grid>
-            <Grid
-                className="appContainer__detail--review"
-                sx={{
-                    height: "2000px",
-                }}
-                container
-            >
+            <Grid className="appContainer__detail--review" container>
                 <Grid item xs={12}>
                     <ProductDetailReview />
                 </Grid>
             </Grid>
+            <div
+                style={{
+                    width: "100%",
+                    padding: "0 300px",
+                    margin: "0 auto",
+                    backgroundColor: "#fff",
+                }}
+            >
+                <HomeFooter />
+            </div>
         </>
     );
+}
+
+export async function getServerSideProps({ params }) {
+    const productId = params.slug ? params.slug.split("-").pop() : null;
+    const products = await ProductService.getProductById(
+        `product/${productId}`
+    );
+
+    return {
+        props: {
+            products: products,
+        },
+    };
 }
