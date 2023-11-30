@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import Rating from "@/components/common/Rating/Rating";
 import Variant from "@/components/common/Variant/Variant";
-import { VariantContext } from "@/provider/VariantContext";
+import { useVariantSelection } from "@/hooks/useVariantSelection";
 
 const StyledDetailInfo = styled("div")(() => ({
     backgroundColor: "#fff",
@@ -103,19 +103,10 @@ export default function ProductDetailInfo() {
 
     useEffect(() => {
         const initialSelections = {};
-        const initialActiveText = [];
-
         fakeData.variants.forEach((variant) => {
-            const firstOptionName = variant.options[0].name;
-            initialSelections[variant.variantType] = firstOptionName;
-            initialActiveText.push({
-                variantType: variant.variantType,
-                optionName: firstOptionName,
-            });
+            initialSelections[variant.variantType] = variant.options[0].name;
         });
-
         setSelectedOptions(initialSelections);
-        setActiveText(initialActiveText);
     }, []);
 
     const handleOptionSelect = (variantType, optionName) => {
@@ -123,7 +114,7 @@ export default function ProductDetailInfo() {
         handleActiveTextChange(variantType, optionName);
     };
 
-    const { activeText, setActiveText } = useContext(VariantContext);
+    const [activeText, setActiveText] = useState([]);
 
     const handleActiveTextChange = (variantType, optionName) => {
         const updatedActiveText = activeText.filter(

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SellerController;
 use App\Http\Controllers\Api\SettingController;
+use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
 use App\Http\Controllers\AuthController;
@@ -34,6 +35,7 @@ Route::apiResource('products', ProductController::class)->only(['index', 'show']
 
 // Brand
 Route::get('/brands/top-brands', [BrandController::class, 'topBrand']);
+Route::apiResource('brands', BrandController::class)->only(['index', 'show', 'topBrand']);
 
 // Category
 Route::get('/categories/recommended', [CategoryController::class, 'recommended']);
@@ -43,6 +45,8 @@ Route::apiResource('categories', CategoryController::class)->only(['index', 'sho
 
 // Setting
 Route::apiResource('settings', SettingController::class)->only(['index', 'show']);
+
+Route::apiResource('tags', TagController::class);
 
 // Middleware
 Route::middleware('auth:sanctum')->group(function () {
@@ -55,7 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('addresses', AddressController::class);
 
-    Route::apiResource('brands', BrandController::class);
+    Route::apiResource('brands', BrandController::class)->except(['index', 'show', 'topBrand']);
 
     Route::apiResource('categories', CategoryController::class)->except(['index', 'show', 'mainCategories', 'bestSeller', 'recommended']);
 

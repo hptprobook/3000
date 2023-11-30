@@ -5,8 +5,12 @@ import Rating from "@/components/common/Rating/Rating";
 
 const StyledReviewOverview = styled("div")(() => ({
     display: "flex",
+    marginTop: "20px",
+    borderBottom: "1px solid var(--color-75)",
+    paddingBottom: "32px",
     justifyContent: "center",
     "& .reviewOverview__rating": {
+        marginTop: "20px",
         "& .overview__rating--number": {
             fontSize: "40px",
             fontWeight: "600",

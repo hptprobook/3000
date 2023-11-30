@@ -9,7 +9,9 @@ export default function HomeFooter() {
             columnSpacing={0.5}
             className="appContainer__homeFooter"
             sx={{
-                marginTop: "48px",
+                // marginTop: "48px",
+                width: "100%",
+                margin: "48px auto 0 auto",
                 padding: "24px 12px 36px",
                 backgroundColor: "#fff",
                 "& p": {

@@ -84,6 +84,8 @@
         --font-family: Inter, Helvetica, Arial, sans-serif !important;
         --title-color: #27272a;
         --text-50-color: #858785;
+        --color-75: #f2f2f2;
+        --border-color: #dddde3;
     }
 }
 
@@ -110,4 +112,44 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     appearance: none;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.at-c {
+    display: flex;
+    align-items: center;
+}
+
+.jc-c {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-c {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.m-12 {
+    margin: 12px;
+}
+
+.mt-12 {
+    margin-top: 12px;
+}
+
+.mb-12 {
+    margin-bottom: 12px;
+}
+
+.mr-12 {
+    margin-right: 12px;
+}
+
+.ml-12 {
+    margin-left: 12px;
 }

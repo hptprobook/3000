@@ -1,6 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { styled } from "@mui/material/styles";
+import { VariantContext } from "@/provider/VariantContext";
 
 const StyledProductDetailAdd = styled("div")(() => ({
     width: "100%",
@@ -107,10 +108,17 @@ export default function ProductDetailAdd() {
         return price.toLocaleString("vi-VN");
     };
 
+    const { activeText } = useContext(VariantContext);
+
     return (
         <StyledProductDetailAdd>
             <div className="variant">
-                <span> 4 tầng</span>,<span> Đỏ</span>
+                {activeText.map((item, index) => (
+                    <span key={index}>
+                        {item.optionName}
+                        {index < activeText.length - 1 ? ", " : ""}
+                    </span>
+                ))}
             </div>
             <h5 style={{ marginTop: "12px" }}>Số lượng</h5>
             <div className="quantity-handle">
