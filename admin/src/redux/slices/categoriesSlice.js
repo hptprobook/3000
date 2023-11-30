@@ -13,6 +13,18 @@ export const fetchCategoriesAsync = createAsyncThunk(
     }
   }
 );
+export const fetchCategoryById = createAsyncThunk(
+  'categories/fetchCategoryById',
+  async (categoryId, thunkAPI) => {
+    try {
+      const res = await CategoryService.getCategoryById(categoryId);
+      return res.data; // Assuming res.data contains the category details
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 export const fetchAllBrands = createAsyncThunk(
   'brands/fetchBrands',
   async (_, thunkAPI) => {

@@ -13,6 +13,7 @@ import ListCategoriesPage from "../pages/Category/List/ListCategoryPage";
 import CreatePostPage from "../pages/Post/Add/CreatePostPage";
 import EditPostPage from "../pages/Post/Edit/EditPostPage";
 import CreateCategoryPage from "../pages/Category/Add/CreateCategoryPage";
+import EditCategoryPage from "../pages/Category/Edit/EditCategoryPage";
 
 function DashboardRoute() {
     return (
@@ -33,6 +34,7 @@ function DashboardRoute() {
             />
             <Route path="category/list" element={<ListCategoriesPage/>} />
             <Route path="category/create" element={<CreateCategoryPage/>} />
+            <Route path="category/edit/:id" element={<EditCategoryPage />} />
         </Routes>
     );
 }
