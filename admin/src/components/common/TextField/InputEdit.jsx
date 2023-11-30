@@ -5,7 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
-import { FormHelperText } from '@mui/material';
+import { FormHelperText, colors } from '@mui/material';
 
 
 const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
@@ -44,21 +44,25 @@ const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
   }
 }))
 
-export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur }) {
+export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur, id, note }) {
 
 
   return (
     <FormControlEdit error={error} fullWidth sx={{ m: 1 }} variant="filled">
-      <InputLabel htmlFor="filled-adornment-amount">{label}</InputLabel>
+      <InputLabel htmlFor={id}>{label}</InputLabel>
       <FilledInput
         defaultValue={value}
         onChange={onChange}
         onBlur={onBlur}
         type={type || 'text'}
-        id="filled-adornment-amount"
+        id={id}
         startAdornment={<InputAdornment position="start">{icon}</InputAdornment>}
       />
       <FormHelperText id="component-error-text">{error ? helperText : ''}</FormHelperText>
+      <FormHelperText sx={{
+        color: color.textColor.dark
+      }}>{note ? note : ''}</FormHelperText>
+
     </FormControlEdit>
   );
 }

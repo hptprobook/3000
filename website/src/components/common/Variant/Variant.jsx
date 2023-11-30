@@ -36,7 +36,6 @@ export default function Variant({ text, onActiveChange, onClick, isActive }) {
             onClick();
         }
     };
-
     return (
         <>
             <StyledVariant onClick={handleClick} isActive={isActive}>

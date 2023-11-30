@@ -5,6 +5,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
+import { FormHelperText } from '@mui/material';
 const FormSelectEdit = styled(FormControl)(({ theme }) => ({
     margin: 0,
     width: '100%',
@@ -40,7 +41,7 @@ const FormSelectEdit = styled(FormControl)(({ theme }) => ({
         color: color.textColor.dark
     }
 }))
-export default function SelectEdit({ label, data, value }) {
+export default function SelectEdit({ label, data, value, onChange, error }) {
     const [select, setSelect] = React.useState(value == null ? '' : value);
 
     const handleChange = (event) => {
@@ -55,7 +56,9 @@ export default function SelectEdit({ label, data, value }) {
                 value={select}
                 onChange={(event) => {
                     handleChange(event);
+                    onChange(event)
                 }}
+
             >
                 {data.map((item) => (
                     <MenuItem key={item.id} value={item.id}>
@@ -64,6 +67,11 @@ export default function SelectEdit({ label, data, value }) {
                 ))}
 
             </Select>
+            <FormHelperText
+                sx={{
+                    color: color.textColor.error,
+                }}
+            >{error}</FormHelperText>
         </FormSelectEdit>
     );
 }
