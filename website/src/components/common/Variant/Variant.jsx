@@ -28,7 +28,6 @@ const StyledVariant = styled("span")(({ isActive }) => ({
 }));
 
 export default function Variant({ text, onClick, isActive }) {
-    console.log("🚀 ~ file: Variant.jsx:31 ~ Variant ~ isActive:", isActive);
     return (
         <>
             <StyledVariant onClick={onClick} isActive={!isActive}>

@@ -1,9 +1,10 @@
-import ProductDetailAdd from "@/components/layouts/ProductDetail/ProductDetailAdd/ProductDetailAdd";
-import ProductDetailInfo from "@/components/layouts/ProductDetail/ProductDetailContainer/ProductDetailInfo/ProductDetailInfo";
+import ProductDetailAdd from "@/components/layouts/ProductDetail/Add/ProductDetailAdd";
+import ProductDetailInfo from "@/components/layouts/ProductDetail/Container/ProductDetailInfo/ProductDetailInfo";
 import ProductDetailMain from "@/components/layouts/ProductDetail/ProductDetailMain";
-import ProductDetailSeller from "@/components/layouts/ProductDetail/ProductDetailSeller/ProductDetailSeller";
-import ProductDetailSimilar from "@/components/layouts/ProductDetail/ProductDetailSimilar.jsx/ProductDetailSimilar";
-import ProductDetailSlider from "@/components/layouts/ProductDetail/ProductDetailSlider/ProductDetailSlider";
+import ProductDetailReview from "@/components/layouts/ProductDetail/Review/ProductDetailReview";
+import ProductDetailSeller from "@/components/layouts/ProductDetail/Seller/ProductDetailSeller";
+import ProductDetailSimilar from "@/components/layouts/ProductDetail/Similar.jsx/ProductDetailSimilar";
+import ProductDetailSlider from "@/components/layouts/ProductDetail/Slider/ProductDetailSlider";
 import { Grid } from "@mui/material";
 import React from "react";
 
@@ -71,7 +72,7 @@ export default function ProductDetail({ params }) {
             >
                 Trang chủ - Sản phẩm số {productId}
             </div>
-            <Grid className="appContainer" container>
+            <Grid className="appContainer__detail" container>
                 <Grid item xs={3.5}>
                     <ProductDetailSlider product={fakeDataProduct} />
                 </Grid>
@@ -89,6 +90,17 @@ export default function ProductDetail({ params }) {
                 </Grid>
                 <Grid item xs={3.5}>
                     <ProductDetailAdd />
+                </Grid>
+            </Grid>
+            <Grid
+                className="appContainer__detail--review"
+                sx={{
+                    height: "2000px",
+                }}
+                container
+            >
+                <Grid item xs={12}>
+                    <ProductDetailReview />
                 </Grid>
             </Grid>
         </>
