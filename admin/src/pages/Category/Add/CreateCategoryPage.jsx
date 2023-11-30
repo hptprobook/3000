@@ -8,6 +8,7 @@ import SelectEdit from "../../../components/common/Select/SelectEdit";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 
+
 export default function CreateCategoryPage() {
   const dispatch = useDispatch();
   const categories = useSelector((state) => state.categories.data); // Access categories from Redux store

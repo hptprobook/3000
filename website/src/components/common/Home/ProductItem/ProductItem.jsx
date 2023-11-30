@@ -3,6 +3,7 @@ import { styled } from "@mui/material/styles";
 import StarIcon from "@mui/icons-material/Star";
 import "./style.css";
 import Link from "next/link";
+import Rating from "../../Rating/Rating";
 
 const StyledProductItem = styled("div")(() => ({
     padding: "0 8px 8px 8px",
@@ -62,28 +63,6 @@ export default function ProductItem({
         }
     }
 
-    const renderRating = (rate) => {
-        let stars = [];
-        for (let i = 0; i < 5; i++) {
-            if (i < rate) {
-                stars.push(
-                    <StarIcon
-                        sx={{ fontSize: "13px", color: "#f8cc3b" }}
-                        key={i}
-                    />
-                );
-            } else {
-                stars.push(
-                    <StarIcon
-                        sx={{ fontSize: "13px", color: "#dddde3" }}
-                        key={i}
-                    />
-                );
-            }
-        }
-        return stars;
-    };
-
     const formatPriceToVND = (price) => {
         return price.toLocaleString("vi-VN");
     };
@@ -121,7 +100,7 @@ export default function ProductItem({
                 />
                 <p className="name">{truncatedName}</p>
                 <div className="rate">
-                    {renderRating(rate)}{" "}
+                    <Rating rate={rate} size={"13px"} />
                     {sold != 0 && (
                         <span style={{ fontSize: "11px", color: "#9c9ca3" }}>
                             | Đã bán {sold}

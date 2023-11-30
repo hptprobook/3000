@@ -36,10 +36,10 @@ Route::apiResource('products', ProductController::class)->only(['index', 'show']
 Route::get('/brands/top-brands', [BrandController::class, 'topBrand']);
 
 // Category
-Route::apiResource('categories', CategoryController::class)->only(['index', 'show', 'bestSeller', 'mainCategories']);
 Route::get('/categories/recommended', [CategoryController::class, 'recommended']);
 Route::get('/categories/best-seller', [CategoryController::class, 'bestSeller']);
 Route::get('/categories/main', [CategoryController::class, 'mainCategories']);
+Route::apiResource('categories', CategoryController::class)->only(['index', 'show', 'bestSeller', 'mainCategories']);
 
 // Setting
 Route::apiResource('settings', SettingController::class)->only(['index', 'show']);

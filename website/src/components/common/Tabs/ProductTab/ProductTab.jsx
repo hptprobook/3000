@@ -6,9 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
-import Link from "next/link";
 import "./style.css";
-import Slider from "react-slick";
 
 const StyledProductTab = styled("div")(() => ({
     "& .tabContent": {
