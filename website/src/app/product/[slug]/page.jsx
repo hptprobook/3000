@@ -7,6 +7,7 @@ import ProductDetailSimilar from "@/components/layouts/ProductDetail/Similar.jsx
 import ProductDetailSlider from "@/components/layouts/ProductDetail/Slider/ProductDetailSlider";
 import { Grid } from "@mui/material";
 import React from "react";
+import { VariantProvider } from "@/provider/VariantContext";
 
 export default function ProductDetail({ params }) {
     const productId = params.slug ? params.slug.split("-").pop() : null;
@@ -73,24 +74,26 @@ export default function ProductDetail({ params }) {
                 Trang chủ - Sản phẩm số {productId}
             </div>
             <Grid className="appContainer__detail" container>
-                <Grid item xs={3.5}>
-                    <ProductDetailSlider product={fakeDataProduct} />
-                </Grid>
-                <Grid item xs={5}>
-                    <div
-                        style={{
-                            margin: "0 12px",
-                        }}
-                    >
-                        <ProductDetailInfo />
-                        <ProductDetailSimilar />
-                        <ProductDetailSeller />
-                        <ProductDetailMain />
-                    </div>
-                </Grid>
-                <Grid item xs={3.5}>
-                    <ProductDetailAdd />
-                </Grid>
+                <VariantProvider>
+                    <Grid item xs={3.5}>
+                        <ProductDetailSlider product={fakeDataProduct} />
+                    </Grid>
+                    <Grid item xs={5}>
+                        <div
+                            style={{
+                                margin: "0 12px",
+                            }}
+                        >
+                            <ProductDetailInfo />
+                            <ProductDetailSimilar />
+                            <ProductDetailSeller />
+                            <ProductDetailMain />
+                        </div>
+                    </Grid>
+                    <Grid item xs={3.5}>
+                        <ProductDetailAdd />
+                    </Grid>
+                </VariantProvider>
             </Grid>
             <Grid
                 className="appContainer__detail--review"
