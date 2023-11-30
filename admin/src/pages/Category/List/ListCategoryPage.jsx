@@ -46,6 +46,13 @@ const ListCategoriesPage = () => {
     const status = useSelector((state) => state.categories.status);
     const error = useSelector((state) => state.categories.error);
     const [filteredCategories, setFilteredCategories] = useState(categories); // State to store filtered categories
+    //Bậc cao 
+    const topLevelCategories = categories.filter(category =>
+        categories.some(otherCategory => otherCategory.id === category.parent_id)
+    );
+    //Bậc thấp  
+    const lowLevelCategories = categories.filter(category => category.parent_id === 0);
+
 
     const handleSearch = (searchValue) => {
         const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
@@ -75,6 +82,7 @@ const ListCategoriesPage = () => {
     const rows = categoriesArray.map((category) => ({
         id: category.id,
         name: category.name,
+        parent_id: category.parent_id,
         icon_url: category.icon_url,
         // Add other fields as needed
     }));
@@ -82,6 +90,7 @@ const ListCategoriesPage = () => {
     const columns = [
         { field: 'id', headerName: 'ID', width: 70 },
         { field: 'name', headerName: 'Name', width: 150 },
+        { field: 'parent_id', headerName: 'Parent ID', width: 150 },
         { field: 'icon_url', headerName: 'Icon URL', width: 150 },
         // Define other columns based on your data structure
     ];
@@ -124,8 +133,8 @@ const ListCategoriesPage = () => {
 
                     >
                         <Tab label="Tất cả" {...a11yProps(0)} />
-                        <Tab label="Đang hoạt động" {...a11yProps(1)} />
-                        <Tab label="Cấm" {...a11yProps(2)} />
+                        <Tab label="Thể loại cấp cao nhất" {...a11yProps(1)} />
+                        <Tab label="Thể loại cấp thấp hơn" {...a11yProps(2)} />
                     </Tabs>
                 </Box>
                 <Divider sx={{ borderColor: '#fff' }} />
@@ -137,14 +146,12 @@ const ListCategoriesPage = () => {
                 <CustomTabPanel index={0} value={value}>
                     <TableDataCategory data={filteredCategories} /> {/* Use filteredCategories here */}
                 </CustomTabPanel>
-
                 <CustomTabPanel align='center' colSpan={7} index={1} value={value}>
-                    trống
+                    <TableDataCategory data={topLevelCategories} />
                 </CustomTabPanel>
                 <CustomTabPanel align='center' colSpan={7} index={2} value={value}>
-                    trống
+                    <TableDataCategory data={lowLevelCategories} />
                 </CustomTabPanel>
-
 
             </Box>
         </div>
