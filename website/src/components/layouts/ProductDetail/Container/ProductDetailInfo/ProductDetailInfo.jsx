@@ -111,7 +111,22 @@ export default function ProductDetailInfo() {
 
     const handleOptionSelect = (variantType, optionName) => {
         setSelectedOptions((prev) => ({ ...prev, [variantType]: optionName }));
+        handleActiveTextChange(variantType, optionName);
     };
+
+    const [activeText, setActiveText] = useState([]);
+
+    const handleActiveTextChange = (variantType, optionName) => {
+        const updatedActiveText = activeText.filter(
+            (item) => item.variantType !== variantType
+        );
+        updatedActiveText.push({ variantType, optionName });
+        setActiveText(updatedActiveText);
+    };
+    console.log(
+        "🚀 ~ file: ProductDetailInfo.jsx:118 ~ ProductDetailInfo ~ activeText:",
+        activeText
+    );
 
     return (
         <StyledDetailInfo>
@@ -154,6 +169,7 @@ export default function ProductDetailInfo() {
                             </h5>
                             {variant.options.map((option) => (
                                 <Variant
+                                    onActiveChange={handleActiveTextChange}
                                     key={option.id}
                                     text={option.name}
                                     onClick={() =>
