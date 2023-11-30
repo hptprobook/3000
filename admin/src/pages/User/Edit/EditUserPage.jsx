@@ -108,7 +108,7 @@ const EditUserPage = () => {
                                     { id: 'female', name: 'Nữ' },
                                     { id: 'other', name: 'Khác' },
                                 ]}
-                                value={user.birth_date}
+                                value={user.gender}
                             />
                         </Grid>
                         <Grid item sm={12} md={6}>
