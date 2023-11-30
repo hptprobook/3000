@@ -14,7 +14,8 @@ import { v4 } from 'uuid';
 import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import { fetchAllBrands, fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import Loading from "../../../components/common/Loading/Loading";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -24,8 +25,16 @@ export default function CreateProductPage() {
     // khai báo các hàm liên quan đến fecth data 
     const dispatch = useDispatch();
     const categories = useSelector((state) => state.categories.data);
+    const brands = useSelector((state) => state.brands.data);
+
     const statusLoad = useSelector((state) => state.categories.status);
     const error = useSelector((state) => state.users.error);
+
+    // khai báo các hàm liên quan đế dữ liệu lấy về 
+    const [parentCategories, setParentCategories] = useState([]);
+    const [childCategories, setChildCategories] = useState([]);
+    const [selectBrands, setSelectBrands] = useState([]);
+
 
     // khai báo các hàm liên quan đến dữ liệu
     const [thumbnail, setThumbnail] = useState('');
@@ -33,6 +42,10 @@ export default function CreateProductPage() {
     const [creatError, setCreateError] = useState(true);
 
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedErrorCategory, setSelectedErrorCategory] = useState('');
+
+    const [selectedCategoryChild, setSelectedCategoryChild] = useState('');
+    const [selectedErrorCategoryChild, setSelectedErrorCategoryChild] = useState('');
 
     const [name, setName] = useState('');
     const [errorName, setErrorName] = useState('');
@@ -50,10 +63,19 @@ export default function CreateProductPage() {
 
     // lấy dữ liệu về category và tag
     useEffect(() => {
-        dispatch(fetchCategoriesAsync());
+        dispatch(fetchCategoriesAsync(), fetchAllBrands());
     }, [dispatch]);
 
-    console.log(categories)
+    useEffect(() => {
+        const parent = categories.filter(item => item.parent_id == 0);
+        setParentCategories(parent);
+    }, [categories]);
+
+    useEffect(() => {
+        const child = categories.filter(item => item.parent_id == selectedCategory);
+        setChildCategories(child);
+    }, [selectedCategory]);
+
     // hande check error input
     const handleCheckError = (field, value) => {
         switch (field) {
@@ -78,6 +100,9 @@ export default function CreateProductPage() {
                 else if (value < 0) {
                     setErrorQuantity('Số lượng không được nhỏ hơn 0!');
                 }
+                else if (isNaN(value)) {
+                    setErrorQuantity('Số lượng không hợp lệ!');
+                }
                 else {
                     setErrorQuantity('');
                 }
@@ -89,6 +114,9 @@ export default function CreateProductPage() {
                 }
                 else if (value < 1) {
                     setErrorPrice('Giá không được nhỏ hơn 1!');
+                }
+                else if (isNaN(value)) {
+                    setErrorPrice('Giá không hợp lệ!');
                 }
                 else {
                     setErrorPrice('');
@@ -119,7 +147,9 @@ export default function CreateProductPage() {
         }
     };
 
-
+    // if (selectedCategory == '') {
+    //     setSelectedErrorCategory('Bắt buộc')
+    // }
     // upload ảnh
     const handleUploadThumnail = () => {
         const thumbnailRef = ref(storageFirebase, `product_image/${v4()}`);
@@ -154,164 +184,172 @@ export default function CreateProductPage() {
     // debug
 
     console.log(selectedCategory)
+    if (statusLoad === "loading") {
+        return <div><Loading /></div>;
+    }
+    if (statusLoad === "succeeded") {
+        return (
+            <Box>
+                <HeaderPage
+                    namePage={"Tạo mới"}
+                    Breadcrumb={["Sản phẩm", "Tạo"]}
+                />
+                <Box sx={{
+                    marginTop: '32px'
+                }}>
+                    <InfoBox title="Thông tin cơ bản">
+                        <DivMargin>
+                            <InputEdit
+                                id={name}
+                                onBlur={(event) => {
+                                    setName(event.target.value);
+                                    handleCheckError('name', event.target.value)
+                                }}
+                                label={'Tên sản phẩm'}
+                                error={errorName ? true : false}
+                                helperText={errorName}
+                            />
 
-    return (
-        <Box>
-            <HeaderPage
-                namePage={"Tạo mới"}
-                Breadcrumb={["Sản phẩm", "Tạo"]}
-            />
-            <Box sx={{
-                marginTop: '32px'
-            }}>
-                <InfoBox title="Thông tin cơ bản">
-                    <DivMargin>
-                        <InputEdit
-                            id={name}
-                            onBlur={(event) => {
-                                setName(event.target.value);
-                                handleCheckError('name', event.target.value)
-                            }}
-                            label={'Tên sản phẩm'}
-                            error={errorName ? true : false}
-                            helperText={errorName}
-                        />
+                        </DivMargin>
+                        <DivMargin>
+                            <InputEdit
+                                id={quantity}
+                                onBlur={(event) => {
+                                    setQuantity(event.target.value);
+                                    handleCheckError('quantity', event.target.value)
+                                }}
+                                label={'Số lượng'}
+                                error={errorQuantity ? true : false}
+                                helperText={errorQuantity}
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <InputEdit
+                                id={price}
+                                onBlur={(event) => {
+                                    setPrice(event.target.value);
+                                    handleCheckError('price', event.target.value)
+                                }}
+                                label={'Giá tiền'}
+                                error={errorPrice ? true : false}
+                                helperText={errorPrice}
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <InputEdit
+                                id={discount}
+                                onBlur={(event) => {
+                                    setDiscount(event.target.value);
+                                    handleCheckError('discount', event.target.value)
+                                }}
+                                label={'Discount'}
+                                error={errorDiscount ? true : false}
+                                helperText={errorDiscount}
+                            />
+                        </DivMargin>
+                    </InfoBox>
+                    <InfoBox title="Phân loại">
+                        <DivMargin>
+                            <SelectEdit
+                                label={'Phân loại'}
+                                data={parentCategories}
+                                value={''}
+                                onChange={(e) => {
+                                    setSelectedCategory(e.target.value)
+                                }}
+                                error={selectedErrorCategory}
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <SelectEdit
+                                label={'Phân loại'}
+                                data={childCategories}
+                                value={''}
+                                onChange={(e) => {
+                                    setSelectedCategoryChild(e.target.value)
+                                }}
+                                error={selectedErrorCategory}
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <SelectEdit
+                                label={'Nhãn hàng'}
+                                data={[
+                                    { id: 'male', name: 'Nam' },
+                                    { id: 'female', name: 'Nữ' },
+                                    { id: 'other', name: 'Khác' },
+                                ]}
+                                value={'male'}
+                            />
+                        </DivMargin>
 
-                    </DivMargin>
-                    <DivMargin>
-                        <InputEdit
-                            id={quantity}
-                            onBlur={(event) => {
-                                setQuantity(event.target.value);
-                                handleCheckError('quantity', event.target.value)
-                            }}
-                            label={'Số lượng'}
-                            type='number'
-                            error={errorQuantity ? true : false}
-                            helperText={errorQuantity}
-                        />
-                    </DivMargin>
-                    <DivMargin>
-                        <InputEdit
-                            id={price}
-                            onBlur={(event) => {
-                                setPrice(event.target.value);
-                                handleCheckError('price', event.target.value)
-                            }}
-                            label={'Giá tiền'}
-                            error={errorPrice ? true : false}
-                            helperText={errorPrice}
-                        />
-                    </DivMargin>
-                    <DivMargin>
-                        <InputEdit
-                            id={discount}
-                            onBlur={(event) => {
-                                setDiscount(event.target.value);
-                                handleCheckError('discount', event.target.value)
-                            }}
-                            label={'Discount'}
-                            error={errorDiscount ? true : false}
-                            helperText={errorDiscount}
-                        />
-                    </DivMargin>
-                </InfoBox>
-                <InfoBox title="Phân loại">
-                    <DivMargin>
-                        <SelectEdit
-                            label={'Phân loại'}
-                            data={categories}
-                            value={''}
-                            onChange={(e) => setSelectedCategory(e.target.value)}
-                            error={'Loi'}
-                        />
-                    </DivMargin>
-                    <DivMargin>
-                        <SelectEdit
-                            label={'Nhãn hàng'}
-                            data={[
-                                { id: 'male', name: 'Nam' },
-                                { id: 'female', name: 'Nữ' },
-                                { id: 'other', name: 'Khác' },
-                            ]}
-                            value={'male'}
-                        />
-                    </DivMargin>
+                    </InfoBox>
+                    <InfoBox title="Nhãn sản phẩm">
+                        <DivMargin>
 
-                </InfoBox>
-                <InfoBox title="Nhãn sản phẩm">
-                    <DivMargin>
-                        <Typography
-                            variant="p"
-                            component="p"
-                            sx={{
-                                marginBottom: '12px',
-                                color: color.textGray
+                            <InputEdit
+                                id={'tag'}
+                                note={'Không bắt buộc*'}
+                                // onBlur={(event) => {
+                                //     setPrice(event.target.value);
+                                //     handleCheckError('price', event.target.value)
+                                // }}
+                                label={'Thêm nhãn sản phẩm'}
+                            // error={errorPrice ? true : false}
+                            // helperText={errorPrice}
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <SelectCategoryCreate />
+                        </DivMargin>
+                    </InfoBox>
+                    <InfoBox title="Hình ảnh">
+                        <DivMargin>
+                            {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
+                            <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
+                            <button onClick={(e) => handleUploadThumnail()}>upload</button>
+                            <ImageDropZone />
+                        </DivMargin>
+                    </InfoBox>
+                    <InfoBox title="Mô tả">
+                        <DivMargin
+                            style={{
+                                marginTop: '12px'
                             }}
                         >
-                            Thêm nhãn sản phẩm(Không bắt buộc)
-                        </Typography>
-                        <InputEdit
-                            id={'tag'}
-
-                            // onBlur={(event) => {
-                            //     setPrice(event.target.value);
-                            //     handleCheckError('price', event.target.value)
-                            // }}
-                            label={'Thêm nhãn sản phẩm'}
-                        // error={errorPrice ? true : false}
-                        // helperText={errorPrice}
-                        />
-                    </DivMargin>
-                    <DivMargin>
-                        <SelectCategoryCreate />
-                    </DivMargin>
-                </InfoBox>
-                <InfoBox title="Hình ảnh">
-                    <DivMargin>
-                        {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
-                        <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
-                        <button onClick={(e) => handleUploadThumnail()}>upload</button>
-                        <ImageDropZone />
-                    </DivMargin>
-                </InfoBox>
-                <InfoBox title="Mô tả">
-                    <DivMargin
-                        style={{
-                            marginTop: '12px'
-                        }}
-                    >
-                        <Typography
-                            variant="p"
-                            component="p"
-                            sx={{
-                                marginBottom: '12px',
-                                color: color.textGray
+                            <Typography
+                                variant="p"
+                                component="p"
+                                sx={{
+                                    marginBottom: '12px',
+                                    color: color.textGray
+                                }}
+                            >
+                                Mô tả ngắn
+                            </Typography>
+                            <TinyEditorMini />
+                        </DivMargin>
+                        <div
+                            style={{
+                                marginTop: '12px'
                             }}
                         >
-                            Mô tả ngắn
-                        </Typography>
-                        <TinyEditorMini />
-                    </DivMargin>
-                    <div
-                        style={{
-                            marginTop: '12px'
-                        }}
-                    >
-                        <Typography
-                            variant="p"
-                            component="p"
-                            sx={{
-                                marginBottom: '12px',
-                                color: color.textGray
-                            }}
-                        >
-                            Chi tiết
-                        </Typography>
-                        <TinyEditor />
-                    </div>
-                </InfoBox>
+                            <Typography
+                                variant="p"
+                                component="p"
+                                sx={{
+                                    marginBottom: '12px',
+                                    color: color.textGray
+                                }}
+                            >
+                                Chi tiết
+                            </Typography>
+                            <TinyEditor />
+                        </div>
+                    </InfoBox>
+                </Box>
             </Box>
-        </Box>
-    );
+        );
+    }
+
 }
