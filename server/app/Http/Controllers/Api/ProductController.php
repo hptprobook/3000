@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
 use App\Models\Tag;
+use App\Models\VariantType;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,9 +72,13 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
-                'product_variants' => 'nullable|string',
-
+                'variants' => 'required|array',
+                'variants.*.name' => 'required|string', // Tên của variant type
+                'variants.*.value' => 'required', // Giá trị của variant
+                'variants.*.price' => 'required|numeric',
             ]);
+
+            // return $request->variants;
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
@@ -105,6 +110,15 @@ class ProductController extends Controller
                 $tag = Tag::firstOrCreate(['name' => $tagName]);
 
                 $product->tags()->attach($tag->id);
+            }
+
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+                // $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
+                $product->variants()->attach($variantType->id, [
+                    'value' => $variant['value'],
+                    'price' => $variant['price']
+                ]);
             }
 
             DB::commit();
