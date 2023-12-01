@@ -14,6 +14,7 @@ import { BiUser } from 'react-icons/bi';
 import { MdDateRange, MdEdit, MdEmail, MdLocationOn, MdPhone } from 'react-icons/md';
 import SelectEdit from '~/components/common/Select/SelectEdit';
 import ModalAddress from '../../../components/common/Modal/ModalAddress';
+import { updateUserByID } from '../../../redux/slices/userSlice';
 
 const ButtonEdit = styled(IconButton)(({ theme }) => ({
     position: 'absolute',
@@ -49,15 +50,28 @@ const EditUserPage = () => {
     const [gender, setGender] = useState('');
     const [genderError, setGenderError] = useState('');
 
+    const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState('');
+
+    const [addressRender, setAddressRender] = useState('');
+
+    const [phone_number, setPhone_number] = useState('');
+    const [phone_numberError, setPhone_numberError] = useState('');
+
+    const [birth_date, setBirth_date] = useState('');
+    const [birth_dateError, setBirth_dateError] = useState('');
+
     useEffect(() => {
         if (!loadData) {
             dispatch(fetchUserById(id));
-            if (status !== 'idle') {
+            if (status == 'succeeded') {
                 setLoadData(true);
-                if (loadData) {
-                    setName(user.name);
-                    setGender(user.gender);
-                }
+                setName(user.name);
+                setGender(user.gender);
+                setEmail(user.email);
+                setPhone_number(user.phone_number);
+                setBirth_date(user.birth_date);
+                setAddressRender(user.addresses[0].address_info + ', ' + user.addresses[0].ward.path_with_type);
             }
 
         }
@@ -65,7 +79,6 @@ const EditUserPage = () => {
 
     const handleFinalAddress = (addressData) => {
         setFinalAddress(addressData);
-        console.log(finalAddress);
     };
 
     const handleEditError = (feild, value) => {
@@ -75,12 +88,89 @@ const EditUserPage = () => {
                     setNameError('Họ tên không được để trống!');
                     break;
                 }
+                if (value.length > 254) {
+                    setNameError('Họ tên không được quá 255 kí tự!');
+                    break;
+                }
+                setNameError('')
+            }
+                break;
+            case 'birth_date': {
+                if (value == '') {
+                    setBirth_dateError('Ngày sinh không được để trống!');
+                    break;
+                }
+                else {
+                    setBirth_dateError('')
+
+                }
+            }
+                break;
+            case 'phone': {
+                if (value == '') {
+                    setPhone_numberError('Số điện thoại không được để trống!');
+                    break;
+                }
+                else if (isNaN(value)) {
+                    setPhone_numberError('Số điện thoại không đúng định dạng!')
+                }
+                else if (value.length != 10) {
+                    setPhone_numberError('Số điện thoại phải gồm 10 chữ số!')
+                }
+                else {
+                    setPhone_numberError('');
+                }
+
+            }
+                break;
+            case 'email': {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (value == '') {
+                    setEmailError('Email không được để trống!');
+                    break;
+                }
+                if (!emailRegex.test(value)) {
+                    setEmailError('Email không đúng định dạng!')
+                }
+                else if (value.length > 254) {
+                    setEmailError('Email không được lớn hơn 255 kí tự!')
+                }
+                else {
+                    setEmailError('');
+                }
+
             }
                 break;
         }
     }
+    function formatDate(inputDate) {
+        const parts = inputDate.split('-');
+        if (parts.length === 3) {
+            // Assuming inputDate is in the format 'y-m-d'
+            const [year, month, day] = parts;
+            const formattedDate = `${year}/${month}/${day}`;
+            return formattedDate;
+        } else {
+            // Handle invalid input
+            console.error('Invalid date format:', inputDate);
+            return inputDate;
+        }
+    }
+
+
     function handleEditUser() {
-        console.log(user);
+        const dataUpdate = {
+            name: name,
+            email: email,
+            role: "USER",
+            phone_number: phone_number,
+            ward_id: finalAddress.ward_id,
+            gender: gender,
+            birth_date: formatDate(birth_date),
+            street: finalAddress.street,
+        }
+        console.log(dataUpdate);
+        dispatch(updateUserByID({ userId: id, data: dataUpdate }));
     }
     if (status === "loading") {
         return <div><Loading /></div>;
@@ -91,7 +181,6 @@ const EditUserPage = () => {
     }
 
     if (loadData) {
-        console.log(user)
         return (
             <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
                 <ModalAddress openModal={openModal} handleClose={handleCloseModal} onFinalAddress={handleFinalAddress} />
@@ -112,22 +201,28 @@ const EditUserPage = () => {
                         <Grid item sm={12} md={6}>
                             <InputEdit
                                 label={'Họ và tên'}
-                                value={user.name}
+                                value={name}
                                 icon={<BiUser />}
                                 onBlur={(e) => {
                                     setName(e.target.value)
                                     handleEditError('name', e.target.value)
                                 }}
                                 error={nameError != '' ? true : false}
-
+                                helperText={nameError}
                             />
                         </Grid>
                         <Grid item sm={12} md={6} lg={4}>
                             <InputEdit
                                 label={'Ngày sinh'}
-                                // value={user.name}
+                                value={user.birth_date}
                                 type={'date'}
                                 icon={<MdDateRange />}
+                                onBlur={(e) => {
+                                    setBirth_date(e.target.value)
+                                    handleEditError('birth_date', e.target.value)
+                                }}
+                                error={birth_dateError != '' ? true : false}
+                                helperText={birth_dateError}
                             />
                         </Grid>
                         <Grid item sm={12} md={6} lg={2}>
@@ -138,31 +233,47 @@ const EditUserPage = () => {
                                     { id: 'female', name: 'Nữ' },
                                     { id: 'other', name: 'Khác' },
                                 ]}
-                                value={user.gender}
-                            // onChange={ }
+                                value={gender}
+                                onBlur={(e) => {
+                                    setGender(e.target.value)
+                                }}
+                                error={genderError != '' ? true : false}
+                                helperText={genderError}
                             />
                         </Grid>
                         <Grid item sm={12} md={6}>
                             <InputEdit
                                 label={'Email'}
-                                value={user.email}
+                                value={email}
                                 type={'email'}
                                 icon={<MdEmail />}
+                                onBlur={(e) => {
+                                    setEmail(e.target.value)
+                                    handleEditError('email', e.target.value)
+                                }}
+                                error={emailError != '' ? true : false}
+                                helperText={emailError}
                             />
                         </Grid>
                         <Grid item sm={12} md={6}>
                             <InputEdit
                                 label={'Số điện thoại'}
-                                value={user.phone_number}
+                                value={phone_number}
                                 type={'phone'}
                                 icon={<MdPhone />}
+                                onBlur={(e) => {
+                                    setPhone_number(e.target.value)
+                                    handleEditError('phone', e.target.value)
+                                }}
+                                error={phone_numberError != '' ? true : false}
+                                helperText={phone_numberError}
                             />
                         </Grid>
                         <Grid item sm={12}>
                             <div style={{ position: 'relative' }}>
                                 <InputEdit
                                     label={'Địa chỉ'}
-                                    value={user}
+                                    value={addressRender}
                                     icon={<MdLocationOn />}
                                 />
                                 <ButtonEdit aria-label="Chỉnh sửa" size="lagre" onClick={() => setIsModalOpen(true)}>

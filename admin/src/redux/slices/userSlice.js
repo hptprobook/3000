@@ -26,6 +26,21 @@ export const fetchUserById = createAsyncThunk(
     }
 );
 
+export const updateUserByID = createAsyncThunk(
+    "users/updateUserByID",
+    async ({ userId, data }, { rejectWithValue }) => {
+        try {
+            const response = await UserService.editUser(userId, data);
+            return response;
+        } catch (err) {
+            console.log("Error status:", err.response.status);
+            console.log("Error data:", err.response.data);
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+
 const initialState = {
     users: [],
     selectedUser: null,
@@ -59,6 +74,17 @@ const userSlice = createSlice({
             })
             .addCase(fetchUserById.rejected, (state, action) => {
                 state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(updateUserByID.pending, (state) => {
+                state.status = "update loading";
+            })
+            .addCase(updateUserByID.fulfilled, (state, action) => {
+                state.status = "update successful";
+                state.selectedUser = action.payload;
+            })
+            .addCase(updateUserByID.rejected, (state, action) => {
+                state.status = "update failed";
                 state.error = action.payload;
             });
     },

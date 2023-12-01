@@ -99,6 +99,9 @@ export default function ModalAddress({ openModal, handleClose, onFinalAddress })
         if (value == '') {
             setDetailErrorAddress('Địa chỉ chi tiết không được để trống!')
         }
+        if (value.length < 4) {
+            setDetailErrorAddress('Địa chỉ chi tiết không được dưới 4 kí tự!')
+        }
         else {
             setDetailErrorAddress('')
         }
@@ -106,11 +109,12 @@ export default function ModalAddress({ openModal, handleClose, onFinalAddress })
     const handleAddress = () => {
         if (selectWard != '' && detailAddress != '') {
             setErrorHandle('');
-            const dataAddressDetail = wards.filter((item) => {
-                return item.id === selectWard;
-            });
-            const FinalAddress = detailAddress + ', ' + dataAddressDetail[0].path_with_type;
-            onFinalAddress(FinalAddress);
+            const dataReturn = {
+                ward_id: selectWard,
+                street: detailAddress
+            };
+            onFinalAddress(dataReturn);
+            setOpen(false);
         }
         else {
             setErrorHandle('Vui lòng nhập đầy đủ thông tin!');
