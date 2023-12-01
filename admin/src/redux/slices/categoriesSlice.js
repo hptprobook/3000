@@ -12,7 +12,19 @@ export const fetchCategoriesAsync = createAsyncThunk(
       throw error;
     }
   }
-)
+);
+export const fetchCategoryById = createAsyncThunk(
+  'categories/fetchCategoryById',
+  async (categoryId, thunkAPI) => {
+    try {
+      const res = await CategoryService.getCategoryById(categoryId);
+      return res.data; // Assuming res.data contains the category details
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 const categoriesSlice = createSlice({
   name: 'categories',
   initialState: { data: [], status: 'idle', error: null },

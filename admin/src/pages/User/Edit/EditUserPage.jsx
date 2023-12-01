@@ -46,6 +46,8 @@ const EditUserPage = () => {
     const [name, setName] = useState('');
     const [nameError, setNameError] = useState('');
 
+    const [gender, setGender] = useState('');
+    const [genderError, setGenderError] = useState('');
 
     useEffect(() => {
         if (!loadData) {
@@ -54,6 +56,7 @@ const EditUserPage = () => {
                 setLoadData(true);
                 if (loadData) {
                     setName(user.name);
+                    setGender(user.gender);
                 }
             }
 
@@ -64,6 +67,18 @@ const EditUserPage = () => {
         setFinalAddress(addressData);
         console.log(finalAddress);
     };
+
+    const handleEditError = (feild, value) => {
+        switch (feild) {
+            case 'name': {
+                if (value == '') {
+                    setNameError('Họ tên không được để trống!');
+                    break;
+                }
+            }
+                break;
+        }
+    }
     function handleEditUser() {
         console.log(user);
     }
@@ -99,7 +114,12 @@ const EditUserPage = () => {
                                 label={'Họ và tên'}
                                 value={user.name}
                                 icon={<BiUser />}
-                                onChange={(e) => setName(e.target.value)}
+                                onBlur={(e) => {
+                                    setName(e.target.value)
+                                    handleEditError('name', e.target.value)
+                                }}
+                                error={nameError != '' ? true : false}
+
                             />
                         </Grid>
                         <Grid item sm={12} md={6} lg={4}>
@@ -119,6 +139,7 @@ const EditUserPage = () => {
                                     { id: 'other', name: 'Khác' },
                                 ]}
                                 value={user.gender}
+                            // onChange={ }
                             />
                         </Grid>
                         <Grid item sm={12} md={6}>
