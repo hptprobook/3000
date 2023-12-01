@@ -14,7 +14,7 @@ import { BiUser } from 'react-icons/bi';
 import { MdDateRange, MdEdit, MdEmail, MdLocationOn, MdPhone } from 'react-icons/md';
 import SelectEdit from '~/components/common/Select/SelectEdit';
 import ModalAddress from '../../../components/common/Modal/ModalAddress';
-import { updateUserByID } from '../../../redux/slices/userSlice';
+import { setStatus, updateUserByID } from '../../../redux/slices/userSlice';
 
 const ButtonEdit = styled(IconButton)(({ theme }) => ({
     position: 'absolute',
@@ -43,6 +43,8 @@ const EditUserPage = () => {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.users.selectedUser);
     const status = useSelector((state) => state.users.status);
+    const statusUpdate = useSelector((state) => state.users.status);
+
     const error = useSelector((state) => state.users.error);
     const [name, setName] = useState('');
     const [nameError, setNameError] = useState('');
@@ -74,13 +76,17 @@ const EditUserPage = () => {
                 setBirth_date(user.birth_date);
                 if (user.addresses[0] != null) {
                     setAddressRender(user.addresses[0].address_info + ', ' + user.addresses[0].ward.path_with_type);
-
                 }
+                dispatch(setStatus('idle'));
             }
-
         }
     }, [loadData, dispatch, id, status]);
-
+    useEffect(() => {
+        if (statusUpdate === true) {
+            alert('Uploading successful');
+            setStatus('idle');
+        }
+    }, [statusUpdate]);
     const handleFinalAddress = (addressData) => {
         setFinalAddress(addressData);
     };

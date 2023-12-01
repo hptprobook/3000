@@ -1,5 +1,5 @@
 // src/redux/userSlice.js
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import UserService from "../../services/user.service";
 
 export const fetchAllUsers = createAsyncThunk(
@@ -47,7 +47,7 @@ const initialState = {
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
-
+export const setStatus = createAction('users/setStatus');
 const userSlice = createSlice({
     name: "users",
     initialState,
@@ -81,12 +81,15 @@ const userSlice = createSlice({
             })
             .addCase(updateUserByID.fulfilled, (state, action) => {
                 state.status = "update successful";
-                state.selectedUser = action.payload;
+                state.updateUser = action.payload;
             })
             .addCase(updateUserByID.rejected, (state, action) => {
                 state.status = "update failed";
                 state.error = action.payload;
-            });
+            })
+            .addCase(setStatus, (state, action) => {
+                state.status = action.payload;
+            });;
     },
 });
 
