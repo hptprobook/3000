@@ -3,12 +3,13 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Typography from '@mui/material/Typography';
 import color from '../../../config/colorConfig';
-import { Grid } from '@mui/material';
+import { FormHelperText, Grid } from '@mui/material';
 import InputEdit from '../TextField/InputEdit';
 import { MdMyLocation } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllProvinces, fetchDistricts, fetchWards, setStatus } from '../../../redux/slices/addressSlice';
 import SelectEditAddress from '../Select/SelectAddress';
+import ButtonNormal from '../Button/ButtonNormal';
 const style = {
     position: 'absolute',
     top: '50%',
@@ -19,17 +20,21 @@ const style = {
     borderRadius: '14px',
 };
 
-export default function ModalAddress({ openModal, handleClose }) {
+export default function ModalAddress({ openModal, handleClose, onFinalAddress }) {
+    const defaultAddress = [{ id: 1, name: 'Trống' }];
+    const [detailAddress, setDetailAddress] = React.useState('');
+    const [detailErrorAddress, setDetailErrorAddress] = React.useState('');
+    const [errorHandle, setErrorHandle] = React.useState('');
+
     const dispatch = useDispatch();
     const provinces = useSelector((state) => state.address.provinces);
     const districts = useSelector((state) => state.address.districts);
     const wards = useSelector((state) => state.address.wards);
     const status = useSelector((state) => state.address.status);
-
     // Use openModal directly instead of local state
-    const [provincesList, setProvinces] = React.useState([{ id: 1, name: 'Trống' }]);
-    const [districtsList, setDistricts] = React.useState([{ id: 1, name: 'Trống' }]);
-    const [wardsList, setWards] = React.useState([{ id: 1, name: 'Trống' }]);
+    const [provincesList, setProvinces] = React.useState(defaultAddress);
+    const [districtsList, setDistricts] = React.useState(defaultAddress);
+    const [wardsList, setWards] = React.useState(defaultAddress);
 
     const [selectDistrict, setSelectDistricts] = React.useState('');
     const [selectProvince, setSelectProvince] = React.useState('');
@@ -37,6 +42,8 @@ export default function ModalAddress({ openModal, handleClose }) {
     const [loadDataAddress, setLoadDataProvince] = React.useState(false);
     const [loadDistrics, setLoadDistrics] = React.useState(false);
     const [loadWards, setLoadWards] = React.useState(false);
+
+    // fetch dữ liệu về địa chỉ
 
     React.useEffect(() => {
         if (!loadDataAddress) {
@@ -50,49 +57,65 @@ export default function ModalAddress({ openModal, handleClose }) {
             dispatch(setStatus('idle'));
         }
     }, [provinces, status]);
-    // React.useEffect(() => {
-    //     if (status === 'districts already' && districtsList) {
-    //         setWards([{ id: '', name: 'Trống' }]);
-    //     }
-    // }, [districtsList, status]);
-    React.useEffect(() => {
-        const fetchData = async () => {
-
-            await dispatch(fetchDistricts(selectProvince));
-            if (status == 'districts already') {
-                setLoadDistrics(true);
-                setDistricts(districts);
-                dispatch(setStatus('idle'));
-            }
-
-        };
-        if (selectProvince !== '' && !loadDistrics) {
-            fetchData(); // Call the async function immediately
-        }
-
-    }, [selectProvince, loadDistrics, dispatch, status]);
 
     React.useEffect(() => {
-        const fetchData = async () => {
-
-            await dispatch(fetchWards(selectDistrict));
-            if (status == 'wards already') {
-                setLoadWards(true);
-                setWards(wards);
-                dispatch(setStatus('idle'));
-            }
-
-        };
-        if (selectDistrict !== '' && !loadWards) {
-            fetchData(); // Call the async function immediately
+        if (selectProvince) {
+            dispatch(fetchDistricts(selectProvince));
         }
-    }, [selectDistrict, loadWards, dispatch, status]);
-    // Use openModal and handleClose directly
+    }, [selectProvince]);
+
+    React.useEffect(() => {
+        if (status === 'districts already' && districts !== undefined) {
+            setSelectDistricts('');
+            setDistricts(districts);
+            setLoadDistrics(true);
+            dispatch(setStatus('idle'));
+        }
+    }, [districts, status]);
+    React.useEffect(() => {
+        if (selectDistrict && selectDistrict != '') {
+            dispatch(fetchWards(selectDistrict));
+        }
+    }, [selectDistrict]);
+
+    React.useEffect(() => {
+        if (status === 'wards already' && wards !== undefined) {
+            setSelectWard('');
+            setWards(wards);
+            setLoadWards(true);
+            dispatch(setStatus('idle'));
+        }
+    }, [wards, status]);
+
+    // xử lý đóng mở modal
 
     const [open, setOpen] = React.useState(openModal);
     React.useEffect(() => {
         setOpen(openModal);
     }, [openModal]);
+
+    // xử lí địa chỉ chi tiết 
+    const handleCheckError = (value) => {
+        if (value == '') {
+            setDetailErrorAddress('Địa chỉ chi tiết không được để trống!')
+        }
+        else {
+            setDetailErrorAddress('')
+        }
+    };
+    const handleAddress = () => {
+        if (selectWard != '' && detailAddress != '') {
+            setErrorHandle('');
+            const dataAddressDetail = wards.filter((item) => {
+                return item.id === selectWard;
+            });
+            const FinalAddress = detailAddress + ', ' + dataAddressDetail[0].path_with_type;
+            onFinalAddress(FinalAddress);
+        }
+        else {
+            setErrorHandle('Vui lòng nhập đầy đủ thông tin!');
+        }
+    }
     return (
         <div>
             <Modal
@@ -103,7 +126,7 @@ export default function ModalAddress({ openModal, handleClose }) {
                 aria-describedby="keep-mounted-modal-description"
             >
                 <Box sx={style}>
-                    <Typography id="keep-mounted-modal-title" variant="h6" sx={{ color: color.textColor.dark }} component="h2">
+                    <Typography id="keep-mounted-modal-title" variant="h6" sx={{ color: color.textColor.dark, marginBottom: '32px' }} component="h2">
                         Chỉnh sửa địa chỉ
                     </Typography>
                     <Box>
@@ -118,6 +141,8 @@ export default function ModalAddress({ openModal, handleClose }) {
                                         setSelectProvince(e.target.value)
                                         setLoadDistrics(false)
                                         setSelectDistricts('')
+                                        setSelectWard('')
+                                        setWards(defaultAddress)
                                     }}
                                 />
                             </Grid>
@@ -125,11 +150,12 @@ export default function ModalAddress({ openModal, handleClose }) {
                                 <SelectEditAddress
                                     id={'district'}
                                     label={'Huyện/ Quận'}
-                                    loading={status == 'districts already'}
+                                    loading={loadDistrics}
                                     data={districtsList}
                                     onChange={(e) => {
                                         setSelectDistricts(e.target.value)
                                         setLoadWards(false)
+                                        setWards(defaultAddress)
                                     }}
                                 />
                             </Grid>
@@ -140,22 +166,38 @@ export default function ModalAddress({ openModal, handleClose }) {
                                     value={selectWard}
                                     loading={loadWards}
                                     data={wardsList}
-
                                     onChange={(e) => {
                                         setSelectWard(e.target.value)
-                                        // setLoadWards(false)
                                     }}
                                 />
                             </Grid>
                             <Grid item sm={12}>
                                 <InputEdit
+                                    disabled={selectWard == '' ? true : false}
                                     label={'Chi tiết'}
-                                    value={''}
-                                    type={'text'}
                                     icon={<MdMyLocation />}
+                                    error={detailErrorAddress != '' ? true : false}
+                                    helperText={detailErrorAddress}
+                                    onBlur={(e) => {
+                                        setDetailAddress(e.target.value)
+                                        handleCheckError(e.target.value)
+                                    }}
                                 />
                             </Grid>
-
+                            <Grid item sm={12}>
+                                <ButtonNormal
+                                    label='Lưu địa chỉ'
+                                    bg='true'
+                                    onClick={(e) => handleAddress()}
+                                />
+                            </Grid>
+                            <Grid item sm={12}>
+                                <FormHelperText
+                                    sx={{
+                                        color: color.textColor.error,
+                                    }}
+                                >{errorHandle}</FormHelperText>
+                            </Grid>
                         </Grid>
                     </Box>
                 </Box>

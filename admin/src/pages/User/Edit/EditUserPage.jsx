@@ -26,9 +26,12 @@ const ButtonEdit = styled(IconButton)(({ theme }) => ({
     }
 }))
 const EditUserPage = () => {
+    // lấy id từ url
     const { id } = useParams();
+
     const [loadData, setLoadData] = useState(false);
     const [openModal, setIsModalOpen] = React.useState(false);
+    const [finalAddress, setFinalAddress] = useState(null);
     function handleSetValue(funcSet, value) {
         funcSet(value);
         console.log(value);
@@ -41,6 +44,8 @@ const EditUserPage = () => {
     const status = useSelector((state) => state.users.status);
     const error = useSelector((state) => state.users.error);
     const [name, setName] = useState('');
+    const [nameError, setNameError] = useState('');
+
 
     useEffect(() => {
         if (!loadData) {
@@ -54,6 +59,11 @@ const EditUserPage = () => {
 
         }
     }, [loadData, dispatch, id, status]);
+
+    const handleFinalAddress = (addressData) => {
+        setFinalAddress(addressData);
+        console.log(finalAddress);
+    };
     function handleEditUser() {
         console.log(user);
     }
@@ -69,7 +79,7 @@ const EditUserPage = () => {
         console.log(user)
         return (
             <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
-                <ModalAddress openModal={openModal} handleClose={handleCloseModal} />
+                <ModalAddress openModal={openModal} handleClose={handleCloseModal} onFinalAddress={handleFinalAddress} />
                 <ButtonBackFullW label={'Trở lại'} />
                 <HeaderUser nameUser={user.name} role={user.role} />
                 <Box sx={{
@@ -131,8 +141,7 @@ const EditUserPage = () => {
                             <div style={{ position: 'relative' }}>
                                 <InputEdit
                                     label={'Địa chỉ'}
-                                    value={user.phone_number}
-                                    type={'phone'}
+                                    value={user}
                                     icon={<MdLocationOn />}
                                 />
                                 <ButtonEdit aria-label="Chỉnh sửa" size="lagre" onClick={() => setIsModalOpen(true)}>
