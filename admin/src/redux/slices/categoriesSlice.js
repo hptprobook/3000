@@ -55,6 +55,17 @@ const categoriesSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
+      .addCase(fetchCategoryById.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCategoryById.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.selectedCategory = action.payload; // Storing the details of a specific category
+      })
+      .addCase(fetchCategoryById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
       .addCase(fetchAllBrands.pending, (state) => {
         state.status = 'loading';
       })
