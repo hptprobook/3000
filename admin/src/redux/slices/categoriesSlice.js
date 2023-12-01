@@ -25,6 +25,19 @@ export const fetchCategoryById = createAsyncThunk(
   }
 );
 
+export const fetchAllBrands = createAsyncThunk(
+  'brands/fetchBrands',
+  async (_, thunkAPI) => {
+    try {
+      const res = await CategoryService.getAllBrand();
+      // Extracting only the necessary data from the response
+      return res.data; // Assuming res.data contains the categories array
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 const categoriesSlice = createSlice({
   name: 'categories',
   initialState: { data: [], status: 'idle', error: null },
