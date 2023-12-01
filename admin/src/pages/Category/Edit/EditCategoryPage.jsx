@@ -46,7 +46,7 @@ const EditCategoryPage = () => {
         return categories.find((category) => category.id === id);
     });
     const status = useSelector((state) => state.categories.status);
-   
+
     const handleCloseModal = () => {
         // Đóng modal nếu cần
     };
@@ -54,7 +54,7 @@ const EditCategoryPage = () => {
     const handleEditCategory = () => {
         // Thực hiện logic cập nhật danh mục với các giá trị mới của name, parentId và iconUrl
         console.log({ name, parentId, iconUrl });
-        
+
     };
 
     if (status === "loading") {

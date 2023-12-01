@@ -25,19 +25,6 @@ export const fetchCategoryById = createAsyncThunk(
   }
 );
 
-export const fetchAllBrands = createAsyncThunk(
-  'brands/fetchBrands',
-  async (_, thunkAPI) => {
-    try {
-      const res = await CategoryService.getAllBrand();
-      // Extracting only the necessary data from the response
-      return res.data; // Assuming res.data contains the categories array
-    } catch (error) {
-      throw error;
-    }
-  }
-);
-
 const categoriesSlice = createSlice({
   name: 'categories',
   initialState: { data: [], status: 'idle', error: null },
@@ -55,17 +42,6 @@ const categoriesSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
-      .addCase(fetchAllBrands.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(fetchAllBrands.fulfilled, (state, action) => {
-        state.status = 'brands is ready';
-        state.data = action.payload; // Storing only the categories array
-      })
-      .addCase(fetchAllBrands.rejected, (state, action) => {
-        state.status = 'failed fetching brands';
-        state.error = action.error.message;
-      });
   },
 });
 

@@ -9,13 +9,15 @@ import color from "../../../config/colorConfig";
 import InputEdit from "../../../components/common/TextField/InputEdit";
 import InfoBox from "../../../components/common/Box/InforBox";
 import SelectEdit from "../../../components/common/Select/SelectEdit";
-import SelectCategoryCreate from "../../../components/common/Select/SelectCategoryCreate";
 import { v4 } from 'uuid';
 import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllBrands, fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import Loading from "../../../components/common/Loading/Loading";
+import { fetchAllBrands } from "../../../redux/slices/brandsSlice";
+import { fetchAllTags } from "../../../redux/slices/tagsSlice";
+import AutoFillTag from "../../../components/common/AutoCompelete/AutoFillTag";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -26,8 +28,11 @@ export default function CreateProductPage() {
     const dispatch = useDispatch();
     const categories = useSelector((state) => state.categories.data);
     const brands = useSelector((state) => state.brands.data);
-
+    const tags = useSelector((state) => state.tags.tags);
     const statusLoad = useSelector((state) => state.categories.status);
+    const statusLoadBrands = useSelector((state) => state.brands.status);
+    const statusLoadTags = useSelector((state) => state.tags.status);
+
     const error = useSelector((state) => state.users.error);
 
     // khai báo các hàm liên quan đế dữ liệu lấy về 
@@ -63,8 +68,18 @@ export default function CreateProductPage() {
 
     // lấy dữ liệu về category và tag
     useEffect(() => {
-        dispatch(fetchCategoriesAsync(), fetchAllBrands());
+        dispatch(fetchCategoriesAsync());
     }, [dispatch]);
+    useEffect(() => {
+        if (categories) {
+            dispatch(fetchAllBrands());
+        }
+    }, [categories]);
+    useEffect(() => {
+        if (statusLoadBrands == 'brands is ready') {
+            dispatch(fetchAllTags());
+        }
+    }, [statusLoadBrands]);
 
     useEffect(() => {
         const parent = categories.filter(item => item.parent_id == 0);
@@ -182,12 +197,12 @@ export default function CreateProductPage() {
     };
 
     // debug
+    console.log(tags)
 
-    console.log(selectedCategory)
     if (statusLoad === "loading") {
         return <div><Loading /></div>;
     }
-    if (statusLoad === "succeeded") {
+    if (statusLoadTags === "succeeded tags") {
         return (
             <Box>
                 <HeaderPage
@@ -274,33 +289,15 @@ export default function CreateProductPage() {
                         <DivMargin>
                             <SelectEdit
                                 label={'Nhãn hàng'}
-                                data={[
-                                    { id: 'male', name: 'Nam' },
-                                    { id: 'female', name: 'Nữ' },
-                                    { id: 'other', name: 'Khác' },
-                                ]}
-                                value={'male'}
+                                data={brands}
+                                value={''}
                             />
                         </DivMargin>
 
                     </InfoBox>
                     <InfoBox title="Nhãn sản phẩm">
                         <DivMargin>
-
-                            <InputEdit
-                                id={'tag'}
-                                note={'Không bắt buộc*'}
-                                // onBlur={(event) => {
-                                //     setPrice(event.target.value);
-                                //     handleCheckError('price', event.target.value)
-                                // }}
-                                label={'Thêm nhãn sản phẩm'}
-                            // error={errorPrice ? true : false}
-                            // helperText={errorPrice}
-                            />
-                        </DivMargin>
-                        <DivMargin>
-                            <SelectCategoryCreate />
+                            <AutoFillTag data={tags} />
                         </DivMargin>
                     </InfoBox>
                     <InfoBox title="Hình ảnh">
