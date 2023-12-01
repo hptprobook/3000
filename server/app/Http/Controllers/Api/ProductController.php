@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
 use App\Models\Tag;
+use App\Models\VariantType;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,8 +72,9 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
-                'product_variants' => 'nullable|string',
-
+                'variants' => 'array',
+                'variants.*.name' => 'string',
+                'variants.*.price' => 'numeric',
             ]);
 
             if ($validator->fails()) {
@@ -105,6 +107,14 @@ class ProductController extends Controller
                 $tag = Tag::firstOrCreate(['name' => $tagName]);
 
                 $product->tags()->attach($tag->id);
+            }
+
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+                $product->variants()->attach($variantType->id, [
+                    'value' => $variant['value'],
+                    'price' => $variant['price']
+                ]);
             }
 
             DB::commit();

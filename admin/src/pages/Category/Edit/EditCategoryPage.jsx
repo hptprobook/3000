@@ -48,9 +48,6 @@ const EditCategoryPage = () => {
         }
     }, [loadData, dispatch, id]);
 
-
-    
-
     const handleCloseModal = () => {
         // Đóng modal nếu cần
     };

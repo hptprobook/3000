@@ -19,6 +19,15 @@ const UserService = {
             throw err;
         }
     },
+    editUser: async (id, data) => {
+        try {
+            const res = await request.put(`users/${id}`, data);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
 };
 
 export default UserService;
