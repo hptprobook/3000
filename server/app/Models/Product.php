@@ -45,6 +45,7 @@ class Product extends Model
 
     public function variants()
     {
-        return $this->hasMany(ProductVariant::class, 'product_id');
+        return $this->belongsToMany(VariantType::class, 'product_variants')
+            ->withPivot(['value', 'price']);
     }
 }

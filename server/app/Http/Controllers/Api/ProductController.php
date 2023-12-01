@@ -70,7 +70,9 @@ class ProductController extends Controller
                 'images' => 'required|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
-                'quantity' => 'required|integer'
+                'quantity' => 'required|integer',
+                'product_variants' => 'nullable|string',
+
             ]);
 
             if ($validator->fails()) {
@@ -120,19 +122,18 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews', 'variants.variantType'])
+            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews', 'variants'])
                 ->findOrFail($id);
 
-            $averageRating = $product->reviews->avg('rating') ?? 'Chưa có đánh giá';
+            $averageRating = $product->reviews->avg('rating') ?? 'No rating';
 
-            $groupedVariants = $product->variants->groupBy('variantType.name')->map(function ($variantGroup, $variantTypeName) {
+            $groupedVariants = $product->variants->groupBy('name')->map(function ($variantGroup, $variantTypeName) {
                 return [
                     'variantType' => $variantTypeName,
                     'options' => $variantGroup->map(function ($variant) {
                         return [
-                            'id' => $variant->id,
-                            'name' => $variant->value,
-                            'price' => $variant->price ?? null
+                            'name' => $variant->pivot->value,
+                            'price' => $variant->pivot->price ?? null
                         ];
                     })
                 ];
@@ -149,6 +150,7 @@ class ProductController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function update(Request $request, $id)
     {
