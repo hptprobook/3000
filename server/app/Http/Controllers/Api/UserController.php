@@ -87,7 +87,7 @@ class UserController extends Controller
 
             $address = Address::updateOrCreate(
                 ['user_id' => $user->id, 'ward_id' => $validatedData['ward_id']],
-                ['name' => $validatedData['name'], 'phone' => $validatedData['phone'], 'address_info' => $validatedData['street'], 'note' => $validatedData['note']]
+                ['name' => $validatedData['name'], 'phone' => $validatedData['phone_number'], 'address_info' => $validatedData['street']]
             );
 
             $user = $user->update([

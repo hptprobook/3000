@@ -71,9 +71,13 @@ const StyledDetailInfo = styled("div")(() => ({
     },
 }));
 
-export default function ProductDetailInfo() {
+export default function ProductDetailInfo({ product }) {
+    console.log(
+        "🚀 ~ file: ProductDetailInfo.jsx:75 ~ ProductDetailInfo ~ product:",
+        product
+    );
     const formatPriceToVND = (price) => {
-        return price.toLocaleString("vi-VN");
+        return price ? price.toLocaleString("vi-VN") : 0;
     };
 
     const fakeData = {
@@ -132,10 +136,14 @@ export default function ProductDetailInfo() {
         updatedActiveText.push({ variantType, optionName });
         setActiveText(updatedActiveText);
     };
-    console.log(
-        "🚀 ~ file: ProductDetailInfo.jsx:118 ~ ProductDetailInfo ~ activeText:",
-        activeText
-    );
+
+    let brand = "";
+
+    product?.brands.map((item) => {
+        brand = item.name;
+    });
+
+    console.log(brand);
 
     return (
         <StyledDetailInfo>
@@ -145,23 +153,21 @@ export default function ProductDetailInfo() {
                     alt="logo"
                 />
                 <p>
-                    Thương hiệu: <Link href={"/"}>VANDO</Link>
+                    Thương hiệu: <Link href={"/"}>{brand}</Link>
                 </p>
             </div>
-            <h3 className="productDetailInfo__name">
-                Tủ Để Đồ Có Nắp Đậy HÀNG NHẬP TRUNG ĐẸP XỊN Bằng Nhựa PVC Chống
-                Ẩm Mốc Trong, Kệ Để Đồ Nhà Tắm Vệ Sinh Kèm Bánh Xe Linh Hoạt
-            </h3>
+            <h3 className="productDetailInfo__name">{product?.name}</h3>
             <div className="productDetailInfo__rate">
-                <Rating rate={4.5} size={"18px"} /> | <p>Đã bán: 6</p>
+                <Rating rate={product?.average_rating} size={"18px"} /> |{" "}
+                <p>Đã bán: {product?.sold}</p>
             </div>
             <div className="productDetailInfo__price">
-                <p className="price">{formatPriceToVND(30000000)}</p>
-                <div className="discount">-44%</div>
+                <p className="price">{formatPriceToVND(product?.price)}</p>
+                <div className="discount">-{product?.discount}%</div>
             </div>
             <div className="productDetailInfo__variant">
                 <div>
-                    {fakeData.variants.map((variant) => (
+                    {product?.variants.map((variant) => (
                         <div
                             key={variant.variantType}
                             style={{
