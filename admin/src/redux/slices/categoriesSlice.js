@@ -12,8 +12,6 @@ export const fetchCategoriesAsync = createAsyncThunk(
       throw error;
     }
   }
-);
-
 const categoriesSlice = createSlice({
   name: 'categories',
   initialState: { data: [], status: 'idle', error: null },

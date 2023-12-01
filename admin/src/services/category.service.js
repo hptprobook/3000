@@ -12,6 +12,14 @@ const CategoryService = {
       throw err;
     }
   },
+  getCategoryById: async (categoryId) => {
+    try {
+      const res = await request.get(`categories/${categoryId}`);
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  },
   getAllBrand: async () => {
     try {
       const res = await request.get("brands");
