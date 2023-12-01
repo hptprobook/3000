@@ -54,9 +54,9 @@ const StyledProductDetailSlider = styled("div")(() => ({
 }));
 
 export default function ProductDetailSlider({ product }) {
-    const [selectedImage, setSelectedImage] = useState(product.images[0]);
+    const [selectedImage, setSelectedImage] = useState(product?.images[0]);
     const [activeThumbnail, setActiveThumbnail] = useState(
-        product.images[0].id
+        product?.images[0].id
     );
 
     const handleThumbnailHover = (image) => {
@@ -71,12 +71,12 @@ export default function ProductDetailSlider({ product }) {
         <StyledProductDetailSlider>
             <div className="container__slider--img">
                 <img
-                    src={selectedImage.image_url}
-                    alt={selectedImage.image_alt}
+                    src={selectedImage?.image_url}
+                    alt={selectedImage?.image_alt}
                 />
             </div>
             <div className="thumbnails">
-                {product.images.map((image) => (
+                {product?.images.map((image) => (
                     <div
                         key={image.id}
                         className={`container__slider--thumb ${
@@ -91,40 +91,4 @@ export default function ProductDetailSlider({ product }) {
             </div>
         </StyledProductDetailSlider>
     );
-}
-
-{
-    /* <Swiper
-                spaceBetween={10}
-                thumbs={{ swiper: thumbsSwiper }}
-                modules={[FreeMode, Navigation, Thumbs]}
-                className="productDetail__slider--container"
-            >
-                {product.images.map((image) => (
-                    <SwiperSlide
-                        key={image.id}
-                        className="container__slider--img"
-                    >
-                        <img src={image.image_url} alt={image.image_alt} />
-                    </SwiperSlide>
-                ))}
-            </Swiper>
-            <Swiper
-                onSwiper={setThumbsSwiper}
-                spaceBetween={10}
-                slidesPerView={6}
-                freeMode={true}
-                watchSlidesProgress={true}
-                modules={[FreeMode, Navigation, Thumbs]}
-                className="productDetail__slider--thumbs"
-            >
-                {product.images.map((image) => (
-                    <SwiperSlide
-                        key={image.id}
-                        className="container__slider--thumb"
-                    >
-                        <img src={image.image_url} alt={image.image_alt} />
-                    </SwiperSlide>
-                ))}
-            </Swiper> */
 }

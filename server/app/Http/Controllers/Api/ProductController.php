@@ -72,9 +72,10 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
-                'variants' => 'array',
-                'variants.*.name' => 'string',
-                'variants.*.price' => 'numeric',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             if ($validator->fails()) {
@@ -181,7 +182,11 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags' => 'sometimes|string',
                 'status' => 'required',
-                'quantity' => 'required|numeric|between:0,10000'
+                'quantity' => 'required|numeric|between:0,10000',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             $product->update($request->only([
@@ -212,6 +217,23 @@ class ProductController extends Controller
                     ProductTag::create([
                         'product_id' => $product->id,
                         'name' => $tag_name
+                    ]);
+                }
+            }
+
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+
+                $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
+                if ($existingVariant) {
+                    $product->variants()->updateExistingPivot($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
+                    ]);
+                } else {
+                    $product->variants()->attach($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
                     ]);
                 }
             }
