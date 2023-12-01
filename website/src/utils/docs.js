@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import Rating from "@/components/common/Rating/Rating";
 import Variant from "@/components/common/Variant/Variant";
-import { VariantContext } from "@/provider/VariantContext";
+import { useVariantSelection } from "@/hooks/useVariantSelection";
 
 const StyledDetailInfo = styled("div")(() => ({
     backgroundColor: "#fff",
@@ -71,13 +71,9 @@ const StyledDetailInfo = styled("div")(() => ({
     },
 }));
 
-export default function ProductDetailInfo({ product }) {
-    console.log(
-        "🚀 ~ file: ProductDetailInfo.jsx:75 ~ ProductDetailInfo ~ product:",
-        product
-    );
+export default function ProductDetailInfo() {
     const formatPriceToVND = (price) => {
-        return price ? price.toLocaleString("vi-VN") : 0;
+        return price.toLocaleString("vi-VN");
     };
 
     const fakeData = {
@@ -107,19 +103,10 @@ export default function ProductDetailInfo({ product }) {
 
     useEffect(() => {
         const initialSelections = {};
-        const initialActiveText = [];
-
         fakeData.variants.forEach((variant) => {
-            const firstOptionName = variant.options[0].name;
-            initialSelections[variant.variantType] = firstOptionName;
-            initialActiveText.push({
-                variantType: variant.variantType,
-                optionName: firstOptionName,
-            });
+            initialSelections[variant.variantType] = variant.options[0].name;
         });
-
         setSelectedOptions(initialSelections);
-        setActiveText(initialActiveText);
     }, []);
 
     const handleOptionSelect = (variantType, optionName) => {
@@ -127,7 +114,7 @@ export default function ProductDetailInfo({ product }) {
         handleActiveTextChange(variantType, optionName);
     };
 
-    const { activeText, setActiveText } = useContext(VariantContext);
+    const [activeText, setActiveText] = useState([]);
 
     const handleActiveTextChange = (variantType, optionName) => {
         const updatedActiveText = activeText.filter(
@@ -136,14 +123,10 @@ export default function ProductDetailInfo({ product }) {
         updatedActiveText.push({ variantType, optionName });
         setActiveText(updatedActiveText);
     };
-
-    let brand = "";
-
-    product?.brands.map((item) => {
-        brand = item.name;
-    });
-
-    console.log(brand);
+    console.log(
+        "🚀 ~ file: ProductDetailInfo.jsx:118 ~ ProductDetailInfo ~ activeText:",
+        activeText
+    );
 
     return (
         <StyledDetailInfo>
@@ -153,21 +136,23 @@ export default function ProductDetailInfo({ product }) {
                     alt="logo"
                 />
                 <p>
-                    Thương hiệu: <Link href={"/"}>{brand}</Link>
+                    Thương hiệu: <Link href={"/"}>VANDO</Link>
                 </p>
             </div>
-            <h3 className="productDetailInfo__name">{product?.name}</h3>
+            <h3 className="productDetailInfo__name">
+                Tủ Để Đồ Có Nắp Đậy HÀNG NHẬP TRUNG ĐẸP XỊN Bằng Nhựa PVC Chống
+                Ẩm Mốc Trong, Kệ Để Đồ Nhà Tắm Vệ Sinh Kèm Bánh Xe Linh Hoạt
+            </h3>
             <div className="productDetailInfo__rate">
-                <Rating rate={product?.average_rating} size={"18px"} /> |{" "}
-                <p>Đã bán: {product?.sold}</p>
+                <Rating rate={4.5} size={"18px"} /> | <p>Đã bán: 6</p>
             </div>
             <div className="productDetailInfo__price">
-                <p className="price">{formatPriceToVND(product?.price)}</p>
-                <div className="discount">-{product?.discount}%</div>
+                <p className="price">{formatPriceToVND(30000000)}</p>
+                <div className="discount">-44%</div>
             </div>
             <div className="productDetailInfo__variant">
                 <div>
-                    {product?.variants.map((variant) => (
+                    {fakeData.variants.map((variant) => (
                         <div
                             key={variant.variantType}
                             style={{

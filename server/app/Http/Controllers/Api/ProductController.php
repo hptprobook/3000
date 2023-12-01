@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
 use App\Models\Tag;
+use App\Models\VariantType;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -22,13 +23,11 @@ class ProductController extends Controller
     {
         try {
             $products = Product::with(['reviews', 'images'])
-                // Thêm trường đánh giá trung bình
                 ->withCount(['reviews as average_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(rating),0)'));
                 }])
                 ->get();
 
-            // Chuyển đổi trường average_rating thành số thực
             $products->each(function ($product) {
                 $product->average_rating = (float) $product->average_rating;
             });
@@ -43,11 +42,9 @@ class ProductController extends Controller
     {
         try {
             $products = Product::with(['reviews', 'images', 'category'])
-                // Thêm trường đánh giá trung bình vào mỗi sản phẩm
                 ->withCount(['reviews as average_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(rating),0)'));
                 }])
-                // Sắp xếp sản phẩm theo đánh giá trung bình
                 ->orderBy('average_rating', 'desc')
                 ->get();
 
@@ -74,7 +71,10 @@ class ProductController extends Controller
                 'images' => 'required|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
-                'quantity' => 'required|integer'
+                'quantity' => 'required|integer',
+                'variants' => 'array',
+                'variants.*.name' => 'string',
+                'variants.*.price' => 'numeric',
             ]);
 
             if ($validator->fails()) {
@@ -109,6 +109,14 @@ class ProductController extends Controller
                 $product->tags()->attach($tag->id);
             }
 
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+                $product->variants()->attach($variantType->id, [
+                    'value' => $variant['value'],
+                    'price' => $variant['price']
+                ]);
+            }
+
             DB::commit();
 
             return response()->json($product, Response::HTTP_CREATED);
@@ -124,15 +132,35 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews'])->findOrFail($id);
+            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews', 'variants'])
+                ->findOrFail($id);
 
-            return response()->json($product, Response::HTTP_OK);
+            $averageRating = $product->reviews->avg('rating') ?? 'No rating';
+
+            $groupedVariants = $product->variants->groupBy('name')->map(function ($variantGroup, $variantTypeName) {
+                return [
+                    'variantType' => $variantTypeName,
+                    'options' => $variantGroup->map(function ($variant) {
+                        return [
+                            'name' => $variant->pivot->value,
+                            'price' => $variant->pivot->price ?? null
+                        ];
+                    })
+                ];
+            })->values();
+
+            $productResource = $product->toArray();
+            $productResource['average_rating'] = $averageRating;
+            $productResource['variants'] = $groupedVariants;
+
+            return response()->json($productResource, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function update(Request $request, $id)
     {

@@ -12,9 +12,9 @@ const CategoryService = {
       throw err;
     }
   },
-  getAllBrand: async () => {
+  getCategoryById: async (categoryId) => {
     try {
-      const res = await request.get("brands");
+      const res = await request.get(`categories/${categoryId}`);
       return res;
     } catch (err) {
       throw err;

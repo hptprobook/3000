@@ -13,6 +13,18 @@ export const fetchCategoriesAsync = createAsyncThunk(
     }
   }
 );
+export const fetchCategoryById = createAsyncThunk(
+  'categories/fetchCategoryById',
+  async (categoryId, thunkAPI) => {
+    try {
+      const res = await CategoryService.getCategoryById(categoryId);
+      return res.data; // Assuming res.data contains the category details
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+
 export const fetchAllBrands = createAsyncThunk(
   'brands/fetchBrands',
   async (_, thunkAPI) => {
@@ -40,6 +52,17 @@ const categoriesSlice = createSlice({
         state.data = action.payload; // Storing only the categories array
       })
       .addCase(fetchCategoriesAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(fetchCategoryById.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCategoryById.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.selectedCategory = action.payload; // Storing the details of a specific category
+      })
+      .addCase(fetchCategoryById.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       })
