@@ -72,13 +72,10 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
-                'variants' => 'required|array',
-                'variants.*.name' => 'required|string', // Tên của variant type
-                'variants.*.value' => 'required', // Giá trị của variant
-                'variants.*.price' => 'required|numeric',
+                'variants' => 'array',
+                'variants.*.name' => 'string',
+                'variants.*.price' => 'numeric',
             ]);
-
-            // return $request->variants;
 
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], Response::HTTP_BAD_REQUEST);
@@ -114,7 +111,6 @@ class ProductController extends Controller
 
             foreach ($request->variants as $variant) {
                 $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
-                // $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
                 $product->variants()->attach($variantType->id, [
                     'value' => $variant['value'],
                     'price' => $variant['price']
