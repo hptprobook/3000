@@ -6,7 +6,8 @@ import color from "../../../config/colorConfig";
 import InputSearch from "../../../components/common/TextField/InputSearch";
 import SelectFilterProduct from "../../../components/common/Select/SelectFilterProduct";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllCategories } from "../../../redux/slices/productSlice";
+import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+
 import TableProduct from "../../../components/common/Table/TableProduct";
 // import { setStatus } from "../../../redux/slices/categoriesSlice";
 
