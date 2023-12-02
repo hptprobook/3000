@@ -11,10 +11,7 @@ import React, { useEffect, useState } from "react";
 import { VariantProvider } from "@/provider/VariantContext";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    fetchAllProducts,
-    fetchProductById,
-} from "@/redux/slices/productSlice";
+import { fetchProductById } from "@/redux/slices/productSlice";
 
 export default function ProductDetail({ params }) {
     const productId = params.slug ? params.slug.split("-").pop() : null;

@@ -54,7 +54,6 @@ const StyledProductDetailSlider = styled("div")(() => ({
 }));
 
 export default function ProductDetailSlider({ product }) {
-    const [selectedImage, setSelectedImage] = useState(product?.images[0]);
     const [activeThumbnail, setActiveThumbnail] = useState(
         product?.images[0].id
     );
@@ -70,10 +69,7 @@ export default function ProductDetailSlider({ product }) {
     return (
         <StyledProductDetailSlider>
             <div className="container__slider--img">
-                <img
-                    src={selectedImage?.image_url}
-                    alt={selectedImage?.image_alt}
-                />
+                <img src={product?.thumbnail} alt={product?.name} />
             </div>
             <div className="thumbnails">
                 {product?.images.map((image) => (
