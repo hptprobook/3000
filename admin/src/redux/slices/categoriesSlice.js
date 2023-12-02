@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
 import CategoryService from '../../services/category.service';
 
 export const fetchCategoriesAsync = createAsyncThunk(
@@ -24,6 +24,7 @@ export const fetchCategoryById = createAsyncThunk(
     }
   }
 );
+export const setStatus = createAction('address/setStatus');
 
 export const fetchAllBrands = createAsyncThunk(
   'brands/fetchBrands',
