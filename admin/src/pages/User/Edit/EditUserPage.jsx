@@ -82,7 +82,7 @@ const EditUserPage = () => {
         }
     }, [loadData, dispatch, id, status]);
     useEffect(() => {
-        if (statusUpdate === true) {
+        if (statusUpdate === '') {
             alert('Uploading successful');
             setStatus('idle');
         }

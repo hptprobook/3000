@@ -37,55 +37,8 @@ const MenuCategoryCustom = styled(Menu)(({ theme }) => ({
     }
 }))
 
-const FakeCategories = [
-    {
-        id: 1,
-        name: 'Category 1'
-    },
-    {
-        id: 2,
-        name: 'Category 2'
-    },
-    {
-        id: 3,
-        name: 'Category 3'
-    },
-    {
-        id: 4,
-        name: 'Category 4'
-    },
-    {
-        id: 5,
-        name: 'Category 5'
-    },
-    {
-        id: 6,
-        name: 'Category 6'
-    },
-    {
-        id: 7,
-        name: 'Category 7'
-    },
-    {
-        id: 8,
-        name: 'Category 8'
-    },
-    {
-        id: 9,
-        name: 'Category 9'
-    },
-    {
-        id: 10,
-        name: 'Category 10'
-    },
-    {
-        id: 11,
-        name: 'Category 11'
-    },
-];
 
-
-export default function SelectFilterProduct() {
+export default function SelectFilterProduct({ data, filterReturn }) {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [anchorElStatus, setAnchorElStatus] = React.useState(null);
@@ -103,7 +56,9 @@ export default function SelectFilterProduct() {
         }
         setChecked(newChecked);
     };
-
+    React.useEffect(() => {
+        filterReturn(checkedCategory);
+    }, [checkedCategory])
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
@@ -127,7 +82,7 @@ export default function SelectFilterProduct() {
             <div className='ProductPage__filter' style={{ borderBottom: '1px solid' + color.colorHover.hoverGray }}>
                 {checkedCategory.length > 0 ? (
                     checkedCategory.map((item) => {
-                        const filteredCategories = FakeCategories.filter((itemCat) => item === itemCat.id);
+                        const filteredCategories = data.filter((itemCat) => item === itemCat.id);
 
                         return filteredCategories.map((filteredItemCat) => (
                             <ChipFilter
@@ -172,8 +127,8 @@ export default function SelectFilterProduct() {
                         horizontal: 'left',
                     }}
                 >
-                    <List sx={{ width: '100%', maxWidth: 360, bgcolor: color.backgroundColorSub.dark, paddingTop: 0, }}>
-                        {FakeCategories.map((item) => {
+                    <List sx={{ width: '100%', maxWidth: 360, bgcolor: color.backgroundColorSub.dark, paddingTop: 0, overflow: 'auto' }}>
+                        {data.map((item) => {
                             const labelId = `checkbox-list-label-${item.id}`;
 
                             return (
@@ -191,7 +146,7 @@ export default function SelectFilterProduct() {
                                                 inputProps={{ 'aria-labelledby': labelId }}
                                             />
                                         </ListItemIcon>
-                                        <ListItemText id={labelId} primary={`Line item ${item.name}`} />
+                                        <ListItemText id={labelId} primary={item.name} />
                                     </ListItemButton>
                                 </ListItem>
                             );
@@ -213,7 +168,7 @@ export default function SelectFilterProduct() {
                         horizontal: 'left',
                     }}
                 >
-                    <Typography sx={{ p: 2 }}>The content of the Popover.</Typography>
+                    <Typography sx={{ p: 2 }}>Đang phát triển</Typography>
                 </Popover>
             </div>
         </Box >
