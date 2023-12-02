@@ -26,8 +26,10 @@ export default function ProductDetail({ params }) {
     };
 
     useEffect(() => {
-        loadProduct(productId);
-    }, []);
+        if (status == "idle") {
+            loadProduct(productId);
+        }
+    }, [status]);
 
     return (
         <>
