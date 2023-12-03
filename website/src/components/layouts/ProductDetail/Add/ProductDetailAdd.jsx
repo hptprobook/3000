@@ -90,7 +90,7 @@ const StyledProductDetailAdd = styled("div")(() => ({
     },
 }));
 
-export default function ProductDetailAdd() {
+export default function ProductDetailAdd({ data }) {
     const [quantity, setQuantity] = useState(1);
     const incrementQuantity = () => {
         if (quantity < 100) {
@@ -109,6 +109,8 @@ export default function ProductDetailAdd() {
     };
 
     const { activeText } = useContext(VariantContext);
+
+    const tempPrice = data * quantity;
 
     return (
         <StyledProductDetailAdd>
@@ -138,7 +140,7 @@ export default function ProductDetailAdd() {
             </div>
             <h5 style={{ marginTop: "12px" }}>Tạm tính</h5>
             <div className="price">
-                <p>{formatPriceToVND(30000000)}</p>
+                <p>{formatPriceToVND(tempPrice)}</p>
             </div>
             <button className="buy-now">Mua ngay</button>
             <button className="add-to-cart">Thêm vào giỏ hàng</button>

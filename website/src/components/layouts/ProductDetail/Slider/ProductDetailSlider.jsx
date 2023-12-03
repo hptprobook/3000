@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 
 const StyledProductDetailSlider = styled("div")(() => ({
@@ -54,22 +54,32 @@ const StyledProductDetailSlider = styled("div")(() => ({
 }));
 
 export default function ProductDetailSlider({ product }) {
+    const initialImage = product?.thumbnail || product?.images[0]?.image_url;
+    const [selectedImage, setSelectedImage] = useState(initialImage);
     const [activeThumbnail, setActiveThumbnail] = useState(
-        product?.images[0].id
+        product?.images[0]?.id
     );
 
+    useEffect(() => {
+        if (product) {
+            setSelectedImage(product.thumbnail || product.images[0]?.image_url);
+            setActiveThumbnail(product.images[0]?.id);
+        }
+    }, [product]);
+
     const handleThumbnailHover = (image) => {
-        setSelectedImage(image);
+        setSelectedImage(image.image_url);
     };
 
     const handleThumbnailClick = (image) => {
-        setSelectedImage(image);
+        setSelectedImage(image.image_url);
         setActiveThumbnail(image.id);
     };
+
     return (
         <StyledProductDetailSlider>
             <div className="container__slider--img">
-                <img src={product?.thumbnail} alt={product?.name} />
+                <img src={selectedImage} alt={product?.name} />
             </div>
             <div className="thumbnails">
                 {product?.images.map((image) => (

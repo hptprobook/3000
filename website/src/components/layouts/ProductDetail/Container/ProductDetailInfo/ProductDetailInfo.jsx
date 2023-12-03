@@ -112,7 +112,7 @@ export default function ProductDetailInfo({ product }) {
 
     let brand = "";
 
-    product?.brands.map((item) => {
+    product?.brands?.map((item) => {
         brand = item.name;
     });
 
