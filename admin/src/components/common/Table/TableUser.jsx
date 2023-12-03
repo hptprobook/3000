@@ -49,8 +49,6 @@ export default function TableUser(props) {
     const dataBan = userData.filter(item => item.status === 'ban');
     const handleSearch = (searchValue) => {
         const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
-
-
         const result = dataSearch.filter(item => regex.test(item.name));
         setUserData(result);
         setDataSearch(props.data);

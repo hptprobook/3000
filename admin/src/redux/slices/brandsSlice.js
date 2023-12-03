@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import CategoryService from '../../services/category.service';
+import BrandsService from '../../services/brand.service';
 
 export const fetchAllBrands = createAsyncThunk(
   'brands/fetchBrands',
   async (_, thunkAPI) => {
     try {
-      const res = await CategoryService.getAllBrand();
+      const res = await BrandsService.getAllBrand();
       return res.data; // Assuming res.data contains the categories array
     } catch (error) {
       throw error;

@@ -71,10 +71,10 @@ export default function CreateProductPage() {
         dispatch(fetchCategoriesAsync());
     }, [dispatch]);
     useEffect(() => {
-        if (categories) {
+        if (statusLoad === 'succeeded') {
             dispatch(fetchAllBrands());
         }
-    }, [categories]);
+    }, [statusLoad]);
     useEffect(() => {
         if (statusLoadBrands == 'brands is ready') {
             dispatch(fetchAllTags());
