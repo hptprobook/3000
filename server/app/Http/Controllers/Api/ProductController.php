@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ReviewResource;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
@@ -133,7 +134,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews', 'variants'])
+            $product = Product::with(['category.products', 'images', 'reviews.user', 'variants', 'seller'])
                 ->findOrFail($id);
 
             $averageRating = $product->reviews->avg('rating') ?? 'No rating';
@@ -153,6 +154,8 @@ class ProductController extends Controller
             $productResource = $product->toArray();
             $productResource['average_rating'] = $averageRating;
             $productResource['variants'] = $groupedVariants;
+
+            $productResource['reviews'] = ReviewResource::collection($product->reviews);
 
             return response()->json($productResource, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {

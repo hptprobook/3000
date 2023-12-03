@@ -45,7 +45,7 @@ export default function ProductDetail({ params }) {
                 <VariantProvider>
                     <Grid item xs={3.5}>
                         <ProductDetailSlider
-                            product={products.selectedProduct}
+                            product={products?.selectedProduct}
                         />
                     </Grid>
                     <Grid item xs={5}>
@@ -55,21 +55,34 @@ export default function ProductDetail({ params }) {
                             }}
                         >
                             <ProductDetailInfo
-                                product={products.selectedProduct}
+                                product={products?.selectedProduct}
                             />
-                            <ProductDetailSimilar />
-                            <ProductDetailSeller />
-                            <ProductDetailMain />
+                            <ProductDetailSimilar
+                                data={
+                                    products?.selectedProduct?.category.products
+                                }
+                            />
+                            <ProductDetailSeller
+                                data={products?.selectedProduct?.seller}
+                            />
+                            <ProductDetailMain
+                                data={products?.selectedProduct?.detail}
+                            />
                         </div>
                     </Grid>
                     <Grid item xs={3.5} sx={{ paddingLeft: "12px" }}>
-                        <ProductDetailAdd />
+                        <ProductDetailAdd
+                            data={products?.selectedProduct?.price}
+                        />
                     </Grid>
                 </VariantProvider>
             </Grid>
             <Grid className="appContainer__detail--review" container>
                 <Grid item xs={12}>
-                    <ProductDetailReview />
+                    <ProductDetailReview
+                        data={products?.selectedProduct?.reviews}
+                        avg_rating={products?.selectedProduct?.average_rating}
+                    />
                 </Grid>
             </Grid>
             <div

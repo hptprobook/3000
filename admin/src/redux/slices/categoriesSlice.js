@@ -1,28 +1,28 @@
-import { createSlice, createAsyncThunk, createAction } from '@reduxjs/toolkit';
-import CategoryService from '../../services/category.service';
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
+import CategoryService from "../../services/category.service";
 
 export const fetchCategoriesAsync = createAsyncThunk(
-  'categories/fetchCategories',
-  async (_, thunkAPI) => {
-    try {
-      const res = await CategoryService.getAllCategories();
-      // Extracting only the necessary data from the response
-      return res.data; // Assuming res.data contains the categories array
-    } catch (error) {
-      throw error;
+    "categories/fetchCategories",
+    async (_, thunkAPI) => {
+        try {
+            const res = await CategoryService.getAllCategories();
+            // Extracting only the necessary data from the response
+            return res.data; // Assuming res.data contains the categories array
+        } catch (error) {
+            throw error;
+        }
     }
-  }
 );
 export const fetchCategoryById = createAsyncThunk(
-  'categories/fetchCategoryById',
-  async (categoryId, thunkAPI) => {
-    try {
-      const res = await CategoryService.getCategoryById(categoryId);
-      return res.data; // Assuming res.data contains the category details
-    } catch (error) {
-      throw error;
+    "categories/fetchCategoryById",
+    async (categoryId, thunkAPI) => {
+        try {
+            const res = await CategoryService.getCategoryById(categoryId);
+            return res.data; // Assuming res.data contains the category details
+        } catch (error) {
+            throw error;
+        }
     }
-  }
 );
 export const createCategoryAsync = createAsyncThunk(
   'categories/createCategory',
@@ -39,16 +39,16 @@ export const createCategoryAsync = createAsyncThunk(
 export const setStatus = createAction('address/setStatus');
 
 export const fetchAllBrands = createAsyncThunk(
-  'brands/fetchBrands',
-  async (_, thunkAPI) => {
-    try {
-      const res = await CategoryService.getAllBrand();
-      // Extracting only the necessary data from the response
-      return res.data; // Assuming res.data contains the categories array
-    } catch (error) {
-      throw error;
+    "brands/fetchBrands",
+    async (_, thunkAPI) => {
+        try {
+            const res = await CategoryService.getAllBrand();
+            // Extracting only the necessary data from the response
+            return res.data; // Assuming res.data contains the categories array
+        } catch (error) {
+            throw error;
+        }
     }
-  }
 );
 
 const categoriesSlice = createSlice({
