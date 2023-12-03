@@ -154,7 +154,6 @@ EnhancedTableHead.propTypes = {
 };
 
 export default function TableProduct({ data }) {
-    const rows = data;
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [selected, setSelected] = React.useState([]);
@@ -169,7 +168,7 @@ export default function TableProduct({ data }) {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
+            const newSelected = data.map((n) => n.id);
             setSelected(newSelected);
             return;
         }
@@ -198,9 +197,8 @@ export default function TableProduct({ data }) {
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage,
             ),
-        [order, orderBy, page, rowsPerPage],
+        [order, orderBy, page, rowsPerPage, data],
     );
-
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{
@@ -220,7 +218,7 @@ export default function TableProduct({ data }) {
                             orderBy={orderBy}
                             onSelectAllClick={handleSelectAllClick}
                             onRequestSort={handleRequestSort}
-                            rowCount={rows.length}
+                            rowCount={data.length}
                         />
                         <TableBody
                             sx={{
@@ -265,7 +263,9 @@ export default function TableProduct({ data }) {
                                         </CustomTableCell>
                                         <CustomTableCell align="right">{row.price}</CustomTableCell>
                                         <CustomTableCell align="right">{row.quantity}</CustomTableCell>
-                                        <CustomTableCell align="right">{row.status}</CustomTableCell>
+                                        <CustomTableCell align="right">
+                                            {row.status}
+                                        </CustomTableCell>
                                         <CustomTableCell align="right">Bấm</CustomTableCell>
                                     </TableRow>
                                 );
@@ -285,7 +285,7 @@ export default function TableProduct({ data }) {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={rows.length}
+                    count={data.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

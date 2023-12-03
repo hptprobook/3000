@@ -23,14 +23,13 @@ export default function ListProductPage() {
     const error = useSelector((state) => state.categories.error);
     const [loadData, setLoadData] = useState(false);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
-
+    const [productsCategory, setProductCategory] = React.useState([]);
+    const [productsList, setProductsList] = React.useState([]);
     const handleFilterReturn = (filters) => {
         setSelectedFilters(filters);
         // You can perform additional actions based on the selected filters if needed
     };
-    useEffect(() => {
-        // console.log(selectedFilters)
-    }, [selectedFilters])
+
 
     useEffect(() => {
         if (statusCat == 'idle') {
@@ -40,8 +39,33 @@ export default function ListProductPage() {
     useEffect(() => {
         if (statusPro == 'idle') {
             dispatch(fetchAllProducts());
+            setProductCategory(products);
         }
     }, [statusPro]);
+    useEffect(() => {
+        if (statusPro == 'products already') {
+            setProductsList(products);
+
+            if (selectedFilters.length > 0) {
+                const filteredProducts = products.filter(product => selectedFilters.includes(product.category_id));
+                setProductCategory(filteredProducts);
+                setProductsList(filteredProducts);
+            }
+            else {
+                setProductCategory(products);
+                setProductsList(products);
+
+            }
+        }
+    }, [selectedFilters, products])
+    const handleSearch = (searchValue) => {
+        const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
+        const result = productsCategory.filter(item => regex.test(item.name));
+        setProductsList(result);
+        if (searchValue === '') {
+            setProductsList(productsCategory);
+        }
+    };
 
     if (statusCat === 'loading') {
         return (
@@ -77,10 +101,10 @@ export default function ListProductPage() {
                                     "1px solid " + color.colorHover.hoverGray,
                             }}
                         >
-                            <InputSearch />
+                            <InputSearch onChange={handleSearch} />
                         </Box>
                         <SelectFilterProduct data={categories} filterReturn={handleFilterReturn} />
-                        <TableProduct data={products} />
+                        <TableProduct data={productsList} />
                     </Box>
                 </Box>
             </Box>

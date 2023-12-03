@@ -67,7 +67,7 @@ const EditUserPage = () => {
     useEffect(() => {
         if (!loadData) {
             dispatch(fetchUserById(id));
-            if (status == 'succeeded') {
+            if (status == 'user already') {
                 setLoadData(true);
                 setName(user.name);
                 setGender(user.gender);
