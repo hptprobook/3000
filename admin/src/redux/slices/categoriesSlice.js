@@ -24,6 +24,18 @@ export const fetchCategoryById = createAsyncThunk(
     }
   }
 );
+export const createCategoryAsync = createAsyncThunk(
+  'categories/createCategory',
+  async (categoryData, thunkAPI) => {
+    try {
+      const res = await CategoryService.createCategory(categoryData);
+      console.log(res.data);
+      return res.data; // Đảm bảo res.data chứa thông tin category mới
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 export const setStatus = createAction('address/setStatus');
 
 export const fetchAllBrands = createAsyncThunk(
@@ -64,6 +76,18 @@ const categoriesSlice = createSlice({
         state.selectedCategory = action.payload; // Storing the details of a specific category
       })
       .addCase(fetchCategoryById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(createCategoryAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createCategoryAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Cập nhật trạng thái hoặc dữ liệu cần thiết từ action.payload
+        state.newCategory = action.payload.newCategoryData;
+      })
+      .addCase(createCategoryAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       })
