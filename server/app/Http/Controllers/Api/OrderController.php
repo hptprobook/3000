@@ -29,7 +29,7 @@ class OrderController extends Controller
             }
 
             $user = Auth::user();
-            $orders = $user->orders()->with(['order_details', 'address,ward'])->get();
+            $orders = $user->orders()->with(['order_details', 'address.ward'])->get();
 
             return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
@@ -63,7 +63,7 @@ class OrderController extends Controller
 
             $address = Address::updateOrCreate(
                 ['user_id' => $user->id, 'ward_id' => $validatedData['ward_id']],
-                ['name' => $validatedData['name'], 'phone' => $validatedData['phone'], 'address_info' => $validatedData['street'], 'note' => $validatedData['note']]
+                ['name' => $validatedData['name'], 'phone' => $validatedData['phone'], 'address_info' => $validatedData['street']]
             );
 
             if ($validatedData['order_type'] == 'cart') {

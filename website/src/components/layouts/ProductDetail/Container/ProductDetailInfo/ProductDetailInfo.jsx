@@ -93,14 +93,33 @@ export default function ProductDetailInfo({ product }) {
 
         setSelectedOptions(initialSelections);
         setActiveText(initialActiveText);
-    }, []);
+        // calculateTotalPrice();
+    }, [product]);
+
+    useEffect(() => {
+        calculateTotalPrice();
+    }, [selectedOptions]);
+
+    const calculateTotalPrice = () => {
+        let additionalPrice = 0;
+        Object.keys(selectedOptions).forEach((variantType) => {
+            const selectedOption = product.variants
+                .find((v) => v.variantType === variantType)
+                .options.find((o) => o.name === selectedOptions[variantType]);
+            additionalPrice += Number(selectedOption.price);
+        });
+        const basePrice = Number(product?.price) || 0;
+        setTotalPrice(basePrice + additionalPrice);
+    };
 
     const handleOptionSelect = (variantType, optionName) => {
         setSelectedOptions((prev) => ({ ...prev, [variantType]: optionName }));
         handleActiveTextChange(variantType, optionName);
+        calculateTotalPrice();
     };
 
-    const { activeText, setActiveText } = useContext(VariantContext);
+    const { activeText, setActiveText, setTotalPrice } =
+        useContext(VariantContext);
 
     const handleActiveTextChange = (variantType, optionName) => {
         const updatedActiveText = activeText.filter(
@@ -138,9 +157,9 @@ export default function ProductDetailInfo({ product }) {
             </div>
             <div className="productDetailInfo__variant">
                 <div>
-                    {product?.variants.map((variant) => (
+                    {product?.variants.map((variant, i) => (
                         <div
-                            key={variant.variantType}
+                            key={i}
                             style={{
                                 marginTop: "16px",
                             }}
@@ -153,10 +172,10 @@ export default function ProductDetailInfo({ product }) {
                             >
                                 {variant.variantType}
                             </h5>
-                            {variant.options.map((option) => (
+                            {variant.options.map((option, index) => (
                                 <Variant
                                     onActiveChange={handleActiveTextChange}
-                                    key={option.id}
+                                    key={index}
                                     text={option.name}
                                     onClick={() =>
                                         handleOptionSelect(

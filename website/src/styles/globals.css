@@ -114,6 +114,24 @@ input[type="number"]::-webkit-outer-spin-button {
     appearance: none;
 }
 
+.checkbox-fake {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgb(196, 196, 207);
+    border-radius: 4px;
+    margin-right: 8px;
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.3s linear 0s;
+    flex-shrink: 0;
+}
+
+.d-b {
+    display: block !important;
+}
+
 .d-flex {
     display: flex;
 }

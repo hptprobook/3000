@@ -12,6 +12,8 @@ import { VariantProvider } from "@/provider/VariantContext";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductById } from "@/redux/slices/productSlice";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 
 export default function ProductDetail({ params }) {
     const productId = params.slug ? params.slug.split("-").pop() : null;
@@ -29,18 +31,13 @@ export default function ProductDetail({ params }) {
         loadProduct(productId);
     }, []);
 
+    if (status == "loading") {
+        return <CirLoading />;
+    }
+
     return (
         <>
-            <div
-                style={{
-                    width: "var(--max-width)",
-                    margin: "auto",
-                    padding: "15px 0",
-                }}
-                className="appBreadcrumb"
-            >
-                Trang chủ - Sản phẩm số {productId}
-            </div>
+            <Breadcrumb productId={productId} />
             <Grid className="appContainer__detail" container>
                 <VariantProvider>
                     <Grid item xs={3.5}>
@@ -71,9 +68,7 @@ export default function ProductDetail({ params }) {
                         </div>
                     </Grid>
                     <Grid item xs={3.5} sx={{ paddingLeft: "12px" }}>
-                        <ProductDetailAdd
-                            data={products?.selectedProduct?.price}
-                        />
+                        <ProductDetailAdd data={products?.selectedProduct} />
                     </Grid>
                 </VariantProvider>
             </Grid>

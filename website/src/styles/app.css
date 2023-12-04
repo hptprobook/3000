@@ -1,4 +1,5 @@
-.appContainer {
+.appContainer,
+.appContainer__cart {
     width: var(--max-width);
     display: flex;
     margin: 0 auto;

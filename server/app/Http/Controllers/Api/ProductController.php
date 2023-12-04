@@ -137,7 +137,7 @@ class ProductController extends Controller
             $product = Product::with(['category.products', 'images', 'reviews.user', 'variants', 'seller'])
                 ->findOrFail($id);
 
-            $averageRating = $product->reviews->avg('rating') ?? 'No rating';
+            $averageRating = $product->reviews->avg('rating') ?? 0;
 
             $groupedVariants = $product->variants->groupBy('name')->map(function ($variantGroup, $variantTypeName) {
                 return [

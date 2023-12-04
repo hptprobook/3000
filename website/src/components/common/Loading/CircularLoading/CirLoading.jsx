@@ -7,14 +7,15 @@ export default function CirLoading() {
         <Box
             sx={{
                 width: "100%",
-                position: "absolute",
+                position: "fixed",
                 top: 0,
                 left: 0,
-                height: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                height: "100vh",
+                backgroundColor: "#ADADB3",
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
+                zIndex: "9999999999999999999999999",
             }}
         >
             <CircularProgress />
