@@ -35,35 +35,71 @@ export default function CreateCategoryPage() {
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Name:', name);
+    console.log('Parent ID:', categoryData.parent_id);
+    console.log('Thumbnail:', thumbnail);
+    console.log('Thumbnail URL:', thumbnailUrl);
+    const errors = validateForm(); // Kiểm tra điều kiện và trả về danh sách lỗi (nếu có)
   
-    if (name && categoryData.parent_id && thumbnailUrl) {
+    if (errors.length === 0) {
       try {
-        const resultAction = dispatch(createCategoryAsync(categoryData));
+        // Thực hiện dispatch action tạo mới category
+        const resultAction = await dispatch(createCategoryAsync(categoryData));
         console.log('New category added:', resultAction.payload);
-        
+      
         // Reset form fields after successful submission
-        setCategoryData({
-          name: "",
-          parent_id: null,
-          icon_url: "",
-        });
-        setName('');
-        setThumbnail('');
-        setThumbnailUrl('');
-        setErrorName('');
-        setErrorParentId('');
-  
-        // Perform other necessary actions upon successful submission
+        resetFormFields();
       } catch (error) {
         console.error('Error adding new category:', error);
-        // Handle errors if necessary
+        // Xử lý lỗi nếu cần
         alert("Tạo không thành công");
       }
     } else {
       alert("Vui lòng điền đầy đủ thông tin");
-      // Handle incomplete data scenario
+      // Hiển thị thông báo lỗi nếu dữ liệu không hợp lệ
     }
   };
+  
+  const validateForm = () => {
+    const errors = [];
+  
+    // Kiểm tra các điều kiện và thêm lỗi vào mảng errors nếu dữ liệu không hợp lệ
+    if (name === '') {
+      errors.push('Tên phân loại không được để trống!');
+    } else if (name.length > 254) {
+      errors.push('Tên phân loại không được quá 255 kí tự!');
+    }
+  
+    if (!categoryData.parent_id || categoryData.parent_id === 'none') {
+      errors.push('Không chọn phân loại cha');
+    } else if (categories.length === 0) {
+      errors.push('Lỗi khi lấy danh sách phân loại cha');
+    }
+  
+    if (!thumbnailUrl) {
+      errors.push('Chưa upload hình ảnh');
+    }
+  
+    // ... Kiểm tra các trường dữ liệu khác nếu cần
+  
+    return errors;
+  };
+  
+  const resetFormFields = () => {
+    // Reset các trường dữ liệu và thông báo lỗi sau khi gửi thành công
+    setCategoryData({
+      name: '',
+      parent_id: null,
+      icon_url: '',
+    });
+    setName('');
+    setThumbnail('');
+    setThumbnailUrl('');
+    setErrorName('');
+    setErrorParentId('');
+    // ... Reset các thông báo lỗi khác nếu có
+  };
+  
   
   
   useEffect(() => {
