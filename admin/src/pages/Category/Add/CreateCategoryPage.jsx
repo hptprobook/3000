@@ -13,6 +13,7 @@ import styled from "@emotion/styled";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storageFirebase } from "../../../config/firebaseConfig";
 import { v4 } from "uuid";
+import Loading from "../../../components/common/Loading/Loading";
 
 const DivMargin = styled.div(({ theme }) => ({
   paddingBottom: '24px',
@@ -22,7 +23,10 @@ const DivMargin = styled.div(({ theme }) => ({
 
 export default function CreateCategoryPage() {
   const dispatch = useDispatch();
-  const categories = useSelector((state) => state.categories.data); // Access categories from Redux store
+  const categories = useSelector((state) => state.categories.data);
+  const dataReturn = useSelector((state) => state.categories.newCategory);
+  const status = useSelector((state) => state.categories.status) // Access categories from Redux store
+  // Access categories from Redux store
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
 
@@ -35,56 +39,63 @@ export default function CreateCategoryPage() {
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Name:', name);
-    console.log('Parent ID:', categoryData.parent_id);
-    console.log('Thumbnail:', thumbnail);
-    console.log('Thumbnail URL:', thumbnailUrl);
+    console.log(categoryData);
     const errors = validateForm(); // Kiểm tra điều kiện và trả về danh sách lỗi (nếu có)
-  
+
     if (errors.length === 0) {
       try {
-        // Thực hiện dispatch action tạo mới category
-        const resultAction = await dispatch(createCategoryAsync(categoryData));
-        console.log('New category added:', resultAction.payload);
-      
+        // Dispatch action to create category and await the result
+        const resultAction = dispatch(createCategoryAsync(categoryData));
+        if (status === 'created successfully') {
+          console.log(dataReturn);
+          
+        }
+        resultAction.then((action) => {
+          console.log('New category added:', action.payload);
+          alert("Tạo thành công"); // Check if action.payload holds the new category data
+        }).catch((error) => {
+          console.error('Error adding new category:', error);
+          // Handle error if needed
+        });
         // Reset form fields after successful submission
         resetFormFields();
       } catch (error) {
         console.error('Error adding new category:', error);
-        // Xử lý lỗi nếu cần
+        // Handle error if needed
         alert("Tạo không thành công");
       }
     } else {
+      console.log(errors);
       alert("Vui lòng điền đầy đủ thông tin");
-      // Hiển thị thông báo lỗi nếu dữ liệu không hợp lệ
+      // Display validation error messages to the user
     }
   };
-  
+
   const validateForm = () => {
     const errors = [];
-  
+
     // Kiểm tra các điều kiện và thêm lỗi vào mảng errors nếu dữ liệu không hợp lệ
     if (name === '') {
       errors.push('Tên phân loại không được để trống!');
     } else if (name.length > 254) {
       errors.push('Tên phân loại không được quá 255 kí tự!');
     }
-  
+
     if (!categoryData.parent_id || categoryData.parent_id === 'none') {
       errors.push('Không chọn phân loại cha');
     } else if (categories.length === 0) {
       errors.push('Lỗi khi lấy danh sách phân loại cha');
     }
-  
+
     if (!thumbnailUrl) {
       errors.push('Chưa upload hình ảnh');
     }
-  
+
     // ... Kiểm tra các trường dữ liệu khác nếu cần
-  
+
     return errors;
   };
-  
+
   const resetFormFields = () => {
     // Reset các trường dữ liệu và thông báo lỗi sau khi gửi thành công
     setCategoryData({
@@ -99,9 +110,9 @@ export default function CreateCategoryPage() {
     setErrorParentId('');
     // ... Reset các thông báo lỗi khác nếu có
   };
-  
-  
-  
+
+
+
   useEffect(() => {
     // Fetch categories when the component mounts
     dispatch(fetchCategoriesAsync());
@@ -119,16 +130,16 @@ export default function CreateCategoryPage() {
         }
       }
         break;
-        case 'parent_id': {
-          if (!value || value === 'none') {
-              setErrorParentId('Không chọn');
-          } else if (categories.length === 0) {
-              setErrorParentId('Lỗi');
-          } else {
-              setErrorParentId('');
-          }
+      case 'parent_id': {
+        if (!value || value === 'none') {
+          setErrorParentId('Không chọn');
+        } else if (categories.length === 0) {
+          setErrorParentId('Lỗi');
+        } else {
+          setErrorParentId('');
+        }
       }
-      break;
+        break;
       // ... other cases if needed
     }
   };
@@ -161,13 +172,25 @@ export default function CreateCategoryPage() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
+          // Update categoryData with the URL
+          setCategoryData({
+            ...categoryData,
+            icon_url: downloadURL,
+          });
+          // Also, update the thumbnailUrl state if needed
           setThumbnailUrl(downloadURL);
         });
       }
     );
   };
 
+  if (status === "loading") {
+    return <Loading />;
+  }
 
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
   return (
     <Box>
       <HeaderPage
@@ -177,58 +200,63 @@ export default function CreateCategoryPage() {
       <Box sx={{
         marginTop: '32px'
       }}></Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <InputEdit
-              label="Tên"
-              value={name}
-              onBlur={(event) => {
-                setName(event.target.value);
-                handleCheckError('name', event.target.value);
-              }}
-              // ... other props
-              error={errorName ? true : false}
-              helperText={errorName}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <SelectEdit
-              label={'Phân loại cha'}
-              data={categories}
-              value={categoryData.parent_id}
-              onChange={(event) => {
-                setCategoryData({
-                  ...categoryData,
-                  parent_id: event.target.value,
-                });
-                handleCheckError('parent_id', event.target.value);
-              }}
-              // ... other props
-              error={errorParentId ? true : false}
-              helperText={errorParentId}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <InfoBox title="Hình ảnh icon">
-              <DivMargin>
-                {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
-                <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
-                <button onClick={(e) => handleUploadThumnail('giap')}>upload</button>
-                {/* <ImageDropZone /> */}
-              </DivMargin>
-            </InfoBox>
-          </Grid>
-          <Grid item xs={12}>
-            <ButtonNormal
-              variant="contained"
-              label={"Thêm"}
-              bg="true"
-              type="submit"
-              sx={{ marginTop: "16px" }}
-              onClick={handleSubmit}
-            ></ButtonNormal>
-          </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <InputEdit
+            label="Tên"
+            value={name}
+            onBlur={(event) => {
+              const newName = event.target.value;
+              setName(newName); // Set the name state
+              setCategoryData({
+                ...categoryData,
+                name: newName, // Set the name in categoryData
+              });
+              handleCheckError('name', newName);
+            }}
+            // ... other props
+            error={errorName ? true : false}
+            helperText={errorName}
+          />
         </Grid>
+        <Grid item xs={12}>
+          <SelectEdit
+            label={'Phân loại cha'}
+            data={categories}
+            value={categoryData.parent_id}
+            onChange={(event) => {
+              setCategoryData({
+                ...categoryData,
+                parent_id: event.target.value,
+              });
+              handleCheckError('parent_id', event.target.value);
+            }}
+            // ... other props
+            error={errorParentId ? true : false}
+            helperText={errorParentId}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <InfoBox title="Hình ảnh icon">
+            <DivMargin>
+              {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
+              <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
+              <button onClick={(e) => handleUploadThumnail('giap')}>upload</button>
+              {/* <ImageDropZone /> */}
+            </DivMargin>
+          </InfoBox>
+        </Grid>
+        <Grid item xs={12}>
+          <ButtonNormal
+            variant="contained"
+            label={"Thêm"}
+            bg="true"
+            type="submit"
+            sx={{ marginTop: "16px" }}
+            onClick={handleSubmit}
+          ></ButtonNormal>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

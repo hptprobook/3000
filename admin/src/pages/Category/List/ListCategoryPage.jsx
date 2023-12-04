@@ -87,13 +87,7 @@ const ListCategoriesPage = () => {
         // Add other fields as needed
     }));
 
-    const columns = [
-        { field: 'id', headerName: 'ID', width: 70 },
-        { field: 'name', headerName: 'Name', width: 150 },
-        { field: 'parent_id', headerName: 'Parent ID', width: 150 },
-        { field: 'icon_url', headerName: 'Icon URL', width: 150 },
-        // Define other columns based on your data structure
-    ];
+  
 
 
     return (
