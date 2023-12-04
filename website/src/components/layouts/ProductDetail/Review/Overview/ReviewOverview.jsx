@@ -19,13 +19,16 @@ const StyledReviewOverview = styled("div")(() => ({
     },
 }));
 
-export default function ReviewOverview() {
+export default function ReviewOverview({ data, length }) {
+    const roundedAvgRating = parseFloat(data?.toFixed(1));
     return (
         <StyledReviewOverview>
             <div className="reviewOverview__rating">
-                <div className="overview__rating--number">4.5</div>
-                <Rating rate={4.2} size={48} />
-                <p style={{ textAlign: "center" }}>( 800 đánh giá )</p>
+                <div className="overview__rating--number">
+                    {roundedAvgRating}
+                </div>
+                <Rating rate={roundedAvgRating} size={48} />
+                <p style={{ textAlign: "center" }}>( {length && length} )</p>
             </div>
         </StyledReviewOverview>
     );

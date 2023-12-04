@@ -6,7 +6,7 @@ import { Box, Grid } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import SelectEdit from "../../../components/common/Select/SelectEdit";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import { createCategoryAsync, fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import InfoBox from "../../../components/common/Box/InforBox";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import styled from "@emotion/styled";
@@ -33,18 +33,39 @@ export default function CreateCategoryPage() {
     parent_id: null,
     icon_url: "",
   });
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here.
-
-    // Clear the form fields after submission if needed.
-    setCategoryData({
-      name: "",
-      parent_id: null,
-      icon_url: "",
-    });
+  
+    if (name && categoryData.parent_id && thumbnailUrl) {
+      try {
+        const resultAction = dispatch(createCategoryAsync(categoryData));
+        console.log('New category added:', resultAction.payload);
+        
+        // Reset form fields after successful submission
+        setCategoryData({
+          name: "",
+          parent_id: null,
+          icon_url: "",
+        });
+        setName('');
+        setThumbnail('');
+        setThumbnailUrl('');
+        setErrorName('');
+        setErrorParentId('');
+  
+        // Perform other necessary actions upon successful submission
+      } catch (error) {
+        console.error('Error adding new category:', error);
+        // Handle errors if necessary
+        alert("Tạo không thành công");
+      }
+    } else {
+      alert("Vui lòng điền đầy đủ thông tin");
+      // Handle incomplete data scenario
+    }
   };
-
+  
+  
   useEffect(() => {
     // Fetch categories when the component mounts
     dispatch(fetchCategoriesAsync());
@@ -120,7 +141,6 @@ export default function CreateCategoryPage() {
       <Box sx={{
         marginTop: '32px'
       }}></Box>
-      <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <InputEdit
@@ -169,10 +189,10 @@ export default function CreateCategoryPage() {
               bg="true"
               type="submit"
               sx={{ marginTop: "16px" }}
+              onClick={handleSubmit}
             ></ButtonNormal>
           </Grid>
         </Grid>
-      </form>
     </Box>
   );
 }

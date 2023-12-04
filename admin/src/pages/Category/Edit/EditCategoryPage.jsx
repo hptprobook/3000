@@ -30,22 +30,23 @@ const EditCategoryPage = () => {
     const [name, setName] = useState('');
     const [parentId, setParentId] = useState('');
     const [iconUrl, setIconUrl] = useState('');
-
+    
+    const category = useSelector((state) => state.categories.selectedCategory);
+    const status = useSelector((state) => state.categories.status);
     useEffect(() => {
         if (!loadData) {
-            dispatch(fetchCategoryById(id));
+            dispatch(fetchCategoryById(id))
+                .then((result) => {
+                    // Xử lý dữ liệu được trả về từ API ở đây
+                    console.log('Data from API:', result);
+                })
+                .catch((error) => {
+                    // Xử lý lỗi nếu có
+                    console.error('Error fetching data:', error);
+                });
             setLoadData(true);
         }
     }, [loadData, dispatch, id]);
-
-    const category = useSelector((state) => {
-        // Thay `categories` bằng tên slice của bạn
-        const categories = state.categories.data;
-
-        // Tìm danh mục dựa trên ID
-        return categories.find((category) => category.id === id);
-    });
-    const status = useSelector((state) => state.categories.status);
 
     const handleCloseModal = () => {
         // Đóng modal nếu cần
@@ -65,7 +66,9 @@ const EditCategoryPage = () => {
         return <div>Error:</div>;
     }
 
+      
     if (loadData) {
+        console.log(category)
         return (
             <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
                 <ModalAddress openModal={false} handleClose={handleCloseModal} />
@@ -85,21 +88,21 @@ const EditCategoryPage = () => {
                         <Grid item sm={12} md={6} lg={4}>
                             <InputEdit
                                 label={'Tên'}
-                                value={name}
+                                value={category.name}
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </Grid>
                         <Grid item sm={12} md={6} lg={4}>
                             <InputEdit
                                 label={'Parent ID'}
-                                value={parentId}
+                                value={category.parent_id}
                                 onChange={(e) => setParentId(e.target.value)}
                             />
                         </Grid>
                         <Grid item sm={12} md={6} lg={4}>
                             <InputEdit
                                 label={'Icon URL'}
-                                value={iconUrl}
+                                value={category.icon_url}
                                 onChange={(e) => setIconUrl(e.target.value)}
                             />
                         </Grid>

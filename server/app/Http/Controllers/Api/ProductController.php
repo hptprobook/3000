@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ReviewResource;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
 use App\Models\Tag;
+use App\Models\VariantType;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -71,8 +73,10 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
-                'product_variants' => 'nullable|string',
-
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             if ($validator->fails()) {
@@ -107,6 +111,14 @@ class ProductController extends Controller
                 $product->tags()->attach($tag->id);
             }
 
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+                $product->variants()->attach($variantType->id, [
+                    'value' => $variant['value'],
+                    'price' => $variant['price']
+                ]);
+            }
+
             DB::commit();
 
             return response()->json($product, Response::HTTP_CREATED);
@@ -122,7 +134,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews', 'variants'])
+            $product = Product::with(['category.products', 'images', 'reviews.user', 'variants', 'seller'])
                 ->findOrFail($id);
 
             $averageRating = $product->reviews->avg('rating') ?? 'No rating';
@@ -142,6 +154,8 @@ class ProductController extends Controller
             $productResource = $product->toArray();
             $productResource['average_rating'] = $averageRating;
             $productResource['variants'] = $groupedVariants;
+
+            $productResource['reviews'] = ReviewResource::collection($product->reviews);
 
             return response()->json($productResource, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
@@ -171,7 +185,11 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags' => 'sometimes|string',
                 'status' => 'required',
-                'quantity' => 'required|numeric|between:0,10000'
+                'quantity' => 'required|numeric|between:0,10000',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             $product->update($request->only([
@@ -202,6 +220,23 @@ class ProductController extends Controller
                     ProductTag::create([
                         'product_id' => $product->id,
                         'name' => $tag_name
+                    ]);
+                }
+            }
+
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+
+                $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
+                if ($existingVariant) {
+                    $product->variants()->updateExistingPivot($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
+                    ]);
+                } else {
+                    $product->variants()->attach($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
                     ]);
                 }
             }

@@ -20,6 +20,15 @@ const CategoryService = {
       throw err;
     }
   },
+    // ... Các hàm khác
+    createCategory: async (categoryData) => {
+      try {
+        const res = await request.post("categories", categoryData);
+        return res;
+      } catch (err) {
+        throw err;
+      }
+  },
 };
 
 export default CategoryService;

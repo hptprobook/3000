@@ -29,29 +29,19 @@ const StyledReviewComment = styled("div")(() => ({
     },
 }));
 
-export default function ReviewComment() {
-    const fakeData = Array.from({ length: 30 }, (_, i) => ({
-        id: 1,
-        name: "Nguyễn Đông Anh",
-        avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/800px-User_icon_2.svg.png",
-        review: {
-            id: 1,
-            rating: 5,
-            comment: `Cực kì hài lòng ${i + 1}`,
-            image_url:
-                "https://salt.tikicdn.com/cache/750x750/ts/product/8c/1a/8f/a9722e24df6a32a7159212e205b2732a.jpg.webp",
-            create_at: "30/11/2023",
-        },
-    }));
-
-    const [activeFilter, setActiveFilter] = useState("");
+export default function ReviewComment({ data, avg_rating }) {
+    const [activeFilter, setActiveFilter] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const commentsPerPage = 5;
-    const numberOfComments = fakeData.length;
+    const numberOfComments = data?.length;
     const commentSectionRef = useRef(null);
 
     const handleFilterClick = (filter) => {
-        setActiveFilter(filter);
+        setActiveFilter((prevFilters) =>
+            prevFilters.includes(filter)
+                ? prevFilters.filter((f) => f !== filter)
+                : [...prevFilters, filter]
+        );
     };
 
     const handlePageChange = (event, value) => {
@@ -68,22 +58,62 @@ export default function ReviewComment() {
         }
     };
 
+    // const indexOfLastComment = currentPage * commentsPerPage;
+    // const indexOfFirstComment = indexOfLastComment - commentsPerPage;
+    // const currentComments = data?.slice(
+    //     indexOfFirstComment,
+    //     indexOfLastComment
+    // );
+
+    const filters = ["5 sao", "4 sao", "3 sao", "2 sao", "1 sao"];
+
+    const getFilteredComments = () => {
+        if (!activeFilter.length) return data;
+        return data.filter((review) =>
+            activeFilter.some(
+                (filter) => Math.round(review.rating) === Number(filter[0])
+            )
+        );
+    };
+
+    const filteredComments = getFilteredComments();
+    const numberOfFilteredComments = filteredComments?.length;
+
     const indexOfLastComment = currentPage * commentsPerPage;
     const indexOfFirstComment = indexOfLastComment - commentsPerPage;
-    const currentComments = fakeData.slice(
+    const currentComments = filteredComments?.slice(
         indexOfFirstComment,
         indexOfLastComment
     );
 
-    const filters = [
-        "Mới nhất",
-        "Cũ nhất",
-        "5 sao",
-        "4 sao",
-        "3 sao",
-        "2 sao",
-        "1 sao",
-    ];
+    const getRatingText = (rating) => {
+        const roundedRating = Math.round(rating);
+        switch (roundedRating) {
+            case 5:
+                return "Cực kì hài lòng";
+            case 4:
+                return "Hài lòng";
+            case 3:
+                return "Khá hài lòng";
+            case 2:
+                return "Khá tệ";
+            case 1:
+                return "Rất tệ";
+            default:
+                return "";
+        }
+    };
+
+    function formatDateTime(dateTimeStr) {
+        const date = new Date(dateTimeStr);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // January is 0!
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, "0");
+        const minutes = date.getMinutes().toString().padStart(2, "0");
+
+        return `${hours}:${minutes} ${day}-${month}-${year}`;
+    }
 
     return (
         <StyledReviewComment>
@@ -95,88 +125,103 @@ export default function ReviewComment() {
                             key={index}
                             text={filterText}
                             onClick={() => handleFilterClick(filterText)}
-                            isActive={activeFilter === filterText}
+                            isActive={activeFilter.includes(filterText)}
                         />
                     ))}
                 </div>
             </div>
             <div ref={commentSectionRef}>
-                {currentComments.map((data, index) => (
-                    <Grid key={index} className="reviewComment__grid" container>
-                        {/* User info */}
-                        <Grid item xs={3}>
-                            <div className="reviewComment__grid--customer">
-                                <div className="info">
-                                    <img
-                                        width={40}
-                                        height={40}
-                                        src={data.avatar}
-                                        alt=""
-                                        style={{ marginRight: "12px" }}
-                                    />
-                                    <span>
-                                        <b>{data.name}</b>
-                                    </span>
+                {currentComments &&
+                    currentComments.map((review, index) => (
+                        <Grid
+                            key={index}
+                            className="reviewComment__grid"
+                            container
+                        >
+                            {/* User info */}
+                            <Grid item xs={3}>
+                                <div className="reviewComment__grid--customer">
+                                    <div className="info">
+                                        <img
+                                            width={40}
+                                            height={40}
+                                            src={
+                                                "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png"
+                                            }
+                                            alt=""
+                                            style={{ marginRight: "12px" }}
+                                        />
+                                        <span>
+                                            <span>
+                                                <b>{review.user.name}</b>
+                                            </span>
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </Grid>
-                        {/* Comment content */}
-                        <Grid item xs={9} className="reviewComment__comment">
-                            <div>
-                                <div className="rating at-c">
-                                    <Rating
-                                        rate={data.review.rating}
-                                        size={30}
-                                    />
-                                    <span
+                            </Grid>
+                            <Grid
+                                item
+                                xs={9}
+                                className="reviewComment__comment"
+                            >
+                                <div>
+                                    <div className="rating at-c">
+                                        <Rating
+                                            rate={review.rating}
+                                            size={30}
+                                        />
+                                        <span
+                                            style={{
+                                                fontSize: "15px",
+                                                fontWeight: "500",
+                                            }}
+                                        >
+                                            {getRatingText(review.rating)}
+                                        </span>
+                                    </div>
+                                    <div
+                                        className="at-c mt-12"
                                         style={{
-                                            fontSize: "15px",
-                                            fontWeight: "500",
+                                            fontSize: "13px",
+                                            color: "#4bc488",
                                         }}
                                     >
-                                        {data.review.comment}
-                                    </span>
-                                </div>
-                                <div
-                                    className="at-c mt-12"
-                                    style={{
-                                        fontSize: "13px",
-                                        color: "#4bc488",
-                                    }}
-                                >
-                                    <CheckCircleIcon
-                                        sx={{ fontSize: "16px" }}
-                                    />
-                                    <span style={{ marginLeft: "4px" }}>
-                                        Đã mua hàng
-                                    </span>
-                                </div>
-                                <div
-                                    className="comment mt-12"
-                                    style={{ fontSize: "14px" }}
-                                >
-                                    <p>Đẹp, cứng chắc, dễ sử dụng</p>
-                                    <img
+                                        <CheckCircleIcon
+                                            sx={{ fontSize: "16px" }}
+                                        />
+                                        <span style={{ marginLeft: "4px" }}>
+                                            Đã mua hàng
+                                        </span>
+                                    </div>
+                                    <div
+                                        className="comment mt-12"
+                                        style={{ fontSize: "14px" }}
+                                    >
+                                        <p>{review.comment}</p>
+                                        {review.image_url && (
+                                            <img
+                                                className="mt-12"
+                                                width={70}
+                                                height={70}
+                                                src={review?.image_url}
+                                                alt=""
+                                            />
+                                        )}
+                                    </div>
+                                    <p
                                         className="mt-12"
-                                        width={70}
-                                        height={70}
-                                        src={data.review.image_url}
-                                        alt=""
-                                    />
+                                        style={{
+                                            fontSize: "13px",
+                                            color: "var(--text-50-color)",
+                                        }}
+                                    >
+                                        Đánh giá vào{" "}
+                                        {formatDateTime(review.created_at)}
+                                    </p>
                                 </div>
-                                <p
-                                    className="mt-12"
-                                    style={{
-                                        fontSize: "13px",
-                                        color: "var(--text-50-color)",
-                                    }}
-                                >
-                                    Đánh giá vào {data.review.create_at}
-                                </p>
-                            </div>
+                            </Grid>
                         </Grid>
-                    </Grid>
-                ))}
+                    ))}
             </div>
             <Pagination
                 sx={{
@@ -192,7 +237,7 @@ export default function ReviewComment() {
                         backgroundColor: "#189eff",
                     },
                 }}
-                count={Math.ceil(numberOfComments / commentsPerPage)}
+                count={Math.ceil(numberOfFilteredComments / commentsPerPage)}
                 page={currentPage}
                 onChange={handlePageChange}
                 color="primary"

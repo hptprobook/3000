@@ -72,35 +72,8 @@ const StyledDetailInfo = styled("div")(() => ({
 }));
 
 export default function ProductDetailInfo({ product }) {
-    console.log(
-        "🚀 ~ file: ProductDetailInfo.jsx:75 ~ ProductDetailInfo ~ product:",
-        product
-    );
     const formatPriceToVND = (price) => {
         return price ? price.toLocaleString("vi-VN") : 0;
-    };
-
-    const fakeData = {
-        productId: 12345,
-        productName: "Tủ Để Đồ Có Nắp Đậy",
-        variants: [
-            {
-                variantType: "Kích thước",
-                options: [
-                    { id: 1, name: "4 tầng", price: 20000000 },
-                    { id: 2, name: "5 tầng", price: 25000000 },
-                    { id: 3, name: "6 tầng", price: 30000000 },
-                ],
-            },
-            {
-                variantType: "Màu sắc",
-                options: [
-                    { id: 1, name: "Đỏ" },
-                    { id: 2, name: "Xanh" },
-                    { id: 3, name: "Trắng" },
-                ],
-            },
-        ],
     };
 
     const [selectedOptions, setSelectedOptions] = useState({});
@@ -109,7 +82,7 @@ export default function ProductDetailInfo({ product }) {
         const initialSelections = {};
         const initialActiveText = [];
 
-        fakeData.variants.forEach((variant) => {
+        product?.variants.forEach((variant) => {
             const firstOptionName = variant.options[0].name;
             initialSelections[variant.variantType] = firstOptionName;
             initialActiveText.push({
@@ -139,11 +112,9 @@ export default function ProductDetailInfo({ product }) {
 
     let brand = "";
 
-    product?.brands.map((item) => {
+    product?.brands?.map((item) => {
         brand = item.name;
     });
-
-    console.log(brand);
 
     return (
         <StyledDetailInfo>
