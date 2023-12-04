@@ -6,6 +6,7 @@ import ProductItem from "@/components/common/Home/ProductItem/ProductItem";
 import SeeMoreBtn from "@/components/common/Button/SeeMore/SeeMoreBtn";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "@/redux/slices/productSlice";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 export default function MainListProduct() {
     const dispatch = useDispatch();
