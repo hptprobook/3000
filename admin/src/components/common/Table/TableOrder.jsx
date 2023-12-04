@@ -14,6 +14,7 @@ import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
+import FormatDateTime from '../Function/FormatDate';
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: '1px solid rgb(45, 55, 72)',
@@ -62,19 +63,19 @@ const headCells = [
         id: 'name',
         numeric: false,
         disablePadding: true,
-        label: 'Tên sản phẩm',
+        label: 'Tên khách hàng',
     },
     {
-        id: 'price',
+        id: 'total_amount',
         numeric: true,
         disablePadding: false,
-        label: 'Giá',
+        label: 'Tổng đơn',
     },
     {
-        id: 'quantity',
+        id: 'created_at',
         numeric: true,
         disablePadding: false,
-        label: 'Số lượng',
+        label: 'Ngày tạo',
     },
     {
         id: 'status',
@@ -153,7 +154,7 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-export default function TableProduct({ data }) {
+export default function TableOrder({ data }) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [selected, setSelected] = React.useState([]);
@@ -259,10 +260,10 @@ export default function TableProduct({ data }) {
                                             scope="row"
                                             padding="none"
                                         >
-                                            {row.name}
+                                            {row.address.name}
                                         </CustomTableCell>
-                                        <CustomTableCell align="right">{row.price}</CustomTableCell>
-                                        <CustomTableCell align="right">{row.quantity}</CustomTableCell>
+                                        <CustomTableCell align="right">{row.total_amount}</CustomTableCell>
+                                        <CustomTableCell align="right">{FormatDateTime(row.created_at)}</CustomTableCell>
                                         <CustomTableCell align="right">
                                             {row.status}
                                         </CustomTableCell>

@@ -6,7 +6,7 @@ import { Box, Grid } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import SelectEdit from "../../../components/common/Select/SelectEdit";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import { createCategoryAsync, fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import InfoBox from "../../../components/common/Box/InforBox";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import styled from "@emotion/styled";
@@ -33,18 +33,75 @@ export default function CreateCategoryPage() {
     parent_id: null,
     icon_url: "",
   });
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here.
-
-    // Clear the form fields after submission if needed.
-    setCategoryData({
-      name: "",
-      parent_id: null,
-      icon_url: "",
-    });
+    console.log('Name:', name);
+    console.log('Parent ID:', categoryData.parent_id);
+    console.log('Thumbnail:', thumbnail);
+    console.log('Thumbnail URL:', thumbnailUrl);
+    const errors = validateForm(); // Kiểm tra điều kiện và trả về danh sách lỗi (nếu có)
+  
+    if (errors.length === 0) {
+      try {
+        // Thực hiện dispatch action tạo mới category
+        const resultAction = await dispatch(createCategoryAsync(categoryData));
+        console.log('New category added:', resultAction.payload);
+      
+        // Reset form fields after successful submission
+        resetFormFields();
+      } catch (error) {
+        console.error('Error adding new category:', error);
+        // Xử lý lỗi nếu cần
+        alert("Tạo không thành công");
+      }
+    } else {
+      alert("Vui lòng điền đầy đủ thông tin");
+      // Hiển thị thông báo lỗi nếu dữ liệu không hợp lệ
+    }
   };
-
+  
+  const validateForm = () => {
+    const errors = [];
+  
+    // Kiểm tra các điều kiện và thêm lỗi vào mảng errors nếu dữ liệu không hợp lệ
+    if (name === '') {
+      errors.push('Tên phân loại không được để trống!');
+    } else if (name.length > 254) {
+      errors.push('Tên phân loại không được quá 255 kí tự!');
+    }
+  
+    if (!categoryData.parent_id || categoryData.parent_id === 'none') {
+      errors.push('Không chọn phân loại cha');
+    } else if (categories.length === 0) {
+      errors.push('Lỗi khi lấy danh sách phân loại cha');
+    }
+  
+    if (!thumbnailUrl) {
+      errors.push('Chưa upload hình ảnh');
+    }
+  
+    // ... Kiểm tra các trường dữ liệu khác nếu cần
+  
+    return errors;
+  };
+  
+  const resetFormFields = () => {
+    // Reset các trường dữ liệu và thông báo lỗi sau khi gửi thành công
+    setCategoryData({
+      name: '',
+      parent_id: null,
+      icon_url: '',
+    });
+    setName('');
+    setThumbnail('');
+    setThumbnailUrl('');
+    setErrorName('');
+    setErrorParentId('');
+    // ... Reset các thông báo lỗi khác nếu có
+  };
+  
+  
+  
   useEffect(() => {
     // Fetch categories when the component mounts
     dispatch(fetchCategoriesAsync());
@@ -120,7 +177,6 @@ export default function CreateCategoryPage() {
       <Box sx={{
         marginTop: '32px'
       }}></Box>
-      <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <InputEdit
@@ -169,10 +225,10 @@ export default function CreateCategoryPage() {
               bg="true"
               type="submit"
               sx={{ marginTop: "16px" }}
+              onClick={handleSubmit}
             ></ButtonNormal>
           </Grid>
         </Grid>
-      </form>
     </Box>
   );
 }

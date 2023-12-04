@@ -4,6 +4,7 @@ import postReducer from "./slices/postSlice";
 import categoriesReducer from "./slices/categoriesSlice";
 import tagsReducer from "./slices/tagsSlice";
 import brandsReducer from "./slices/brandsSlice";
+import ordersReducer from "./slices/ordersSlice";
 import addressSlice from "./slices/addressSlice";
 import uploadReducer from "./slices/uploadSlice";
 import productsReducer from "./slices/productSlice";
@@ -17,6 +18,7 @@ export const store = configureStore({
         upload: uploadReducer,
         products: productsReducer,
         brands: brandsReducer,
+        orders: ordersReducer,
         tags: tagsReducer,
     },
 });

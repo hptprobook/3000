@@ -26,7 +26,7 @@ const ButtonEdit = styled(IconButton)(({ theme }) => ({
         color: color.textColor.dark
     }
 }))
-const EditUserPage = () => {
+const EditOrderPage = () => {
     // lấy id từ url
     const { id } = useParams();
 
@@ -335,4 +335,4 @@ const EditUserPage = () => {
     }
 }
 
-export default EditUserPage
+export default EditOrderPage;

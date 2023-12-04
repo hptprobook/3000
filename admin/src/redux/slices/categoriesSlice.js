@@ -24,7 +24,19 @@ export const fetchCategoryById = createAsyncThunk(
         }
     }
 );
-export const setStatus = createAction("address/setStatus");
+export const createCategoryAsync = createAsyncThunk(
+  'categories/createCategory',
+  async (categoryData, thunkAPI) => {
+    try {
+      const res = await CategoryService.createCategory(categoryData);
+      console.log(res.data);
+      return res.data; // Đảm bảo res.data chứa thông tin category mới
+    } catch (error) {
+      throw error;
+    }
+  }
+);
+export const setStatus = createAction('address/setStatus');
 
 export const fetchAllBrands = createAsyncThunk(
     "brands/fetchBrands",
@@ -40,45 +52,57 @@ export const fetchAllBrands = createAsyncThunk(
 );
 
 const categoriesSlice = createSlice({
-    name: "categories",
-    initialState: { data: [], status: "idle", error: null },
-    reducers: {},
-    extraReducers: (builder) => {
-        builder
-            .addCase(fetchCategoriesAsync.pending, (state) => {
-                state.status = "loading";
-            })
-            .addCase(fetchCategoriesAsync.fulfilled, (state, action) => {
-                state.status = "succeeded";
-                state.data = action.payload; // Storing only the categories array
-            })
-            .addCase(fetchCategoriesAsync.rejected, (state, action) => {
-                state.status = "failed";
-                state.error = action.error.message;
-            })
-            .addCase(fetchCategoryById.pending, (state) => {
-                state.status = "loading";
-            })
-            .addCase(fetchCategoryById.fulfilled, (state, action) => {
-                state.status = "succeeded";
-                state.selectedCategory = action.payload; // Storing the details of a specific category
-            })
-            .addCase(fetchCategoryById.rejected, (state, action) => {
-                state.status = "failed";
-                state.error = action.error.message;
-            })
-            .addCase(fetchAllBrands.pending, (state) => {
-                state.status = "loading";
-            })
-            .addCase(fetchAllBrands.fulfilled, (state, action) => {
-                state.status = "brands is ready";
-                state.data = action.payload; // Storing only the categories array
-            })
-            .addCase(fetchAllBrands.rejected, (state, action) => {
-                state.status = "failed fetching brands";
-                state.error = action.error.message;
-            });
-    },
+  name: 'categories',
+  initialState: { data: [], status: 'idle', error: null },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCategoriesAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCategoriesAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.data = action.payload; // Storing only the categories array
+      })
+      .addCase(fetchCategoriesAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(fetchCategoryById.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCategoryById.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.selectedCategory = action.payload; // Storing the details of a specific category
+      })
+      .addCase(fetchCategoryById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(createCategoryAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(createCategoryAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // Cập nhật trạng thái hoặc dữ liệu cần thiết từ action.payload
+        state.newCategory = action.payload.newCategoryData;
+      })
+      .addCase(createCategoryAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(fetchAllBrands.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchAllBrands.fulfilled, (state, action) => {
+        state.status = 'brands is ready';
+        state.data = action.payload; // Storing only the categories array
+      })
+      .addCase(fetchAllBrands.rejected, (state, action) => {
+        state.status = 'failed fetching brands';
+        state.error = action.error.message;
+      });
+  },
 });
 
 export default categoriesSlice.reducer;
