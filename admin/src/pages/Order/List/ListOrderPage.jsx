@@ -1,30 +1,27 @@
 import React, { useEffect, useState } from "react";
-import "./style.css";
 import { Box, colors } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import color from "../../../config/colorConfig";
 import InputSearch from "../../../components/common/TextField/InputSearch";
-import SelectFilterProduct from "../../../components/common/Select/SelectFilterProduct";
+import SelectFilterOrder from "../../../components/common/Select/SelectFilterOrder";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllProducts } from "../../../redux/slices/productSlice";
 import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
-
-import TableProduct from "../../../components/common/Table/TableProduct";
-import { setStatus } from "../../../redux/slices/categoriesSlice";
 import Loading from "../../../components/common/Loading/Loading";
+import TableOrder from "../../../components/common/Table/TableOrder";
+import { fetchAllOrders } from "../../../redux/slices/ordersSlice";
 
 
-export default function WarehouseProductPage() {
+export default function ListOrderPage() {
     const dispatch = useDispatch();
     const categories = useSelector((state) => state.categories.data);
     const statusCat = useSelector((state) => state.categories.status);
-    const products = useSelector((state) => state.products.products);
-    const statusPro = useSelector((state) => state.products.status);
+    const orders = useSelector((state) => state.orders.data);
+    const statusOrder = useSelector((state) => state.orders.status);
     const error = useSelector((state) => state.categories.error);
     const [loadData, setLoadData] = useState(false);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
-    const [productsCategory, setProductCategory] = React.useState([]);
-    const [productsList, setProductsList] = React.useState([]);
+    const [ordersStatusList, setOrderStatusList] = React.useState([]);
+    const [orderList, setOrderList] = React.useState([]);
     const handleFilterReturn = (filters) => {
         setSelectedFilters(filters);
         // You can perform additional actions based on the selected filters if needed
@@ -37,33 +34,32 @@ export default function WarehouseProductPage() {
         }
     }, [statusCat]);
     useEffect(() => {
-        if (statusPro == 'idle') {
-            dispatch(fetchAllProducts());
-            setProductCategory(products);
+        if (statusOrder == 'idle') {
+            dispatch(fetchAllOrders());
+            setOrderStatusList(orders);
         }
-    }, [statusPro]);
+    }, [statusOrder]);
     useEffect(() => {
-        if (statusPro == 'products already') {
-            setProductsList(products);
+        if (statusOrder == 'orders already') {
+            setOrderList(orders);
 
             if (selectedFilters.length > 0) {
-                const filteredProducts = products.filter(product => selectedFilters.includes(product.category_id));
-                setProductCategory(filteredProducts);
-                setProductsList(filteredProducts);
+                const filteredOrder = orders.filter(order => selectedFilters.includes(order.status));
+                setOrderStatusList(filteredOrder);
+                setOrderList(filteredOrder);
             }
             else {
-                setProductCategory(products);
-                setProductsList(products);
-
+                setOrderStatusList(orders);
+                setOrderList(orders);
             }
         }
-    }, [selectedFilters, products])
+    }, [selectedFilters, orders])
     const handleSearch = (searchValue) => {
         const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
-        const result = productsCategory.filter(item => regex.test(item.name));
-        setProductsList(result);
+        const result = ordersStatusList.filter(item => regex.test(item.address.name));
+        setOrderList(result);
         if (searchValue === '') {
-            setProductsList(productsCategory);
+            setOrderList(ordersStatusList);
         }
     };
 
@@ -72,18 +68,17 @@ export default function WarehouseProductPage() {
             <Loading />
         )
     }
-    if (statusCat === 'failed' || statusPro === 'failed') {
+    if (statusCat === 'failed' || statusOrder === 'failed') {
         return (
             <div>Error</div>
         )
     }
-    if (statusPro === 'products already') {
+    if (statusOrder === 'orders already') {
         return (
             <Box>
                 <HeaderPage
-                    namePage={"Sản phẩm"}
-                    Breadcrumb={["Sản phẩm", "Kho"]}
-                    ButtonLink="/product/create"
+                    namePage={"Đơn hàng"}
+                    Breadcrumb={["Đơn hàng", "Danh sách"]}
                 />
                 <Box
                     sx={{
@@ -103,8 +98,18 @@ export default function WarehouseProductPage() {
                         >
                             <InputSearch onChange={handleSearch} />
                         </Box>
-                        <SelectFilterProduct data={categories} filterReturn={handleFilterReturn} />
-                        <TableProduct data={productsList} />
+                        <SelectFilterOrder
+                            data={[
+                                { id: 'pending', name: 'Chưa giải quyết', },
+                                { id: 'processing', name: 'Đang xử lý' },
+                                { id: 'shipping', name: 'Đang giao' },
+                                { id: 'cancelled', name: 'Hủy' },
+                                { id: 'delivered', name: 'Giao hàng thành công' },
+                                { id: 'refunded', name: 'Trả hàng' },
+                                { id: 'complete', name: 'Hoàn thành' },
+                            ]}
+                            filterReturn={handleFilterReturn} />
+                        <TableOrder data={orderList} />
                     </Box>
                 </Box>
             </Box>

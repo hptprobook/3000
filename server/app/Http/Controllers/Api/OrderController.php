@@ -29,7 +29,7 @@ class OrderController extends Controller
             }
 
             $user = Auth::user();
-            $orders = $user->orders()->with(['order_details', 'address,ward'])->get();
+            $orders = $user->orders()->with(['order_details', 'address.ward'])->get();
 
             return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
