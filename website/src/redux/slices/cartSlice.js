@@ -3,7 +3,8 @@ import CartService from "@/services/cart.service";
 
 const initialState = {
     carts: {},
-    status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
+    cartList: [],
+    status: "idle",
     error: null,
 };
 
@@ -12,6 +13,18 @@ export const addToCart = createAsyncThunk(
     async (cartData, { rejectWithValue }) => {
         try {
             const response = await CartService.addToCart(cartData);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const fetchAllCart = createAsyncThunk(
+    "carts/fetchAll",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await CartService.fetchAllCart();
             return response;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -33,6 +46,17 @@ const cartSlice = createSlice({
                 state.carts = action.payload;
             })
             .addCase(addToCart.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(fetchAllCart.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchAllCart.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.cartList = action.payload;
+            })
+            .addCase(fetchAllCart.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });

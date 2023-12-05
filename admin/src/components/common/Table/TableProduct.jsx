@@ -14,6 +14,9 @@ import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
+import { NavLink } from 'react-router-dom';
+import { IconButton, Tooltip } from '@mui/material';
+import { BiSolidPencil } from 'react-icons/bi';
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: '1px solid rgb(45, 55, 72)',
@@ -266,7 +269,20 @@ export default function TableProduct({ data }) {
                                         <CustomTableCell align="right">
                                             {row.status}
                                         </CustomTableCell>
-                                        <CustomTableCell align="right">Bấm</CustomTableCell>
+                                        <CustomTableCell align="right">
+
+                                            <NavLink to={'/product/edit/' + row.id}>
+                                                <Tooltip title="Sửa" >
+                                                    <IconButton sx={{
+                                                        color: '#9da4ae',
+                                                        marginRight: '8px'
+                                                    }}
+                                                    >
+                                                        <BiSolidPencil style={{ fontSize: '16px' }} />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </NavLink>
+                                        </CustomTableCell>
                                     </TableRow>
                                 );
                             })}
