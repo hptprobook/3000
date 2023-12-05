@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import "./style.css";
 import CartContainer from "@/components/layouts/Cart/CartContainer";
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 import { Grid } from "@mui/material";
