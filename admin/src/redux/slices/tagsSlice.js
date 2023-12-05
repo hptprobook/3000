@@ -24,6 +24,28 @@ export const createTag = createAsyncThunk(
     }
   }
 );
+export const fetchOneById = createAsyncThunk(
+  "tags/fetchOneById",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await TagsService.getTagByID(id);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
+export const updateTagByID = createAsyncThunk(
+  "tags/updateTagByID",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await TagsService.updateTagByID(id, data);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
 export const setStatus = createAction('tags/setStatus');
 
 const initialState = {
@@ -60,6 +82,28 @@ const tagsSlice = createSlice({
       .addCase(createTag.rejected, (state, action) => {
         state.status = "failed";
         state.errorCreate = action.payload;
+      })
+      .addCase(fetchOneById.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchOneById.fulfilled, (state, action) => {
+        state.status = "tag already";
+        state.getOne = action.payload;
+      })
+      .addCase(fetchOneById.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(updateTagByID.pending, (state) => {
+        state.statusUpdate = "loading update";
+      })
+      .addCase(updateTagByID.fulfilled, (state, action) => {
+        state.statusUpdate = "update successful";
+        state.update = action.payload;
+      })
+      .addCase(updateTagByID.rejected, (state, action) => {
+        state.statusUpdate = "update failed";
+        state.error = action.payload;
       })
   },
 });

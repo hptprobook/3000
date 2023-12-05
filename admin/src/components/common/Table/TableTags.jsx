@@ -143,7 +143,7 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-export default function TableProduct({ data }) {
+export default function TableTags({ data }) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [selected, setSelected] = React.useState([]);
@@ -179,7 +179,7 @@ export default function TableProduct({ data }) {
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
     const visibleRows = React.useMemo(
         () =>

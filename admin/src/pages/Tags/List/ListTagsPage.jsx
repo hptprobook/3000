@@ -6,7 +6,7 @@ import InputSearch from "../../../components/common/TextField/InputSearch";
 import { useDispatch, useSelector } from "react-redux";
 import TableTags from "../../../components/common/Table/TableTags";
 import Loading from "../../../components/common/Loading/Loading";
-import { fetchAllTags } from "../../../redux/slices/tagsSlice";
+import { fetchAllTags, setStatus } from "../../../redux/slices/tagsSlice";
 
 
 export default function ListTagsPage() {
@@ -16,7 +16,7 @@ export default function ListTagsPage() {
     const status = useSelector((state) => state.tags.status);
     const [dataTags, setDataTags] = useState([]);
     useEffect(() => {
-        if (status == 'idle') {
+        if (status == 'idle' || status !== 'succeeded tags') {
             dispatch(fetchAllTags());
         }
     }, [status]);

@@ -19,6 +19,7 @@ import ListOrderPage from "../pages/Order/List/ListOrderPage";
 import ComingSoon from "../components/common/ComingSoon/ComingSoon";
 import ListTagsPage from "../pages/Tags/List/ListTagsPage";
 import CreateTagsPage from "../pages/Tags/Create/CreateTagsPage";
+import EditTagsPage from "../pages/Tags/Edit/EditTagsPage";
 
 function DashboardRoute() {
     return (
@@ -38,7 +39,7 @@ function DashboardRoute() {
             <Route path="category/create" element={<CreateCategoryPage />} />
             <Route path="category/tag" element={<ListTagsPage />} />
             <Route path="category/tag/create" element={<CreateTagsPage />} />
-
+            <Route path="category/tag/edit/:id" element={<EditTagsPage />} />
             <Route path="category/edit/:id" element={<EditCategoryPage />} />
 
             <Route path="order/detail/:id" element={<EditOrderPage />} />
