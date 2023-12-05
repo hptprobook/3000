@@ -29,13 +29,16 @@ export const createCategoryAsync = createAsyncThunk(
   async (categoryData, thunkAPI) => {
     try {
       const res = await CategoryService.createCategory(categoryData);
-      console.log(res.data);
-      return res.data; // Đảm bảo res.data chứa thông tin category mới
+      console.log(res); // Log the received data
+      return res.data; // Return the received data
     } catch (error) {
       throw error;
     }
   }
 );
+
+
+
 export const setStatus = createAction('address/setStatus');
 
 export const fetchAllBrands = createAsyncThunk(
@@ -83,10 +86,9 @@ const categoriesSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(createCategoryAsync.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        // Cập nhật trạng thái hoặc dữ liệu cần thiết từ action.payload
-        state.newCategory = action.payload.newCategoryData;
-      })
+        state.status = 'created successfully';
+        state.newCategory = action.payload; // Update based on the actual structure
+      })      
       .addCase(createCategoryAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
