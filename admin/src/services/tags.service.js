@@ -28,6 +28,15 @@ const TagsService = {
             throw err;
         }
     },
+    deleteTagByID: async (id) => {
+        try {
+            const res = await request.delete(`tags/${id}`);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
     createTag: async (dataCreate) => {
         try {
             const res = await request.post("tags", dataCreate);

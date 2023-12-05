@@ -6,66 +6,65 @@ import InputEdit from "../../../components/common/TextField/InputEdit";
 import InfoBox from "../../../components/common/Box/InforBox";
 import { useDispatch, useSelector } from "react-redux";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
-import { createTag, fetchOneById, setStatus, updateTagByID } from "../../../redux/slices/tagsSlice";
+import { createTag, setStatus } from "../../../redux/slices/tagsSlice";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 import SuccessAlert from "../../../components/common/Alert/SuccessAlert";
-import { useParams } from "react-router-dom";
-import Loading from "../../../components/common/Loading/Loading";
+import { fetchAllBrands } from "../../../redux/slices/brandsSlice";
+import SelectEdit from "../../../components/common/Select/SelectEdit";
+import ButtonUploadImg from "../../../components/common/Button/ButtonUploadImg";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
 }));
-export default function EditTagsPage() {
-    const { id } = useParams();
+export default function CreateBrandPage() {
+
     // khai báo các hàm liên quan đến fecth data 
     const dispatch = useDispatch();
 
-    const error = useSelector((state) => state.tags.error);
-    const tag = useSelector((state) => state.tags.getOne);
-    const status = useSelector((state) => state.tags.status);
-    const statusUpdate = useSelector((state) => state.tags.statusUpdate);
+    const error = useSelector((state) => state.brands.errorCreate);
+    const brands = useSelector((state) => state.brands.data);
+    const status = useSelector((state) => state.brands.status);
 
     const [name, setName] = useState('');
     const [errorName, setErrorName] = useState('');
+
+    const [parent_id, setParentId] = useState('');
 
     const [description, setDescription] = useState('');
     const [errorDescription, setErrorDescription] = useState('');
 
     const [success, setSeccess] = useState(false);
+    const [thumbnail, setThumbnail] = useState('');
     useEffect(() => {
-        if (status !== 'tag already') {
-            dispatch(fetchOneById({ id: id }));
+        if (status == 'idle') {
+            dispatch(fetchAllBrands());
         }
+
     }, [status])
+
     useEffect(() => {
-        if (error === 'The name has already been taken.' && statusUpdate === 'update failed') {
+        if (error === 'The name has already been taken.' && status === 'failed') {
             setErrorName('Nhãn sản phẩm đã tồn tại');
             setSeccess(false);
         }
 
-    }, [error, statusUpdate])
+    }, [error, status])
     useEffect(() => {
-        if (status === 'tag already') {
-            setName(tag.name);
-            setDescription(tag.description);
-        }
-    }, [status])
-    useEffect(() => {
-        if (statusUpdate === 'update successful') {
+        if (status === 'created successfully') {
             setSeccess(true);
         }
-        if (statusUpdate === 'loading update') {
+        if (status === 'loading') {
             setSeccess(false);
         }
-    }, [statusUpdate])
-    const handleEditTags = () => {
+    }, [status])
+    const handleCreateTags = () => {
         if (name !== '' && description !== '') {
             const data = {
                 name: name,
                 description: description
             }
             // console.log(data);
-            dispatch(updateTagByID({ id: id, data: data }));
+            dispatch(createTag({ data: data }));
         }
         else {
             if (name === '') {
@@ -76,15 +75,14 @@ export default function EditTagsPage() {
             }
         }
     }
-
     const handleCheckError = (field, value) => {
         switch (field) {
             case 'name': {
                 if (value === '') {
-                    setErrorName('Nhãn sản phẩm không được để trống!');
+                    setErrorName('Thương hiệu không được để trống!');
                 }
                 else if (value.length > 128) {
-                    setErrorName('Nhãn sản phẩm không được quá 128 kí tự!');
+                    setErrorName('Thương hiệu không được quá 128 kí tự!');
                 }
                 else {
                     setErrorName('');
@@ -108,20 +106,44 @@ export default function EditTagsPage() {
                 return false; // Default to no error
         }
     };
+    const handleUploadThumnail = () => {
+        const thumbnailRef = ref(storageFirebase, `product_image/${v4()}`);
+        const uploadTask = uploadBytesResumable(thumbnailRef, thumbnail);
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                // Observe state change events such as progress, pause, and resume
+                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('Upload is ' + progress + '% done');
+                switch (snapshot.state) {
+                    case 'paused':
+                        console.log('Upload is paused');
+                        break;
+                    case 'running':
+                        console.log('Upload is running');
+                        break;
+                }
+            },
+            (error) => {
+                // Handle unsuccessful uploads
+            },
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log('File available at', downloadURL);
+                    setThumbnailUrl(downloadURL);
+                });
+            }
+        );
+    };
 
-    if (status === 'loading') {
-        return (
-            <Loading />
-        )
-    }
-    if (status == 'tag already') {
+    if (status === 'brands is ready') {
         return (
             <Box>
-                {success ? <SuccessAlert label={'Cập nhật nhãn sản phẩm thành công'} /> : null}
-                {statusUpdate === 'loading update' ? <LinearIndeterminate /> : null}
+                {success ? <SuccessAlert label={'Tạo nhãn sản phẩm thành công'} /> : null}
+                {status === 'loading' ? <LinearIndeterminate /> : null}
                 <HeaderPage
-                    namePage={"Chỉnh sửa"}
-                    Breadcrumb={["Nhãn sản phẩm", "Chỉnh sửa"]}
+                    namePage={"Tạo mới"}
+                    Breadcrumb={["Nhãn sản phẩm", "Tạo"]}
                 />
                 <Box sx={{
                     marginTop: '32px'
@@ -134,29 +156,30 @@ export default function EditTagsPage() {
                                     setName(event.target.value);
                                     handleCheckError('name', event.target.value)
                                 }}
-                                value={tag.name}
-                                label={'Nhãn sản phẩm'}
+                                label={'Thương hiệu'}
                                 error={errorName ? true : false}
                                 helperText={errorName}
                             />
 
                         </DivMargin>
                         <DivMargin>
-                            <InputEdit
-                                id={'description'}
-                                onBlur={(event) => {
-                                    setDescription(event.target.value);
-                                    handleCheckError('description', event.target.value)
+                            <SelectEdit
+                                label={'Thương hiệu cha'}
+                                data={brands}
+                                value={''}
+                                onChange={(e) => {
+                                    setParentId(e.target.value)
                                 }}
-                                value={tag.description}
-                                label={'Mô tả ngắn'}
-                                error={errorDescription ? true : false}
-                                helperText={errorDescription}
                             />
+                        </DivMargin>
+                        <DivMargin>
+                            <DivMargin>
+                                <ButtonUploadImg />
+                            </DivMargin>
 
                         </DivMargin>
                         <DivMargin>
-                            <ButtonNormal bg={'true'} label={'Lưu'} onClick={handleEditTags} />
+                            <ButtonNormal bg={'true'} label={'Thêm'} onClick={handleCreateTags} />
 
                         </DivMargin>
                     </InfoBox>

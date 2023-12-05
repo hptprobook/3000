@@ -68,13 +68,13 @@ const headCells = [
         id: 'name',
         numeric: false,
         disablePadding: true,
-        label: 'Tên sản phẩm',
+        label: 'Tên thương hiệu',
     },
     {
-        id: 'description',
+        id: 'icon_url',
         numeric: true,
         disablePadding: false,
-        label: 'Mô tả',
+        label: 'Ảnh đại diện',
     },
     {
         id: 'action',
@@ -147,15 +147,15 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-export default function TableTags({ data, onDeleteTag }) {
+export default function TableBrands({ data, onDeleteBrand }) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    const handleDeleteTag = (id) => {
-        onDeleteTag(id);
+    const handleDeleteBrand = (id) => {
+        onDeleteBrand(id);
     };
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -258,9 +258,15 @@ export default function TableTags({ data, onDeleteTag }) {
                                         >
                                             {row.name}
                                         </CustomTableCell>
-                                        <CustomTableCell align="right">{row.description}</CustomTableCell>
                                         <CustomTableCell align="right">
-                                            <NavLink to={'/category/tag/edit/' + row.id}>
+                                            <img
+                                                src={row.icon_url}
+                                                alt={row.name}
+                                                style={{ width: '30px', height: '30px' }}
+                                            />
+                                        </CustomTableCell>
+                                        <CustomTableCell align="right">
+                                            <NavLink to={'/category/brand/edit/' + row.id}>
                                                 <Tooltip title="Sửa" >
                                                     <IconButton sx={{
                                                         color: '#9da4ae',
@@ -276,7 +282,7 @@ export default function TableTags({ data, onDeleteTag }) {
                                                     color: '#9da4ae',
                                                     marginRight: '8px'
                                                 }}
-                                                    onClick={(e) => handleDeleteTag(row.id)}
+                                                    onClick={(e) => handleDeleteBrand(row.id)}
                                                 >
                                                     <MdDelete style={{ fontSize: '16px' }} />
                                                 </IconButton>

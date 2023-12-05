@@ -12,6 +12,15 @@ const BrandsService = {
             throw err;
         }
     },
+    deleteBrandByID: async (id) => {
+        try {
+            const res = await request.delete(`brands/${id}`);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
 };
 
 export default BrandsService;
