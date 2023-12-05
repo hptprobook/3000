@@ -18,9 +18,21 @@ export const fetchProductById = createAsyncThunk(
     async (productId, { rejectWithValue }) => {
         try {
             const response = await ProductService.getProductById(productId);
-            return response.data;
+            return response;
         } catch (err) {
-            return rejectWithValue(err.response.data);
+            return rejectWithValue(err.message);
+        }
+    }
+);
+
+export const fetchRecommendedProducts = createAsyncThunk(
+    "products/fetchRecommendedProducts",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await ProductService.getRecommendedProduct();
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response);
         }
     }
 );
@@ -28,6 +40,7 @@ export const fetchProductById = createAsyncThunk(
 const initialState = {
     products: [],
     selectedProduct: null,
+    recommendedProducts: [],
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
@@ -59,6 +72,17 @@ const productSlice = createSlice({
             .addCase(fetchProductById.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
+            })
+            .addCase(fetchRecommendedProducts.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchRecommendedProducts.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(fetchRecommendedProducts.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.recommendedProducts = action.payload;
             });
     },
 });

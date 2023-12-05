@@ -6,7 +6,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
-import Link from "next/link";
 import "./style.css";
 
 const StyledProductTab = styled("div")(() => ({
@@ -40,6 +39,13 @@ const StyledButtonTab = styled("button")(() => ({
 
 export default function ProductTab({ tabs }) {
     const [activeTab, setActiveTab] = useState(0);
+    const settings = {
+        dots: false,
+        infinite: false,
+        speed: false,
+        slidesToShow: 6,
+        slidesToScroll: 6,
+    };
 
     return (
         <StyledProductTab className="appContainer__ProductTab">
@@ -50,7 +56,7 @@ export default function ProductTab({ tabs }) {
                         className={`tab ${index === activeTab ? "active" : ""}`}
                         onClick={() => setActiveTab(index)}
                     >
-                        {tab.title}
+                        {tab.name}
                     </StyledButtonTab>
                 ))}
             </div>
@@ -60,20 +66,31 @@ export default function ProductTab({ tabs }) {
                     spaceBetween={8}
                     navigation={true}
                     modules={[Navigation]}
+                    className="ProductTabSwiper"
+                    slideToClickedSlide={6}
                 >
-                    {tabs[activeTab].products.map((product) => (
-                        <SwiperSlide key={product.id} className="product">
-                            <Link href={"/"}>
+                    {tabs[activeTab] &&
+                        tabs[activeTab]?.products.map((product) => (
+                            <SwiperSlide key={product.id}>
                                 <ProductItem
                                     name={product.name}
                                     price={product.price}
-                                    rate={product.rate}
-                                    imgUrl={product.imgUrl}
+                                    rate={product.average_rating}
+                                    imgUrl={product.thumbnail}
+                                    href={`/product/${encodeURIComponent(
+                                        product.name
+                                            .toLowerCase()
+                                            .replace(/ /g, "-")
+                                    )}-${encodeURIComponent(product.id)}`}
                                 />
-                            </Link>
-                        </SwiperSlide>
-                    ))}
+                            </SwiperSlide>
+                        ))}
                 </Swiper>
+                {/* {tabs[activeTab]?.products.map((product, i) => (
+                    <a href={product.id}>
+                        {product.name} - {product.id}
+                    </a>
+                ))} */}
             </div>
         </StyledProductTab>
     );

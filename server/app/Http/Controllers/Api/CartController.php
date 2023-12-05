@@ -40,32 +40,47 @@ class CartController extends Controller
         try {
             $request->validate([
                 'product_id' => 'required|exists:products,id',
-                'quantity' => 'required|integer|min:1,max:10000'
+                'temp_price' => 'required',
+                'quantity' => 'required|integer|min:1|max:1000',
+                'variants' => 'string|max:255'
             ]);
 
             $product = Product::findOrFail($request->product_id);
-
             $cart = Auth::user()->cart;
 
             if (!$cart) {
                 $cart = Cart::create(['user_id' => Auth::id()]);
             }
 
-            $carts = $cart->cart_items()->updateOrCreate(
-                [
-                    'product_id' => $product->id,
-                    'quantity' => DB::raw("quantity + $request->quantity"),
-                    'price' => $product->price
-                ]
-            );
+            $newVariants = json_decode($request->variants, true);
+            sort($newVariants);
 
-            return response()->json($carts, Response::HTTP_CREATED);
+            $cartItem = $cart->cart_items()->where('product_id', $product->id)->get()->filter(function ($item) use ($newVariants) {
+                $itemVariants = json_decode($item->variants, true);
+                sort($itemVariants);
+                return $newVariants == $itemVariants;
+            })->first();
+
+            if ($cartItem) {
+                $cartItem->quantity += $request->quantity;
+                $cartItem->save();
+            } else {
+                $cartItem = $cart->cart_items()->create([
+                    'product_id' => $product->id,
+                    'quantity' => $request->quantity,
+                    'price' => $request->temp_price,
+                    'variants' => json_encode($newVariants)
+                ]);
+            }
+
+            return response()->json($cartItem, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function show(string $id)
     {

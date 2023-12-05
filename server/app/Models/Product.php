@@ -10,7 +10,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity'
+        'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity', 'sold'
     ];
 
     public function category()
@@ -41,5 +41,11 @@ class Product extends Model
     public function seller()
     {
         return $this->belongsTo(Seller::class);
+    }
+
+    public function variants()
+    {
+        return $this->belongsToMany(VariantType::class, 'product_variants')
+            ->withPivot(['value', 'price']);
     }
 }

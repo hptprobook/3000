@@ -81,6 +81,11 @@
         --text-color: #333;
         --span-color: #ff424e;
         --link-color: #2184ff;
+        --font-family: Inter, Helvetica, Arial, sans-serif !important;
+        --title-color: #27272a;
+        --text-50-color: #858785;
+        --color-75: #f2f2f2;
+        --border-color: #dddde3;
     }
 }
 
@@ -101,4 +106,68 @@ body {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.checkbox-fake {
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgb(196, 196, 207);
+    border-radius: 4px;
+    margin-right: 8px;
+    position: relative;
+    z-index: 1;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.3s linear 0s;
+    flex-shrink: 0;
+}
+
+.d-b {
+    display: block !important;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.at-c {
+    display: flex;
+    align-items: center;
+}
+
+.jc-c {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-c {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.m-12 {
+    margin: 12px;
+}
+
+.mt-12 {
+    margin-top: 12px;
+}
+
+.mb-12 {
+    margin-bottom: 12px;
+}
+
+.mr-12 {
+    margin-right: 12px;
+}
+
+.ml-12 {
+    margin-left: 12px;
 }

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ReviewResource;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
 use App\Models\Tag;
+use App\Models\VariantType;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -21,13 +23,38 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::with(['brands', 'category', 'tags', 'images', 'reviews'])->get();
+            $products = Product::with(['reviews', 'images'])
+                ->withCount(['reviews as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(rating),0)'));
+                }])
+                ->get();
+
+            $products->each(function ($product) {
+                $product->average_rating = (float) $product->average_rating;
+            });
 
             return response()->json($products, Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function withReview()
+    {
+        try {
+            $products = Product::with(['reviews', 'images', 'category'])
+                ->withCount(['reviews as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(rating),0)'));
+                }])
+                ->orderBy('average_rating', 'desc')
+                ->get();
+
+            return response()->json($products, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public function store(Request $request)
     {
@@ -45,7 +72,11 @@ class ProductController extends Controller
                 'images' => 'required|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
-                'quantity' => 'required|integer'
+                'quantity' => 'required|integer',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             if ($validator->fails()) {
@@ -80,6 +111,14 @@ class ProductController extends Controller
                 $product->tags()->attach($tag->id);
             }
 
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+                $product->variants()->attach($variantType->id, [
+                    'value' => $variant['value'],
+                    'price' => $variant['price']
+                ]);
+            }
+
             DB::commit();
 
             return response()->json($product, Response::HTTP_CREATED);
@@ -92,19 +131,40 @@ class ProductController extends Controller
         }
     }
 
-
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews'])->findOrFail($id);
+            $product = Product::with(['category.products', 'images', 'reviews.user', 'variants', 'seller'])
+                ->findOrFail($id);
 
-            return response()->json($product, Response::HTTP_OK);
+            $averageRating = $product->reviews->avg('rating') ?? 0;
+
+            $groupedVariants = $product->variants->groupBy('name')->map(function ($variantGroup, $variantTypeName) {
+                return [
+                    'variantType' => $variantTypeName,
+                    'options' => $variantGroup->map(function ($variant) {
+                        return [
+                            'name' => $variant->pivot->value,
+                            'price' => $variant->pivot->price ?? null
+                        ];
+                    })
+                ];
+            })->values();
+
+            $productResource = $product->toArray();
+            $productResource['average_rating'] = $averageRating;
+            $productResource['variants'] = $groupedVariants;
+
+            $productResource['reviews'] = ReviewResource::collection($product->reviews);
+
+            return response()->json($productResource, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function update(Request $request, $id)
     {
@@ -125,7 +185,11 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags' => 'sometimes|string',
                 'status' => 'required',
-                'quantity' => 'required|numeric|between:0,10000'
+                'quantity' => 'required|numeric|between:0,10000',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             $product->update($request->only([
@@ -156,6 +220,23 @@ class ProductController extends Controller
                     ProductTag::create([
                         'product_id' => $product->id,
                         'name' => $tag_name
+                    ]);
+                }
+            }
+
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+
+                $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
+                if ($existingVariant) {
+                    $product->variants()->updateExistingPivot($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
+                    ]);
+                } else {
+                    $product->variants()->attach($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
                     ]);
                 }
             }

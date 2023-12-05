@@ -1,54 +1,38 @@
-import { Grid } from "@mui/material";
-import React from "react";
+"use client";
+import { Grid, Skeleton } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import "./style.css";
 import Link from "next/link";
-import Image from "next/image";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllSettings } from "@/redux/slices/settingSlice";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 export default function Banner() {
-    const fakeData = [
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-        {
-            href: "/",
-            alt: "",
-            src: "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp",
-        },
-    ];
+    const dispatch = useDispatch();
+    const { loading, settings, error } = useSelector((state) => state.setting);
+    const [loadData, setLoadData] = useState(false);
+    const [imageLoaded, setImageLoaded] = useState(false);
+
+    useEffect(() => {
+        if (!loading && !loadData) {
+            dispatch(fetchAllSettings());
+            setLoadData(true);
+        }
+    }, [loadData, dispatch, loading]);
+
+    if (loading) {
+        return <CirLoading />;
+    }
+
+    const mainBannerSetting = settings.find((s) => s.name === "main_banner");
+    const childBannerSetting = settings.find((s) => s.name === "child_banner");
+    let childBanners = [];
+
+    if (childBannerSetting && childBannerSetting.value) {
+        childBanners = childBannerSetting.value.split(",").map((url) => {
+            return { href: "/", alt: "", src: url.slice(1, -1) };
+        });
+    }
 
     return (
         <Grid container className="appContainer__banner" rowSpacing={0}>
@@ -61,9 +45,7 @@ export default function Banner() {
                             height: "100%",
                         }}
                         alt=""
-                        src={
-                            "https://salt.tikicdn.com/cache/w750/ts/tikimsp/68/e8/70/9404daa43e395a88d782e06760ce2062.jpg.webp"
-                        }
+                        src={mainBannerSetting?.value}
                     />
                 </Link>
             </Grid>
@@ -75,7 +57,7 @@ export default function Banner() {
                 columnSpacing={1.5}
                 rowSpacing={1.5}
             >
-                {fakeData.map((data, i) => (
+                {childBanners.map((data, i) => (
                     <Grid key={i} item xs={3}>
                         <Link href={data.href}>
                             <img
@@ -86,7 +68,9 @@ export default function Banner() {
                                     width: "100%",
                                     height: "100%",
                                     borderRadius: "8px",
+                                    display: imageLoaded ? "block" : "none",
                                 }}
+                                onLoad={() => setImageLoaded(true)}
                             />
                         </Link>
                     </Grid>

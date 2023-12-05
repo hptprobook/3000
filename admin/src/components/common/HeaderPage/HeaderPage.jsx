@@ -17,7 +17,12 @@ const HeaderPage = (propCustom) => {
                 </Typography>
                 <Breadcrumb link={propCustom.Breadcrumb} />
             </div>
-            <ButtonAdd link={propCustom.ButtonLink} />
+            {propCustom.ButtonLink ? (
+                <ButtonAdd link={propCustom.ButtonLink} />
+            ) : (
+                <></>
+            )}
+
 
         </Box>
     )

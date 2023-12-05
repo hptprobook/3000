@@ -1,12 +1,25 @@
-.appContainer {
+.appContainer,
+.appContainer__cart {
     width: var(--max-width);
     display: flex;
     margin: 0 auto;
     border-radius: 8px;
-    height: 4000px;
+}
+
+.appContainer__detail {
+    width: var(--max-width);
+    display: flex;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+
+.appContainer__detail--review {
+    width: var(--max-width);
+    display: flex;
+    margin: 0 auto;
+    border-radius: 8px;
 }
 
 .appContainer__content {
     margin-top: 16px;
-    /* margin-left: 12px; */
 }

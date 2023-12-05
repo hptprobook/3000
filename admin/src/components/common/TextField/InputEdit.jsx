@@ -5,16 +5,15 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
-import { IconButton } from '@mui/material';
-import { MdEdit } from 'react-icons/md';
+import { FormHelperText, colors } from '@mui/material';
 
 
-const FormControlEdit = styled(FormControl)(({ theme }) => ({
+const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
   margin: 0,
   width: '100%',
   '& .MuiInputBase-root.MuiFilledInput-root': {
     borderRadius: '14px',
-    border: '2px solid' + color.colorHover.hoverGray,
+    border: `2px solid ${error ? color.textColor.error : color.colorHover.hoverGray}`,
     transition: 'border .4s linear',
     color: color.textColor.dark
   },
@@ -35,7 +34,7 @@ const FormControlEdit = styled(FormControl)(({ theme }) => ({
     border: 'none'
   },
   '& .MuiFormLabel-root.MuiInputLabel-root': {
-    color: color.textColor.dark,
+    color: error ? color.textColor.error : color.textColor.dark,
   },
   '& .MuiFormLabel-root.MuiInputLabel-root.Mui-focused': {
     color: color.focusedColor.dark,
@@ -45,19 +44,26 @@ const FormControlEdit = styled(FormControl)(({ theme }) => ({
   }
 }))
 
-export default function InputEdit({ label, icon, value, onChange, type }) {
+export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur, id, note, disabled }) {
 
 
   return (
-    <FormControlEdit fullWidth sx={{ m: 1 }} variant="filled">
-      <InputLabel htmlFor="filled-adornment-amount">{label}</InputLabel>
+    <FormControlEdit error={error} fullWidth sx={{ m: 1 }} variant="filled">
+      <InputLabel htmlFor={id}>{label}</InputLabel>
       <FilledInput
+        disabled={disabled}
         defaultValue={value}
         onChange={onChange}
+        onBlur={onBlur}
         type={type || 'text'}
-        id="filled-adornment-amount"
+        id={id}
         startAdornment={<InputAdornment position="start">{icon}</InputAdornment>}
       />
+      <FormHelperText id="component-error-text">{error ? helperText : ''}</FormHelperText>
+      <FormHelperText sx={{
+        color: color.textColor.dark
+      }}>{note ? note : ''}</FormHelperText>
+
     </FormControlEdit>
   );
 }

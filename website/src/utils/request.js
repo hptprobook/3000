@@ -3,15 +3,39 @@
 import axios from "axios";
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL;
-const accessToken = process.env.NEXT_PUBLIC_ACCESS_TOKEN;
+// const accessToken = localStorage.getItem("access_token");
+axios.defaults.withCredentials = true;
 
 const request = axios.create({
     baseURL,
     headers: {
         "Content-Type": "application/json",
-        Authorization: accessToken ? `Bearer ${accessToken}` : "",
+        // Authorization: accessToken ? `Bearer ${accessToken}` : "",
     },
 });
+
+request.interceptors.request.use(
+    (config) => {
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("access_token");
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        }
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
+export const getCsrfToken = async () => {
+    try {
+        await request.get("/sanctum/csrf-cookie");
+    } catch (error) {
+        console.error("Lỗi khi lấy CSRF token:", error);
+    }
+};
 
 export const get = async (path, options = {}) => {
     try {

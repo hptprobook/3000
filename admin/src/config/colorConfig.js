@@ -3,7 +3,8 @@
 const color = {
     textColor: {
         dark: '#EDF2F7',
-        light: '#EDF2F7'
+        light: '#EDF2F7',
+        error: '#d32f2f',
     },
     backgroundColorSub: {
         dark: '#111927',
