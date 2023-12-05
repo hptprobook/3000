@@ -184,7 +184,6 @@ const EditUserPage = () => {
                     birth_date: formatDate(birth_date),
                     street: user.addresses[0].address_info,
                 }
-                console.log(dataUpdate)
                 dispatch(updateUserByID({ userId: id, data: dataUpdate }));
             }
         }

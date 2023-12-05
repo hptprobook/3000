@@ -1,6 +1,5 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -68,22 +67,10 @@ const headCells = [
         label: 'Tên sản phẩm',
     },
     {
-        id: 'price',
+        id: 'description',
         numeric: true,
         disablePadding: false,
-        label: 'Giá',
-    },
-    {
-        id: 'quantity',
-        numeric: true,
-        disablePadding: false,
-        label: 'Số lượng',
-    },
-    {
-        id: 'status',
-        numeric: true,
-        disablePadding: false,
-        label: 'Trạng thái',
+        label: 'Mô tả',
     },
     {
         id: 'action',
@@ -264,14 +251,9 @@ export default function TableProduct({ data }) {
                                         >
                                             {row.name}
                                         </CustomTableCell>
-                                        <CustomTableCell align="right">{row.price}</CustomTableCell>
-                                        <CustomTableCell align="right">{row.quantity}</CustomTableCell>
+                                        <CustomTableCell align="right">{row.description}</CustomTableCell>
                                         <CustomTableCell align="right">
-                                            {row.status}
-                                        </CustomTableCell>
-                                        <CustomTableCell align="right">
-
-                                            <NavLink to={'/product/edit/' + row.id}>
+                                            <NavLink to={'/category/tag/edit/' + row.id}>
                                                 <Tooltip title="Sửa" >
                                                     <IconButton sx={{
                                                         color: '#9da4ae',

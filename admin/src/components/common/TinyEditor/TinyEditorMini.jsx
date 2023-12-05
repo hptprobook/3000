@@ -1,11 +1,12 @@
 import React, { useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import './style.css';
-export default function TinyEditor() {
+export default function TinyEditorMini({ onEditorChange }) {
     const editorRef = useRef(null);
     const log = () => {
         if (editorRef.current) {
-            console.log(editorRef.current.getContent());
+            const content = editorRef.current.getContent();
+            onEditorChange(content);
         }
     };
     const handleUndoRedo = () => {
