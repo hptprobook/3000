@@ -16,6 +16,9 @@ import CreateCategoryPage from "../pages/Category/Add/CreateCategoryPage";
 import EditCategoryPage from "../pages/Category/Edit/EditCategoryPage";
 import EditOrderPage from "../pages/Order/Edit/EditOrderPage";
 import ListOrderPage from "../pages/Order/List/ListOrderPage";
+import ComingSoon from "../components/common/ComingSoon/ComingSoon";
+import ListTagsPage from "../pages/Tags/List/ListTagsPage";
+import CreateTagsPage from "../pages/Tags/Create/CreateTagsPage";
 
 function DashboardRoute() {
     return (
@@ -30,15 +33,20 @@ function DashboardRoute() {
             <Route path="post/list" element={<ListPostPage />} />
             <Route path="post/create" element={<CreatePostPage />} />
             <Route path="post/edit/:id" element={<EditPostPage />} />
-            <Route
-                path="product/warehouse"
-                element={<WarehouseProductPage />}
-            />
+            <Route path="product/warehouse" element={<WarehouseProductPage />} />
             <Route path="category/list" element={<ListCategoriesPage />} />
             <Route path="category/create" element={<CreateCategoryPage />} />
+            <Route path="category/tag" element={<ListTagsPage />} />
+            <Route path="category/tag/create" element={<CreateTagsPage />} />
+
             <Route path="category/edit/:id" element={<EditCategoryPage />} />
-            <Route path="order/edit/:id" element={<EditOrderPage />} />
+
+            <Route path="order/detail/:id" element={<EditOrderPage />} />
             <Route path="order" element={<ListOrderPage />} />
+            <Route path="payment" element={<ComingSoon />} />
+            <Route path="payment" element={<ComingSoon />} />
+
+
         </Routes>
     );
 }

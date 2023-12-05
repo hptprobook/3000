@@ -10,6 +10,15 @@ const TagsService = {
             throw err;
         }
     },
+    createTag: async (dataCreate) => {
+        try {
+            const res = await request.post("tags", dataCreate);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
 };
 
 export default TagsService;

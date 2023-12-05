@@ -33,8 +33,6 @@ export const updateUserByID = createAsyncThunk(
             const response = await UserService.editUser(userId, data);
             return response;
         } catch (err) {
-            console.log("Error status:", err.response.status);
-            console.log("Error data:", err.response.data);
             return rejectWithValue(err.response.data);
         }
     }
