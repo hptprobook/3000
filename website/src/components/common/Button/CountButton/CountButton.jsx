@@ -63,7 +63,7 @@ export default function CountBtn({ icon, count }) {
         if (addToCartSuccess) {
             const timer = setTimeout(() => {
                 setAddToCartSuccess(false);
-            }, 3000);
+            }, 2000);
 
             return () => clearTimeout(timer);
         }
@@ -88,61 +88,65 @@ export default function CountBtn({ icon, count }) {
     }, []);
 
     return (
-        <CountButton isActive={isActive}>
-            <span className="CountBtn__count">{count}</span>
-            <Link href={"/cart"}>{icon}</Link>
-            <div className="modal">
-                <CloseIcon
-                    onClick={(e) => {
-                        handleCloseModal(e);
-                        resetAddToCartSuccess();
-                    }}
-                    sx={{
-                        position: "absolute",
-                        top: "5px",
-                        right: "5px",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        color: "#9b9b9b",
-                    }}
-                />
-                <div className="at-c">
-                    <CheckCircleIcon
-                        sx={{ fontSize: "24px", color: "#4caf50" }}
-                    />{" "}
-                    <p
-                        style={{
-                            color: "#4f4f4f",
-                            fontSize: "14px",
-                            fontWeight: "400",
-                            marginLeft: "8px",
+        <Link href={"/cart"}>
+            <CountButton isActive={isActive}>
+                <span className="CountBtn__count">{count}</span>
+                {icon}
+                <div className="modal">
+                    <CloseIcon
+                        onClick={(e) => {
+                            handleCloseModal(e);
+                            resetAddToCartSuccess();
                         }}
-                    >
-                        Thêm vào giỏ hàng thành công
-                    </p>
+                        sx={{
+                            position: "absolute",
+                            top: "5px",
+                            right: "5px",
+                            cursor: "pointer",
+                            fontSize: "16px",
+                            color: "#9b9b9b",
+                        }}
+                    />
+                    <div className="at-c">
+                        <CheckCircleIcon
+                            sx={{ fontSize: "24px", color: "#4caf50" }}
+                        />{" "}
+                        <p
+                            style={{
+                                color: "#4f4f4f",
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                marginLeft: "8px",
+                            }}
+                        >
+                            Thêm vào giỏ hàng thành công
+                        </p>
+                    </div>
+                    <Link href={"/cart"}>
+                        <button
+                            style={{
+                                outline: "none",
+                                width: "100%",
+                                height: "37px",
+                                border: "none",
+                                backgroundColor: "#ff424e",
+                                borderRadius: "4px",
+                                marginTop: "16px",
+                                cursor: "pointer",
+                                color: "#fff",
+                                fontFamily: "var(--font-family)",
+                                fontSize: "14px",
+                                transition: ".2s ease",
+                                "&:hover": {
+                                    opacity: "0.8",
+                                },
+                            }}
+                        >
+                            Xem giỏ hàng và thanh toán
+                        </button>
+                    </Link>
                 </div>
-                <button
-                    style={{
-                        outline: "none",
-                        width: "100%",
-                        height: "37px",
-                        border: "none",
-                        backgroundColor: "#ff424e",
-                        borderRadius: "4px",
-                        marginTop: "16px",
-                        cursor: "pointer",
-                        color: "#fff",
-                        fontFamily: "var(--font-family)",
-                        fontSize: "14px",
-                        transition: ".2s ease",
-                        "&:hover": {
-                            opacity: "0.8",
-                        },
-                    }}
-                >
-                    <Link href={"/cart"}>Xem giỏ hàng và thanh toán</Link>
-                </button>
-            </div>
-        </CountButton>
+            </CountButton>
+        </Link>
     );
 }
