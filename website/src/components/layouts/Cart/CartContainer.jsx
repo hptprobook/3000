@@ -24,7 +24,14 @@ export default function CartContainer() {
 
     return (
         <StyledCartContainer>
-            <Grid container>
+            <Grid
+                container
+                sx={{
+                    alignItems: " center",
+                    color: "#363636",
+                    fontSize: "14px",
+                }}
+            >
                 <Grid item xs={0.5}>
                     <FormControlLabel
                         control={
