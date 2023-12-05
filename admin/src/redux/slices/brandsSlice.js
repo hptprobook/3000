@@ -12,7 +12,17 @@ export const fetchAllBrands = createAsyncThunk(
     }
   }
 );
-
+export const deleteBrandByID = createAsyncThunk(
+  "brands/deleteBrandByID",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await BrandsService.deleteBrandByID(id);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
 const brandsSlice = createSlice({
   name: 'brands',
   initialState: { data: [], status: 'idle', error: null },
@@ -29,7 +39,19 @@ const brandsSlice = createSlice({
       .addCase(fetchAllBrands.rejected, (state, action) => {
         state.status = 'failed fetching brands';
         state.error = action.error.message;
-      });
+      })
+      .addCase(deleteBrandByID.pending, (state) => {
+        state.statusDelete = 'loading delete';
+      })
+      .addCase(deleteBrandByID.fulfilled, (state, action) => {
+        state.statusDelete = 'delete success';
+        state.dataDelete = action.payload; // Storing only the brands array
+      })
+      .addCase(deleteBrandByID.rejected, (state, action) => {
+        state.statusDelete = 'delete failed';
+        state.error = action.error.message;
+      })
+      ;
   },
 });
 
