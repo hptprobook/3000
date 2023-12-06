@@ -10,6 +10,7 @@ export default function LoginForm({
     onBlur,
     error,
     helperText,
+    mt = "12px",
 }) {
     return (
         <TextField
@@ -22,7 +23,7 @@ export default function LoginForm({
             helperText={helperText}
             sx={{
                 width: "100%",
-                marginTop: "12px",
+                marginTop: mt,
                 "& .MuiFormLabel-root": {
                     fontFamily: "var(--font-family)",
                 },

@@ -68,7 +68,6 @@ const StyledCartContainer = styled("div")(() => ({
 }));
 
 export default function CartContainer({ data }) {
-    // Các checkbox chọn item
     const [checkedIds, setCheckedIds] = useState([]);
 
     useEffect(() => {
@@ -91,7 +90,6 @@ export default function CartContainer({ data }) {
         }
     };
 
-    // Hàm giới hạn ký tự tên sản phẩm
     const truncateProductName = (name) => {
         return name.length > 135 ? `${name.substring(0, 135)}...` : name;
     };
@@ -99,7 +97,6 @@ export default function CartContainer({ data }) {
     const allChecked = checkedIds.length === data?.length;
     const indeterminate = checkedIds.length > 0 && !allChecked;
 
-    // Hàm tính tổng tiền dựa trên quantity change
     const [quantities, setQuantities] = useState({});
     const [totalPrices, setTotalPrices] = useState({});
 
@@ -125,7 +122,6 @@ export default function CartContainer({ data }) {
         }));
     };
 
-    // Hàm xử lý input quantity
     const incrementQuantity = (id) => {
         updateQuantity(id, Math.min(quantities[id] + 1, 100));
     };
@@ -134,7 +130,6 @@ export default function CartContainer({ data }) {
         updateQuantity(id, Math.max(quantities[id] - 1, 1));
     };
 
-    // Hàm xử lý tổng tiền cho giỏ hàng
     const { setQuantity, setTotalPrice, setCartItemIds } =
         useContext(CartContext);
 
