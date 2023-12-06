@@ -207,7 +207,6 @@ export default function CreateCategoryPage() {
             label="Tên"
             value={name}
             onBlur={(event) => {
-
               const newName = event.target.value;
               setName(newName); // Set the name state
               setCategoryData({
