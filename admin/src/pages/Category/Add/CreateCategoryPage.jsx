@@ -49,7 +49,7 @@ export default function CreateCategoryPage() {
         const resultAction = dispatch(createCategoryAsync(categoryData));
         if (status === 'created successfully') {
           console.log(dataReturn);
-          
+
         }
         resultAction.then((action) => {
           console.log('New category added:', action.payload);
@@ -58,6 +58,7 @@ export default function CreateCategoryPage() {
           console.error('Error adding new category:', error);
           // Handle error if needed
         });
+
         // Reset form fields after successful submission
         resetFormFields();
       } catch (error) {
