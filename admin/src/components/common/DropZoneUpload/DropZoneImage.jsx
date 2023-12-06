@@ -2,22 +2,38 @@ import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import color from '../../../config/colorConfig';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import * as FileType from 'file-type';
+
 const ImageDropZone = () => {
     const [image, setImage] = useState(null);
-    const onDrop = (acceptedFiles, rejectedFiles) => {
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const onDrop = async (acceptedFiles, rejectedFiles) => {
         if (rejectedFiles.length > 0) {
-            console.error('Invalid file extension. Please select a valid PNG file.');
+            const firstRejectedFile = rejectedFiles[0];
+            const fileType = await FileType.fromFile(firstRejectedFile);
+
+            if (!fileType || !fileType.mime.startsWith('image/png')) {
+                setErrorMessage(`Invalid file: ${firstRejectedFile.name}. Please select a valid image file.`);
+                return;
+            }
+        }
+
+        if (acceptedFiles.length > 1) {
+            setErrorMessage('You can upload only one image at a time.');
             return;
         }
+
         const selectedImage = acceptedFiles[0];
         setImage(URL.createObjectURL(selectedImage));
+        setErrorMessage('');
     };
 
     const {
         getRootProps,
         getInputProps
     } = useDropzone({
-        accept: 'image/*',
+        accept: 'image/png',
         onDrop,
         maxFiles: 1, // Set to allow only one file
     });
@@ -27,9 +43,13 @@ const ImageDropZone = () => {
             <div {...getRootProps()} style={dropzoneStyle}>
                 <input {...getInputProps()} />
                 <CloudUploadIcon fontSize="large" sx={{ marginBottom: '12px' }} />
-
                 <p style={{ margin: 0 }}>Kéo thả hình ảnh ở đây hoặc chọn 1 hình ảnh bất kì</p>
             </div>
+            {errorMessage && (
+                <div style={{ color: 'red', marginTop: '10px' }}>
+                    <p>{errorMessage}</p>
+                </div>
+            )}
             {image && (
                 <div>
                     <p>Ảnh được chọn:</p>

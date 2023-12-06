@@ -26,6 +26,7 @@ export default function CreateCategoryPage() {
   const categories = useSelector((state) => state.categories.data);
   const dataReturn = useSelector((state) => state.categories.newCategory);
   const status = useSelector((state) => state.categories.status) // Access categories from Redux store
+  const error = useSelector((state) => state.categories.error);
   // Access categories from Redux store
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
@@ -48,7 +49,7 @@ export default function CreateCategoryPage() {
         const resultAction = dispatch(createCategoryAsync(categoryData));
         if (status === 'created successfully') {
           console.log(dataReturn);
-          
+
         }
         resultAction.then((action) => {
           console.log('New category added:', action.payload);
@@ -57,6 +58,7 @@ export default function CreateCategoryPage() {
           console.error('Error adding new category:', error);
           // Handle error if needed
         });
+
         // Reset form fields after successful submission
         resetFormFields();
       } catch (error) {
