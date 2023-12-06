@@ -12,6 +12,17 @@ export const fetchAllBrands = createAsyncThunk(
     }
   }
 );
+export const createBrand = createAsyncThunk(
+  'brands/createBrand',
+  async ({ data }, thunkAPI) => {
+    try {
+      const res = await BrandsService.createBrand(data);
+      return res.data; // Assuming res.data contains the categories array
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 export const deleteBrandByID = createAsyncThunk(
   "brands/deleteBrandByID",
   async ({ id }, { rejectWithValue }) => {
@@ -38,6 +49,17 @@ const brandsSlice = createSlice({
       })
       .addCase(fetchAllBrands.rejected, (state, action) => {
         state.status = 'failed fetching brands';
+        state.error = action.error.message;
+      })
+      .addCase(createBrand.pending, (state) => {
+        state.statusCreate = 'loading';
+      })
+      .addCase(createBrand.fulfilled, (state, action) => {
+        state.statusCreate = 'success';
+        state.dataCreate = action.payload; // Storing only the brands array
+      })
+      .addCase(createBrand.rejected, (state, action) => {
+        state.statusCreate = 'failed';
         state.error = action.error.message;
       })
       .addCase(deleteBrandByID.pending, (state) => {

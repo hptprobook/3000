@@ -2,6 +2,10 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import BasicAlertl from '../Alert/BasicAlertl';
+import color from '../../../config/colorConfig';
+import { ref, uploadBytesResumable } from 'firebase/storage';
+import { storageFirebase } from '../../../config/firebaseConfig';
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -15,33 +19,45 @@ const VisuallyHiddenInput = styled('input')({
     width: 1,
 });
 
-export default function ButtonUploadImg() {
+export default function ButtonUploadImg({ handleOnChange }) {
+    const [erroUpload, setErrorUpload] = React.useState('');
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
-
-            // Bạn có thể thực hiện xử lý với file ở đây, ví dụ: hiển thị ảnh, gửi lên server, ...
-            console.log('Đã chọn file:', file.type);
+            // Kiểm tra loại file
+            if (file.type.startsWith('image/')) {
+                setErrorUpload('');
+                handleOnChange(file);
+            } else {
+                // Nếu không phải là file ảnh, hiển thị thông báo hoặc thực hiện xử lý khác
+                setErrorUpload('Vui lòng chọn một file ảnh!')
+            }
         }
     };
 
     return (
-        <label>
-            <Button
-                component="div"
-                variant="contained"
-                sx={{
-                    borderRadius: '14px',
-                    padding: '8px 24px',
-                }}
-                startIcon={<CloudUploadIcon />}
-            >
-                Tải file
-            </Button>
-            <VisuallyHiddenInput
-                type="file"
-                onChange={handleFileChange}
-            />
-        </label>
+        <div>
+            <label>
+
+                {erroUpload ? <BasicAlertl label={erroUpload} severity={"error"} /> : null}
+                <Button
+                    component="div"
+                    variant="contained"
+                    sx={{
+                        borderRadius: '14px',
+                        padding: '8px 24px',
+                        backgroundColor: color.focusedColor.dark,
+                    }}
+                    startIcon={<CloudUploadIcon />}
+                >
+                    Tải file
+                </Button>
+                <VisuallyHiddenInput
+                    type="file"
+                    accept="image/*" // Chỉ cho phép chọn file ảnh
+                    onChange={handleFileChange}
+                />
+            </label>
+        </div>
     );
 }
