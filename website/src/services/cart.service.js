@@ -9,6 +9,14 @@ const CartService = {
             return err.response;
         }
     },
+    fetchAllCart: async () => {
+        try {
+            const res = await request.get("carts");
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
 };
 
 export default CartService;

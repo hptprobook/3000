@@ -152,6 +152,16 @@ input[type="number"]::-webkit-outer-spin-button {
     align-items: center;
 }
 
+.jc-sb {
+    display: flex;
+    justify-content: space-between;
+}
+
+.float-end {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .m-12 {
     margin: 12px;
 }
@@ -170,4 +180,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .ml-12 {
     margin-left: 12px;
+}
+
+img.img-c {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

@@ -21,7 +21,6 @@ export default function ProductDetail({ params }) {
     const dispatch = useDispatch();
     const products = useSelector((state) => state.products);
     const status = useSelector((state) => state.products.status);
-    const [loadData, setLoadData] = useState(false);
 
     const loadProduct = (productId) => {
         dispatch(fetchProductById(productId));
