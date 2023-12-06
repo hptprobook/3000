@@ -95,6 +95,27 @@ class CartController extends Controller
         }
     }
 
+    public function getCartsWithIds(Request $request)
+    {
+        try {
+            $cartItemIds = $request->input('cart_item_ids', []);
+
+            if (empty($cartItemIds)) {
+                return response()->json(['message' => 'No cart item IDs provided'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $cartItems = CartItem::with('product')
+                ->whereIn('id', $cartItemIds)
+                ->get();
+
+            return response()->json($cartItems, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
     public function update(Request $request, string $id)
     {
         try {

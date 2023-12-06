@@ -71,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('carts', CartController::class);
 
+    Route::post('/carts/get_cart_with_ids', [CartController::class, 'getCartsWithIds']);
+
     Route::apiResource('orders', OrderController::class);
 
     Route::apiResource('order_details', OrderDetailController::class);
