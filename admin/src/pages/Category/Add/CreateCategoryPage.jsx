@@ -26,6 +26,7 @@ export default function CreateCategoryPage() {
   const categories = useSelector((state) => state.categories.data);
   const dataReturn = useSelector((state) => state.categories.newCategory);
   const status = useSelector((state) => state.categories.status) // Access categories from Redux store
+  const error = useSelector((state) => state.categories.error);
   // Access categories from Redux store
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
