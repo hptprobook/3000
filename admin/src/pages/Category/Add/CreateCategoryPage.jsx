@@ -57,6 +57,7 @@ export default function CreateCategoryPage() {
           console.error('Error adding new category:', error);
           // Handle error if needed
         });
+
         // Reset form fields after successful submission
         resetFormFields();
       } catch (error) {

@@ -12,6 +12,14 @@ const BrandsService = {
             throw err;
         }
     },
+    createBrand: async (data) => {
+        try {
+            const res = await request.post(`brands`, data);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    },
     deleteBrandByID: async (id) => {
         try {
             const res = await request.delete(`brands/${id}`);
