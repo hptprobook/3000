@@ -48,7 +48,7 @@ export default function CreateCategoryPage() {
         const resultAction = dispatch(createCategoryAsync(categoryData));
         if (status === 'created successfully') {
           console.log(dataReturn);
-          
+
         }
         resultAction.then((action) => {
           console.log('New category added:', action.payload);
