@@ -4,6 +4,7 @@ import "./style.css";
 import ProductTab from "@/components/common/Tabs/ProductTab/ProductTab";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchBestSellerCategory } from "@/redux/slices/categorySlice";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 export default function BestSeller() {
     const dispatch = useDispatch();
@@ -17,6 +18,10 @@ export default function BestSeller() {
             dispatch(fetchBestSellerCategory());
         }
     }, []);
+
+    if (loading) {
+        return <CirLoading />;
+    }
 
     return (
         <div className="appContainer__bestSeller">

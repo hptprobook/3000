@@ -13,6 +13,7 @@ import styled from "@emotion/styled";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storageFirebase } from "../../../config/firebaseConfig";
 import { v4 } from "uuid";
+import Loading from "../../../components/common/Loading/Loading";
 
 const DivMargin = styled.div(({ theme }) => ({
   paddingBottom: '24px',
@@ -22,7 +23,10 @@ const DivMargin = styled.div(({ theme }) => ({
 
 export default function CreateCategoryPage() {
   const dispatch = useDispatch();
-  const categories = useSelector((state) => state.categories.data); // Access categories from Redux store
+  const categories = useSelector((state) => state.categories.data);
+  const dataReturn = useSelector((state) => state.categories.newCategory);
+  const status = useSelector((state) => state.categories.status) // Access categories from Redux store
+  // Access categories from Redux store
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
 
@@ -35,28 +39,36 @@ export default function CreateCategoryPage() {
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Name:', name);
-    console.log('Parent ID:', categoryData.parent_id);
-    console.log('Thumbnail:', thumbnail);
-    console.log('Thumbnail URL:', thumbnailUrl);
+    console.log(categoryData);
     const errors = validateForm(); // Kiểm tra điều kiện và trả về danh sách lỗi (nếu có)
 
     if (errors.length === 0) {
       try {
-        // Thực hiện dispatch action tạo mới category
-        const resultAction = await dispatch(createCategoryAsync(categoryData));
-        console.log('New category added:', resultAction.payload);
+        // Dispatch action to create category and await the result
+        const resultAction = dispatch(createCategoryAsync(categoryData));
+        if (status === 'created successfully') {
+          console.log(dataReturn);
+          
+        }
+        resultAction.then((action) => {
+          console.log('New category added:', action.payload);
+          alert("Tạo thành công"); // Check if action.payload holds the new category data
+        }).catch((error) => {
+          console.error('Error adding new category:', error);
+          // Handle error if needed
+        });
 
         // Reset form fields after successful submission
         resetFormFields();
       } catch (error) {
         console.error('Error adding new category:', error);
-        // Xử lý lỗi nếu cần
+        // Handle error if needed
         alert("Tạo không thành công");
       }
     } else {
+      console.log(errors);
       alert("Vui lòng điền đầy đủ thông tin");
-      // Hiển thị thông báo lỗi nếu dữ liệu không hợp lệ
+      // Display validation error messages to the user
     }
   };
 
@@ -161,13 +173,25 @@ export default function CreateCategoryPage() {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
           console.log('File available at', downloadURL);
+          // Update categoryData with the URL
+          setCategoryData({
+            ...categoryData,
+            icon_url: downloadURL,
+          });
+          // Also, update the thumbnailUrl state if needed
           setThumbnailUrl(downloadURL);
         });
       }
     );
   };
 
+  if (status === "loading") {
+    return <Loading />;
+  }
 
+  if (status === "failed") {
+    return <div>Error: {error}</div>;
+  }
   return (
     <Box>
       <HeaderPage
@@ -183,8 +207,13 @@ export default function CreateCategoryPage() {
             label="Tên"
             value={name}
             onBlur={(event) => {
-              setName(event.target.value);
-              handleCheckError('name', event.target.value);
+              const newName = event.target.value;
+              setName(newName); // Set the name state
+              setCategoryData({
+                ...categoryData,
+                name: newName, // Set the name in categoryData
+              });
+              handleCheckError('name', newName);
             }}
             // ... other props
             error={errorName ? true : false}
