@@ -719,10 +719,10 @@ export default function OrderPage() {
             </div>
             <div className="appContainer__checkout">
                 <Grid container>
-                    <Grid item xs={5}>
+                    <Grid item xs={9}>
                         <OrderContainer data={fakeData} />
                     </Grid>
-                    <Grid item xs={7}>
+                    <Grid item xs={3}>
                         <AddressCheckout provinces={provinces} />
                     </Grid>
                 </Grid>
