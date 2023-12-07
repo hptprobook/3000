@@ -15,7 +15,6 @@ import useAuth from "@/hooks/useAuth";
 import { logoutUser } from "@/redux/slices/authSlice";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllCart } from "@/redux/slices/cartSlice";
 
 const UserBarContainer = styled("div")(() => ({}));
 
@@ -149,7 +148,7 @@ export default function UserBar() {
                                     },
                                 }}
                             >
-                                <Link href={"/"}>
+                                <Link href={"/profile"}>
                                     <p>Thông tin tài khoản</p>
                                 </Link>
                                 <Link href={"/"}>

@@ -5,7 +5,6 @@ import PrimaryBtn from "@/components/common/Button/PrimaryButton/PrimaryBtn";
 import Image from "next/image";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllProducts } from "@/redux/slices/productSlice";
 import { fetchParentCategory } from "@/redux/slices/categorySlice";
 
 export default function Sidebar() {
