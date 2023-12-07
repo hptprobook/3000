@@ -24,7 +24,7 @@ class AddressController extends Controller
             $user = Auth::user();
             $userId = $user->id;
 
-            $addresses = Address::where('user_id', $userId)->get();
+            $addresses = Address::where('user_id', $userId)->with(['ward'])->get();
 
             return response()->json($addresses, Response::HTTP_OK);
         } catch (Exception $e) {
@@ -43,34 +43,33 @@ class AddressController extends Controller
                 return response()->json(['error' => 'Người dùng được tối đa 4 địa chỉ.'], Response::HTTP_BAD_REQUEST);
             }
 
-            $request->validate(
-                [
-                    'name' => "required|string|min:3|max:100",
-                    'phone' => "required|string|min:8|max:10",
-                    'ward_id' => "required",
-                    'address_info' => 'required|string|min:3|max:100',
-                ]
-            );
+            $request->validate([
+                'name' => "required|string|min:3|max:100",
+                'phone' => "required|string|min:8|max:10",
+                'province_id' => "min:1|max:255",
+                'district_id' => "min:1|max:255",
+                'ward_id' => "required|integer",
+                'address_info' => 'required|string|min:3|max:100',
+            ]);
 
             $isFirstAddress = $user->addresses()->count() == 0;
-            $isDefault = $request->input('is_default', false) || $isFirstAddress;
+            $isDefaultRequested = $request->input('is_default', false);
+            $isDefault = $isDefaultRequested || $isFirstAddress;
 
             if ($isDefault) {
                 $user->addresses()->update(['default' => 0]);
             }
 
-            $address = Address::create(
-                [
-                    'user_id' => $user->id,
-                    'name' => $request->name,
-                    'phone' => $request->phone,
-                    'province_id' => $request->province_id,
-                    'district_id' => $request->district_id,
-                    'ward_id' => $request->ward_id,
-                    'address_info' => $request->address_info,
-                    'default' => $isDefault ? 1 : 0
-                ]
-            );
+            $address = Address::create([
+                'user_id' => $user->id,
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'province_id' => $request->province_id,
+                'district_id' => $request->district_id,
+                'ward_id' => $request->ward_id,
+                'address_info' => $request->address_info,
+                'default' => $isDefault ? 1 : 0
+            ]);
 
             DB::commit();
             return response()->json($address, Response::HTTP_OK);
@@ -83,21 +82,22 @@ class AddressController extends Controller
         }
     }
 
+
     public function update(Request $request, string $id)
     {
         DB::beginTransaction();
         try {
             $user = Auth::user();
 
-            $request->validate(
-                [
-                    'name' => "sometimes|string|min:3|max:100",
-                    'phone' => "sometimes|string|min:8|max:10",
-                    'ward_id' => "sometimes|integer",
-                    'address_info' => 'sometimes|string|min:3|max:100',
-                    'default' => 'sometimes',
-                ]
-            );
+            $request->validate([
+                'name' => "sometimes|string|min:3|max:100",
+                'phone' => "sometimes|string|min:8|max:10",
+                'ward_id' => "sometimes",
+                'district_id' => "sometimes",
+                'province_id' => "sometimes",
+                'address_info' => 'sometimes|string|min:3|max:100',
+                'default' => 'sometimes|boolean',
+            ]);
 
             $address = Address::find($id);
 
@@ -107,11 +107,10 @@ class AddressController extends Controller
 
             if ($request->has('default') && $request->default) {
                 $user->addresses()->update(['default' => 0]);
+                $address->default = 1;
             }
 
-            $address->update($request->only(['name', 'phone', 'province_id', 'district_id', 'ward_id', 'address_info']));
-
-            $address = Address::find($id);
+            $address->update($request->only(['name', 'phone', 'province_id', 'district_id', 'ward_id', 'address_info', 'default']));
 
             DB::commit();
             return response()->json($address, Response::HTTP_OK);

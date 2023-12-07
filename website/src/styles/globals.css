@@ -154,6 +154,7 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .jc-sb {
     display: flex;
+    align-items: center;
     justify-content: space-between;
 }
 
@@ -164,6 +165,17 @@ input[type="number"]::-webkit-outer-spin-button {
 
 .m-12 {
     margin: 12px;
+}
+
+.mt-6 {
+    margin-top: 6px;
+}
+
+.css-link {
+    display: flex;
+    align-items: center;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 .mt-12 {

@@ -10,7 +10,7 @@ class Address extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'name', 'phone', 'ward_id', 'address_info', 'note'];
+    protected $fillable = ['user_id', 'name', 'phone', 'province_id', 'district_id', 'ward_id', 'address_info'];
 
     public $timestamps = false;
 
