@@ -1,6 +1,7 @@
 .appContainer,
 .appContainer__cart,
-.appContainer__checkout {
+.appContainer__checkout,
+.appContainer__profile {
     width: var(--max-width);
     display: flex;
     margin: 0 auto;
