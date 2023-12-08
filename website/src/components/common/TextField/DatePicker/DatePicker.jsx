@@ -12,14 +12,9 @@ export default function BasicDatePicker({ label, date }) {
                 components={["DatePicker"]}
                 sx={{
                     width: "100%",
-                    "& .MuiFormLabel-root": {
-                        fontFamily: "var(--font-family)",
-                    },
-                    "& .MuiInputBase-input": {
-                        fontFamily: "var(--font-family)",
-                    },
-                    "& .MuiPickersDay-root": {
-                        fontFamily: "var(--font-family)",
+                    "& .MuiFormControl-root": {
+                        width: "100%",
+                        marginTop: "20px",
                     },
                 }}
             >

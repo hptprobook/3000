@@ -1,4 +1,5 @@
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
+import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import ProfileSidebar from "@/components/layouts/ProfileSidebar/ProfileSidebar";
 import { Grid } from "@mui/material";
 
@@ -10,16 +11,19 @@ export const metadata = {
 
 export default function ProfileLayout({ children }) {
     return (
-        <Grid container className="appContainer__profile" columnSpacing={2}>
-            <Grid item xs={12}>
-                <Breadcrumb />
+        <>
+            <Grid container className="appContainer__profile" columnSpacing={2}>
+                <Grid item xs={12}>
+                    <Breadcrumb />
+                </Grid>
+                <Grid item xs={3}>
+                    <ProfileSidebar />
+                </Grid>
+                <Grid item xs={9}>
+                    {children}
+                </Grid>
             </Grid>
-            <Grid item xs={3}>
-                <ProfileSidebar />
-            </Grid>
-            <Grid item xs={9}>
-                {children}
-            </Grid>
-        </Grid>
+            <HomeFooter />
+        </>
     );
 }

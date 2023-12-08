@@ -24,9 +24,7 @@ export default function IconField({ text, icon, value }) {
                 id="input-with-icon-adornment"
                 value={value}
                 startAdornment={
-                    <InputAdornment position="start">
-                        <AccountCircle />
-                    </InputAdornment>
+                    <InputAdornment position="start">{icon}</InputAdornment>
                 }
             />
         </FormControl>

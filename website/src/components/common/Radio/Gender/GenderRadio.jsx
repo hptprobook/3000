@@ -7,7 +7,12 @@ import FormLabel from "@mui/material/FormLabel";
 
 export default function GenderRadio() {
     return (
-        <FormControl className="d-flex">
+        <FormControl
+            className="d-flex"
+            style={{
+                marginTop: "12px",
+            }}
+        >
             <FormLabel id="demo-row-radio-buttons-group-label">
                 Giới tính
             </FormLabel>
