@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
 import IconField from "@/components/common/TextField/IconField/IconField";
 import BasicDatePicker from "@/components/common/TextField/DatePicker/DatePicker";
+import GenderRadio from "@/components/common/Radio/Gender/GenderRadio";
 
 const StyledProfileInfo = styled("div")(() => ({
     borderRadius: "5px",
@@ -84,7 +85,9 @@ export default function ProfileInfo() {
                 <div className="birthdate">
                     <BasicDatePicker label={"Ngày sinh"} date={"04/14/2000"} />
                 </div>
-                <div className="gender">Giới tính</div>
+                <div className="gender">
+                    <GenderRadio />
+                </div>
                 <button>Lưu thay đổi</button>
             </div>
             <div className="right"></div>
