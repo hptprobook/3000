@@ -122,7 +122,7 @@ export default function CountBtn({ icon, count }) {
                             Thêm vào giỏ hàng thành công
                         </p>
                     </div>
-                    <Link href={"/cart"}>
+                    <Link href={"/cart"} className="css-link">
                         <button
                             style={{
                                 outline: "none",
