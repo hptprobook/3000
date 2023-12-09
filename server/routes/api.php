@@ -73,6 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/carts/get_cart_with_ids', [CartController::class, 'getCartsWithIds']);
 
+    Route::get("/orders/get_all", [OrderController::class, 'getAll']);
+
     Route::apiResource('orders', OrderController::class);
 
     Route::apiResource('order_details', OrderDetailController::class);
