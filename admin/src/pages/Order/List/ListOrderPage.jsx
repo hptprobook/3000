@@ -27,7 +27,6 @@ export default function ListOrderPage() {
         // You can perform additional actions based on the selected filters if needed
     };
 
-
     useEffect(() => {
         if (statusCat == 'idle') {
             dispatch(fetchCategoriesAsync());
@@ -106,7 +105,6 @@ export default function ListOrderPage() {
                                 { id: 'cancelled', name: 'Hủy' },
                                 { id: 'delivered', name: 'Giao hàng thành công' },
                                 { id: 'refunded', name: 'Trả hàng' },
-                                { id: 'complete', name: 'Hoàn thành' },
                             ]}
                             filterReturn={handleFilterReturn} />
                         <TableOrder data={orderList} />
