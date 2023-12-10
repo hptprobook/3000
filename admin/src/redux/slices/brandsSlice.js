@@ -12,6 +12,17 @@ export const fetchAllBrands = createAsyncThunk(
     }
   }
 );
+export const fetchOneBrands = createAsyncThunk(
+  'brands/fetchBrand',
+  async ({ id }, thunkAPI) => {
+    try {
+      const res = await BrandsService.getOneBrand(id);
+      return res.data; // Assuming res.data contains the categories array
+    } catch (error) {
+      throw error;
+    }
+  }
+);
 export const createBrand = createAsyncThunk(
   'brands/createBrand',
   async ({ data }, thunkAPI) => {
@@ -28,6 +39,17 @@ export const deleteBrandByID = createAsyncThunk(
   async ({ id }, { rejectWithValue }) => {
     try {
       const response = await BrandsService.deleteBrandByID(id);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
+export const updateBrandByID = createAsyncThunk(
+  "brands/updateBrandByID",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await BrandsService.updateBrandByID(id, data);
       return response;
     } catch (err) {
       return rejectWithValue(err.response.data.errors);
@@ -51,6 +73,17 @@ const brandsSlice = createSlice({
         state.status = 'failed fetching brands';
         state.error = action.error.message;
       })
+      .addCase(fetchOneBrands.pending, (state) => {
+        state.statusLoadOne = 'loading one';
+      })
+      .addCase(fetchOneBrands.fulfilled, (state, action) => {
+        state.statusLoadOne = 'brand is ready';
+        state.dataOne = action.payload; // Storing only the brands array
+      })
+      .addCase(fetchOneBrands.rejected, (state, action) => {
+        state.statusLoadOne = 'failed fetching brand';
+        state.error = action.error.message;
+      })
       .addCase(createBrand.pending, (state) => {
         state.statusCreate = 'loading';
       })
@@ -71,6 +104,17 @@ const brandsSlice = createSlice({
       })
       .addCase(deleteBrandByID.rejected, (state, action) => {
         state.statusDelete = 'delete failed';
+        state.error = action.error.message;
+      })
+      .addCase(updateBrandByID.pending, (state) => {
+        state.statusUpdate = 'loading';
+      })
+      .addCase(updateBrandByID.fulfilled, (state, action) => {
+        state.statusUpdate = 'success';
+        state.dataUpdate = action.payload; // Storing only the brands array
+      })
+      .addCase(updateBrandByID.rejected, (state, action) => {
+        state.statusUpdate = 'failed';
         state.error = action.error.message;
       })
       ;

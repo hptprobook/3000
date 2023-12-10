@@ -22,6 +22,7 @@ import CreateTagsPage from "../pages/Tags/Create/CreateTagsPage";
 import EditTagsPage from "../pages/Tags/Edit/EditTagsPage";
 import ListBrandPage from "../pages/Brand/List/ListBrandPage";
 import CreateBrandPage from "../pages/Brand/Create/CreateBrandPage";
+import EditBrandPage from "../pages/Brand/Edit/EditBrandPage";
 
 function DashboardRoute() {
     return (
@@ -46,6 +47,7 @@ function DashboardRoute() {
 
             <Route path="category/brand" element={<ListBrandPage />} />
             <Route path="category/brand/create" element={<CreateBrandPage />} />
+            <Route path="category/brand/edit/:id" element={<EditBrandPage />} />
 
             <Route path="order/detail/:id" element={<EditOrderPage />} />
             <Route path="order" element={<ListOrderPage />} />

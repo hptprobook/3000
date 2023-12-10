@@ -46,7 +46,6 @@ const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
 
 export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur, id, note, disabled }) {
 
-
   return (
     <FormControlEdit error={error} fullWidth sx={{ m: 1 }} variant="filled">
       <InputLabel htmlFor={id}>{label}</InputLabel>
