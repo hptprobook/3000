@@ -37,7 +37,7 @@ class OrderController extends Controller
     public function getAll()
     {
         try {
-            $orders = Order::all();
+            $orders = Order::with(['order_details.product'])->get();
 
             return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
