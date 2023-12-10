@@ -26,8 +26,18 @@ class OrderController extends Controller
                 return response()->json(['error' => 'Orders is empty'], Response::HTTP_NOT_FOUND);
             }
 
-            $user = Auth::user();
             $orders = $user->orders()->with(['order_details.product', 'address.ward'])->get();
+
+            return response()->json($orders, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getAll()
+    {
+        try {
+            $orders = Order::with(['order_details.product'])->get();
 
             return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
