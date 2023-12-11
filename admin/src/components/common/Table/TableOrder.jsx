@@ -15,6 +15,10 @@ import { visuallyHidden } from '@mui/utils';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
 import FormatDateTime from '../Function/FormatDate';
+import { IconButton, Tooltip } from '@mui/material';
+import { NavLink } from 'react-router-dom';
+import { FaEye } from 'react-icons/fa';
+import { ChipStatusOrder } from '../Chip/ChipStatusOrder';
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: '1px solid rgb(45, 55, 72)',
@@ -265,9 +269,22 @@ export default function TableOrder({ data }) {
                                         <CustomTableCell align="right">{row.total_amount}</CustomTableCell>
                                         <CustomTableCell align="right">{FormatDateTime(row.created_at)}</CustomTableCell>
                                         <CustomTableCell align="right">
-                                            {row.status}
+                                            <ChipStatusOrder status={row.status} />
                                         </CustomTableCell>
-                                        <CustomTableCell align="right">Bấm</CustomTableCell>
+                                        <CustomTableCell align="right">
+                                            <NavLink to={'/order/detail/' + row.id}>
+                                                <Tooltip title="Xem chi tiết" >
+
+                                                    <IconButton sx={{
+                                                        color: '#9da4ae',
+                                                        marginRight: '8px'
+                                                    }}
+                                                    >
+                                                        <FaEye />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            </NavLink>
+                                        </CustomTableCell>
                                     </TableRow>
                                 );
                             })}
