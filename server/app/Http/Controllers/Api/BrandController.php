@@ -28,7 +28,6 @@ class BrandController extends Controller
     {
         try {
             $sortedBrands = Brand::with(['products.reviews'])->get()->map(function ($brand) {
-                // Tính toán đánh giá trung bình cho mỗi sản phẩm
                 $brand->products->each(function ($product) {
                     $product->average_rating = $product->reviews->avg('rating') ?: 0;
                 });
@@ -52,11 +51,9 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         try {
-            $parent_id = $request->parent_id ?? null;
             $request->validate(
                 [
                     'name' => 'required|min:3|max:128',
-                    'parent_id' => 'max:10',
                     'icon_url' => 'required|max:255'
                 ]
             );
@@ -64,7 +61,6 @@ class BrandController extends Controller
             $brand = Brand::create(
                 [
                     'name' => $request->name,
-                    'parent_id' => $parent_id,
                     'icon_url' => $request->icon_url
                 ]
             );
@@ -95,11 +91,9 @@ class BrandController extends Controller
         try {
             $brand = Brand::findOrFail($id);
 
-            $parent_id = $request->parent_id ?? null;
             $request->validate(
                 [
                     'name' => 'required|min:3|max:128',
-                    'parent_id' => 'max:10',
                     'icon_url' => 'required|max:255'
                 ]
             );
@@ -107,7 +101,6 @@ class BrandController extends Controller
             $brand = $brand->update(
                 [
                     'name' => $request->name,
-                    'parent_id' => $parent_id,
                     'icon_url' => $request->icon_url
                 ]
             );

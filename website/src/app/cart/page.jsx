@@ -4,7 +4,7 @@ import { Grid } from "@mui/material";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import dynamic from "next/dynamic";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllCart } from "@/redux/slices/cartSlice";
+import { fetchAllCart, fetchWithIds } from "@/redux/slices/cartSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import PaymentContainer from "@/components/layouts/Cart/PaymentContainer";
 import { CartProvider } from "@/provider/CartContext";

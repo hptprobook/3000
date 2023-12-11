@@ -1,12 +1,11 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
-import StarIcon from "@mui/icons-material/Star";
 import "./style.css";
 import Link from "next/link";
 import Rating from "../../Rating/Rating";
 
 const StyledProductItem = styled("div")(() => ({
-    padding: "0 8px 8px 8px",
+    padding: "8px",
     backgroundColor: "#fff",
     "& .img": {
         width: "100%",

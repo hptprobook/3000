@@ -1,6 +1,7 @@
 .appContainer,
 .appContainer__cart,
-.appContainer__checkout {
+.appContainer__checkout,
+.appContainer__searchPage {
     width: var(--max-width);
     display: flex;
     margin: 0 auto;
@@ -9,6 +10,13 @@
 
 .appContainer__profile {
     width: 1200px;
+    display: flex;
+    margin: 0 auto;
+    border-radius: 8px;
+}
+
+.appContainer__category {
+    width: 1280px;
     display: flex;
     margin: 0 auto;
     border-radius: 8px;
