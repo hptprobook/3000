@@ -8,7 +8,7 @@ import categoryReducer from "./slices/categorySlice";
 import brandReducer from "./slices/brandSlice";
 import cartReducer from "./slices/cartSlice";
 import addressReducer from "./slices/addressSlice";
-
+import deliveryReducer from "./slices/deliverySlice";
 import orderReducer from "./slices/orderSlice";
 import couponReducer from "./slices/couponSlice";
 
@@ -25,6 +25,7 @@ export const store = configureStore({
         addresses: addressReducer,
         orders: orderReducer,
         coupons: couponReducer,
+        deliveries: deliveryReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

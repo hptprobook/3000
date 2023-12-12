@@ -14,6 +14,14 @@ const AddressService = {
     getAddress: async () => {
         return handleRequest("addresses");
     },
+    getProvinceGHN: async () => {
+        try {
+            const res = await request.get("addresses/getProvinceGHN");
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
     getAddressById: async (id) => {
         try {
             const res = await request.get(`addresses/${id}`);

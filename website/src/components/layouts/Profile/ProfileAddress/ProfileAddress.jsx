@@ -4,6 +4,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { styled } from "@mui/material/styles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Link from "next/link";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 const StyledProfileAddress = styled("div")(() => ({
     "& .create": {
@@ -58,6 +59,10 @@ const StyledProfileAddress = styled("div")(() => ({
 }));
 
 export default function ProfileAddress({ data }) {
+    if (data.length == 0) {
+        return <CirLoading />;
+    }
+
     return (
         <StyledProfileAddress>
             <p>Sổ địa chỉ</p>

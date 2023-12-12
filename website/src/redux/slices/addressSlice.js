@@ -4,6 +4,7 @@ import AddressService from "@/services/address.service";
 const initialState = {
     addresses: [],
     address: {},
+    addressGHN: [],
     addressById: {},
     status: "idle",
     error: null,
@@ -14,6 +15,18 @@ export const getAddresses = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await AddressService.getAddress();
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const getAddressGHN = createAsyncThunk(
+    "address/getGHN",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await AddressService.getProvinceGHN();
             return response;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -103,6 +116,17 @@ const addressSlice = createSlice({
                 state.addressById = action.payload;
             })
             .addCase(getAddressById.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(getAddressGHN.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(getAddressGHN.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.addressGHN = action.payload;
+            })
+            .addCase(getAddressGHN.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });

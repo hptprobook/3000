@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Address;
+use App\Models\AddressGhn;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -62,6 +63,7 @@ class AddressController extends Controller
                 'district_id' => "min:1|max:255",
                 'ward_id' => "required|integer",
                 'address_info' => 'required|string|min:3|max:100',
+                'street' => 'required|string|min:3|max:128'
             ]);
 
             $isFirstAddress = $user->addresses()->count() == 0;
@@ -80,6 +82,7 @@ class AddressController extends Controller
                 'district_id' => $request->district_id,
                 'ward_id' => $request->ward_id,
                 'address_info' => $request->address_info,
+                'street' => $request->street,
                 'default' => $isDefault ? 1 : 0
             ]);
 
@@ -108,6 +111,7 @@ class AddressController extends Controller
                 'district_id' => "sometimes",
                 'province_id' => "sometimes",
                 'address_info' => 'sometimes|string|min:3|max:100',
+                'street' => "sometimes|string|min:3|max:128",
                 'default' => 'sometimes|boolean',
             ]);
 
@@ -122,7 +126,7 @@ class AddressController extends Controller
                 $address->default = 1;
             }
 
-            $address->update($request->only(['name', 'phone', 'province_id', 'district_id', 'ward_id', 'address_info', 'default']));
+            $address->update($request->only(['name', 'phone', 'province_id', 'district_id', 'ward_id', 'address_info', 'street', 'default']));
 
             DB::commit();
             return response()->json($address, Response::HTTP_OK);
@@ -140,6 +144,17 @@ class AddressController extends Controller
     {
         try {
             $provinces = Province::all();
+
+            return response()->json($provinces, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function getProvincesByGHN()
+    {
+        try {
+            $provinces = AddressGhn::all();
 
             return response()->json($provinces, Response::HTTP_OK);
         } catch (Exception $e) {

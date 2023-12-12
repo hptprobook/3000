@@ -1,6 +1,7 @@
 "use client";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import ProfileAddress from "@/components/layouts/Profile/ProfileAddress/ProfileAddress";
-import { getAddresses } from "@/redux/slices/addressSlice";
+import { getAddressGHN, getAddresses } from "@/redux/slices/addressSlice";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -14,7 +15,11 @@ export default function ProfileAddressPage() {
         if (addressFetchStatus == "idle") {
             dispatch(getAddresses());
         }
-    }, [addressFetchStatus]);
+    }, []);
+
+    if (addressFetchStatus == "loading") {
+        return <CirLoading />;
+    }
 
     return (
         <div>
