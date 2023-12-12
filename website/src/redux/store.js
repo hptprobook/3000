@@ -9,6 +9,9 @@ import brandReducer from "./slices/brandSlice";
 import cartReducer from "./slices/cartSlice";
 import addressReducer from "./slices/addressSlice";
 
+import orderReducer from "./slices/orderSlice";
+import couponReducer from "./slices/couponSlice";
+
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -20,6 +23,8 @@ export const store = configureStore({
         brands: brandReducer,
         carts: cartReducer,
         addresses: addressReducer,
+        orders: orderReducer,
+        coupons: couponReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
