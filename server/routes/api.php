@@ -77,6 +77,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('orders', OrderController::class);
 
+    Route::get("/orders/get_detail/{id}", [OrderController::class, 'showNotAuth']);
+
     Route::apiResource('order_details', OrderDetailController::class);
 
     Route::apiResource('coupons', CouponController::class);

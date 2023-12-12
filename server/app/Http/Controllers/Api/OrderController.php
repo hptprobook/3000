@@ -109,6 +109,17 @@ class OrderController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function showNotAuth(string $id)
+    {
+        try {
+            $order = Order::with(['order_details', 'address'])->findOrFail($id);
+            return response()->json($order, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function update(Request $request, string $id)
     {

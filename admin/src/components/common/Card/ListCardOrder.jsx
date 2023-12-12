@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import color from '../../../config/colorConfig';
-export const ListCardOrder = ({ title, content, border }) => {
+export const ListCardOrder = ({ title, content, status = '' }) => {
     return (
         <div className='ListCardOrder'>
             <Grid container>

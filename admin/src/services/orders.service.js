@@ -14,7 +14,7 @@ const OrdersService = {
     },
     getOneOrder: async (id) => {
         try {
-            const res = await request.get(`orders/${id}`);
+            const res = await request.get(`orders/get_detail/${id}`);
             return res;
         } catch (err) {
             throw err;

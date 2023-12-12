@@ -3,6 +3,9 @@ import * as React from 'react';
 import color from "../../../config/colorConfig";
 import './style.css';
 import { ListCardOrder } from './ListCardOrder';
+import FormatVND from '../Function/FormatVND';
+import FormatDate from '../Function/FormatDate';
+
 export default function CardOrder({ data }) {
     console.log(data);
     return (
@@ -20,19 +23,22 @@ export default function CardOrder({ data }) {
             <div className="OrderPaperContent">
                 <ul>
                     <li>
-                        <ListCardOrder title={'Họ và tên'} content={data.address.name} border={'true'} />
+                        <ListCardOrder title={'Họ và tên'} content={data.address.name} />
                     </li>
                     <li>
-                        <ListCardOrder title={''} content={'Tin'} border={'true'} />
+                        <ListCardOrder title={'Địa chỉ'} content={data.address.address_info} />
                     </li>
                     <li>
-                        <ListCardOrder title={'Name'} content={'Tin'} border={'true'} />
+                        <ListCardOrder title={'Số điện thoại'} content={data.address.phone} />
                     </li>
                     <li>
-                        <ListCardOrder title={'Name'} content={'Tin'} border={'true'} />
+                        <ListCardOrder title={'Tổng tiền'} content={FormatVND(data.total_amount)} />
                     </li>
                     <li>
-                        <ListCardOrder title={'Name'} content={'Tin'} border={'true'} />
+                        <ListCardOrder title={'Ngày tạo'} content={FormatDate(data.created_at)} />
+                    </li>
+                    <li>
+                        <ListCardOrder title={'Trạng thái'} status={data.status} />
                     </li>
                 </ul>
             </div>
