@@ -4,6 +4,13 @@
     align-items: center;
 }
 
+.headerPage-orderDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
 .headerPage-user__content h4,
 .headerPage-user__content h6 {
     padding-left: 12px;
