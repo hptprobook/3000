@@ -33,7 +33,7 @@ export const DetailOrderPage = () => {
             <Box>
                 <ButtonBackFullW label={'Đơn hàng'} />
                 <HeaderOrderDetail label={'Đơn hàng'} create_at={order.created_at} />
-                <CardOrder />
+                <CardOrder data={order} />
             </Box>
         )
     }
