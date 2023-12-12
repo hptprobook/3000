@@ -8,6 +8,11 @@
     text-decoration: none;
 }
 
+:root {
+    --color-text-1-dark: 'rgb(237, 242, 247)';
+    --color-line-dark: '#2d3748';
+}
+
 /* Tắt tùy chỉnh autofill của trình duyệt */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,

@@ -1,40 +1,47 @@
 import * as React from 'react';
-import Stack from '@mui/material/Stack';
-import Paper from '@mui/material/Paper';
-import { styled } from '@mui/material/styles';
-import color from '../../../config/colorConfig';
-import { Divider, Typography } from '@mui/material';
 
-const OderPaper = styled(Paper)(({ theme }) => ({
-    width: '100%',
-    backgroundColor: color.backgroundColorSub.dark,
-    color: color.textColor.dark,
-    ...theme.typography.body2,
-    textAlign: 'left',
-    borderRadius: '14px',
-    marginTop: '32px'
-}));
+import color from "../../../config/colorConfig";
+import './style.css';
+import { ListCardOrder } from './ListCardOrder';
+import FormatVND from '../Function/FormatVND';
+import FormatDate from '../Function/FormatDate';
 
-const TextCard = styled(Typography)(({ theme }) => ({
-    padding: '16px',
-}));
-const CustomHr = styled(hr)(({ theme }) => ({
-
-}));
-export default function CardOrder() {
+export default function CardOrder({ data }) {
+    console.log(data);
     return (
-        <OderPaper variant="elevation">
-            <div style={{ paddingTop: '16px', }}>
-                <TextCard variant="h6" component="h2" sx={{ color: color.textColor.dark, }}>
+        <div className='OrderPaper' style={{ backgroundColor: color.backgroundColorSub.dark }}>
+            <div
+                className="OrderPaperHeader"
+                style={{
+                    borderBottom: '1px solid' + color.borderColor.dark,
+                }}
+            >
+                <p>
                     Thông tin cơ bản
-                </TextCard>
+                </p>
             </div>
-            <CustomHr />
-            <div style={{ paddingBottom: '16px', }}>
-                <TextCard variant="h6" component="h2" sx={{ color: color.textColor.dark, }}>
-                    Thông tin cơ bản
-                </TextCard>
+            <div className="OrderPaperContent">
+                <ul>
+                    <li>
+                        <ListCardOrder title={'Họ và tên'} content={data.address.name} />
+                    </li>
+                    <li>
+                        <ListCardOrder title={'Địa chỉ'} content={data.address.address_info} />
+                    </li>
+                    <li>
+                        <ListCardOrder title={'Số điện thoại'} content={data.address.phone} />
+                    </li>
+                    <li>
+                        <ListCardOrder title={'Tổng tiền'} content={FormatVND(data.total_amount)} />
+                    </li>
+                    <li>
+                        <ListCardOrder title={'Ngày tạo'} content={FormatDate(data.created_at)} />
+                    </li>
+                    <li>
+                        <ListCardOrder title={'Trạng thái'} status={data.status} />
+                    </li>
+                </ul>
             </div>
-        </OderPaper>
+        </div>
     );
 }
