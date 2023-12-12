@@ -5,6 +5,7 @@ const color = {
         dark: '#EDF2F7',
         light: '#EDF2F7',
         error: '#d32f2f',
+        gray: 'rgb(160, 174, 192)',
     },
     backgroundColorSub: {
         dark: '#111927',
@@ -33,6 +34,9 @@ const color = {
             hoverNoBg: '#19212f',
         },
         dark: '#333333'
+    },
+    borderColor: {
+        dark: '#2d3748',
     },
     text: '#333333',
 }

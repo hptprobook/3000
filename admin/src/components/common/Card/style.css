@@ -1,0 +1,49 @@
+:root {
+    --color-text-1-dark: 'rgb(237, 242, 247)';
+    --color-line-dark: '#2d3748';
+}
+
+/* OrderPaper */
+.OrderPaper {
+    border-radius: 14px;
+    padding: 32px 0 0;
+    margin-top: 32px;
+}
+
+.OrderPaperHeader p {
+    padding: 0 24px;
+    color: var(--color-text-1-dark);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.OrderPaperContent ul {
+    padding: 0;
+}
+
+.OrderPaperContent li {
+    list-style: none;
+    padding: 12px 24px
+}
+
+.OrderPaperContent li:not(:last-child) {
+    border-bottom: 1px solid rgb(45, 55, 72);
+}
+
+/* OrderPaperList */
+.ListCardOrder {
+    display: flex;
+    font-size: 14px;
+}
+
+/* Card Action Order */
+.CardActionOrder {
+    padding: 24px;
+    border-radius: 14px;
+    margin: 16px 0;
+}
+
+.CardActionOrder p {
+    font-size: 16px;
+    font-weight: 500;
+}

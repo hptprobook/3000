@@ -109,6 +109,17 @@ class OrderController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function showNotAuth(string $id)
+    {
+        try {
+            $order = Order::with(['order_details.product', 'address',])->findOrFail($id);
+            return response()->json($order, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function update(Request $request, string $id)
     {
@@ -124,6 +135,34 @@ class OrderController extends Controller
             $order = $order->update(['status' => $request->status]);
 
             $order = $user->orders()->findOrFail($id);
+
+            DB::commit();
+
+            return response()->json($order, Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (ModelNotFoundException $e) {
+            DB::rollBack();
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    public function updateNotAuth(Request $request, string $id)
+    {
+        DB::beginTransaction();
+        try {
+            $order = Order::findOrFail($id);
+
+            $request->validate([
+                'status' => 'required|string|in:pending,processing,shipping,delivered,cancelled,refunded'
+            ]);
+
+            $order = $order->update(['status' => $request->status]);
+
+            $order = Order::findOrFail($id);
 
             DB::commit();
 

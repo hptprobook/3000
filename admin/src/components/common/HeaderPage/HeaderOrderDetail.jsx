@@ -1,10 +1,13 @@
 import { Avatar, Box, Chip, Stack, Typography } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import './style.css';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FormatDateTime from '../Function/FormatDate';
 import ButtonNormal from '../Button/ButtonNormal';
-const HeaderOrderDetail = ({ label, create_at, onClick }) => {
+const HeaderOrderDetail = ({ label, create_at, handleUpdateStatus, status }) => {
+    const handleButtonClick = (status) => {
+        handleUpdateStatus(status) // Hoặc thêm logic xử lý khác tại đây
+    };
     return (
         <Box sx={{ width: '100%', paddingTop: '32px' }}>
             <div className='headerPage-orderDetail'>
@@ -36,6 +39,11 @@ const HeaderOrderDetail = ({ label, create_at, onClick }) => {
                         </Stack>
                     </Stack>
 
+                </div>
+                <div>
+                    {status == 'processing' || status == 'pending' ? <ButtonNormal label={'Hủy'} onClick={() => handleButtonClick('cancelled')} /> : ''}
+                    {status == 'processing' ? <ButtonNormal label={'Sẵn sàng giao'} bg={'true'} onClick={() => handleButtonClick('shipping')} /> : ''}
+                    {status == 'pending' ? <ButtonNormal label={'Chập nhận đơn hàng'} bg={'true'} onClick={() => handleButtonClick('processing')} /> : ''}
                 </div>
             </div>
         </Box>
