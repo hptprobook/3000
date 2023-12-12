@@ -73,6 +73,7 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
+                'brand_id' => 'integer',
                 'variants' => 'sometimes|array',
                 'variants.*.name' => 'required_with:variants|string',
                 'variants.*.value' => 'required_with:variants',
@@ -84,7 +85,7 @@ class ProductController extends Controller
             }
 
             $data = $request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status',
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'brand_id'
             ]);
 
             if ($request->has('quantity')) {
@@ -92,10 +93,6 @@ class ProductController extends Controller
             }
 
             $product = Product::create($data);
-
-            if ($request->has('brand_ids') && is_array($request->brand_ids)) {
-                $product->brands()->attach($request->brand_ids);
-            }
 
             foreach ($request->images as $image_url) {
                 $product->images()->create([
@@ -184,6 +181,7 @@ class ProductController extends Controller
                 'images' => 'sometimes|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags' => 'sometimes|string',
+                'brand_id' => 'integer',
                 'status' => 'required',
                 'quantity' => 'required|numeric|between:0,10000',
                 'variants' => 'sometimes|array',
@@ -193,12 +191,8 @@ class ProductController extends Controller
             ]);
 
             $product->update($request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity'
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity', 'brand_id'
             ]));
-
-            if ($request->has('brand_ids') && is_array($request->brand_ids)) {
-                $product->brands()->sync($request->brand_ids);
-            }
 
             if ($request->has('images')) {
                 $product->images()->delete();

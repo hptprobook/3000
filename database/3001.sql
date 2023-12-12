@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 01, 2023 lúc 07:09 AM
+-- Thời gian đã tạo: Th12 11, 2023 lúc 03:43 PM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.2.4
 
@@ -32,17 +32,24 @@ CREATE TABLE `addresses` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
   `phone` varchar(10) NOT NULL,
+  `district_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `province_id` bigint(20) UNSIGNED DEFAULT NULL,
   `ward_id` bigint(20) UNSIGNED NOT NULL,
-  `address_info` varchar(255) NOT NULL
+  `address_info` varchar(255) NOT NULL,
+  `default` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `addresses`
 --
 
-INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `ward_id`, `address_info`) VALUES
-(2, 13, 'Công ty TNHH MTV Hoàn Vũ', '1900.3842', 133, '45/19 Nguyễn Viết Xuân'),
-(4, 13, 'PHT', '0833129021', 25, 'Nguyễn Viết Xuân');
+INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `district_id`, `province_id`, `ward_id`, `address_info`, `default`) VALUES
+(2, 13, 'Công ty TNHH MTV Hoàn Vũ', '1900.3842', 0, 0, 0, '45/19 Nguyễn Viết Xuân', 0),
+(4, 13, 'PHT', '0833129021', 0, 0, 0, 'Nguyễn Viết Xuân', 0),
+(5, 14, 'Nguyen Van A', '0123456789', 30, 13, 0, '123 Phố Xanh', 0),
+(6, 14, 'Phan Thanh Hóa', '0833129021', 30, 13, 0, '45/19 Nguyễn Viết Xuân', 1),
+(7, 14, 'Phan Thanh Hóa', '0833129021', NULL, NULL, 0, '45/19 Nguyễn Viết Xuân', 0),
+(8, 14, 'Phan Thanh Hóa', '0833129021', NULL, NULL, 0, '45/19 Nguyễn Viết Xuân', 0);
 
 -- --------------------------------------------------------
 
@@ -53,7 +60,6 @@ INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `ward_id`, `address_i
 CREATE TABLE `brands` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
-  `parent_id` tinyint(3) UNSIGNED DEFAULT NULL,
   `icon_url` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -61,11 +67,15 @@ CREATE TABLE `brands` (
 -- Đang đổ dữ liệu cho bảng `brands`
 --
 
-INSERT INTO `brands` (`id`, `name`, `parent_id`, `icon_url`) VALUES
-(1, 'OPPO', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
-(2, 'ACER', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
-(3, 'DELL', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
-(4, 'ihpone', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp');
+INSERT INTO `brands` (`id`, `name`, `icon_url`) VALUES
+(1, 'OPPO', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(2, 'ACER', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(3, 'DELL', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(4, 'ihpone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(5, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(6, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(7, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(8, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp');
 
 -- --------------------------------------------------------
 
@@ -85,7 +95,8 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`id`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 13, '2023-11-06 01:19:44', '2023-11-06 01:19:44');
+(1, 13, '2023-11-06 01:19:44', '2023-11-06 01:19:44'),
+(2, 14, '2023-12-03 04:53:18', '2023-12-03 04:53:18');
 
 -- --------------------------------------------------------
 
@@ -98,9 +109,21 @@ CREATE TABLE `cart_items` (
   `cart_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `quantity` bigint(20) UNSIGNED NOT NULL,
-  `status` varchar(50) NOT NULL DEFAULT 'not_ordered',
-  `price` bigint(20) UNSIGNED NOT NULL
+  `variants` varchar(255) NOT NULL,
+  `price` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `variants`, `price`) VALUES
+(4, 1, 20, 1, '', 21000000),
+(5, 1, 19, 1, '', 21000000),
+(6, 2, 21, 4, '', 20076000),
+(7, 2, 22, 2, 'Cam, 4 inch', 1128000),
+(13, 1, 15, 1, '[]', 20000000),
+(14, 1, 11, 7, '[]', 20000000);
 
 -- --------------------------------------------------------
 
@@ -1010,7 +1033,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (55, '2023_11_10_093059_create_settings_table', 23),
 (56, '2023_11_13_081451_create_hot_searches_table', 24),
 (57, '2023_11_24_033510_add_sold_to_product', 25),
-(60, '2023_11_30_142048_create_product_variants_table', 26);
+(60, '2023_11_30_142048_create_product_variants_table', 26),
+(61, '2023_12_03_133828_add_variants_and_delete_status_carts', 27),
+(63, '2023_12_06_153120_add_province_to_address', 28),
+(64, '2023_12_10_085724_add_brand_id_to_products', 29),
+(65, '2023_12_11_125953_add_to_products', 30);
 
 -- --------------------------------------------------------
 
@@ -1060,7 +1087,10 @@ CREATE TABLE `orders` (
 INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `address_id`, `status`, `note`, `created_at`, `updated_at`) VALUES
 (1, 13, 0, 2, 'pending', NULL, '2023-11-07 02:07:43', '2023-11-07 02:07:43'),
 (2, 13, 0, 2, 'processing', NULL, '2023-11-07 02:39:59', '2023-11-07 07:57:22'),
-(3, 13, 0, 2, 'pending', NULL, '2023-11-07 02:40:12', '2023-11-07 02:40:12');
+(3, 13, 0, 2, 'pending', NULL, '2023-11-07 02:40:12', '2023-11-07 02:40:12'),
+(4, 14, 20000000, 5, 'pending', NULL, '2023-12-04 00:59:38', '2023-12-04 00:59:38'),
+(5, 14, 0, 4, 'pending', NULL, '2023-12-06 08:03:49', '2023-12-06 08:03:49'),
+(6, 14, 4522000, 4, 'pending', NULL, '2023-12-06 08:04:32', '2023-12-06 08:04:32');
 
 -- --------------------------------------------------------
 
@@ -1075,6 +1105,17 @@ CREATE TABLE `order_details` (
   `quantity` bigint(20) UNSIGNED NOT NULL,
   `discount` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `order_details`
+--
+
+INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `quantity`, `discount`) VALUES
+(3, 4, 21, 15, '0'),
+(4, 6, 22, 59, '0'),
+(5, 6, 22, 4, '0'),
+(6, 6, 22, 5, '0'),
+(7, 6, 22, 1, '0');
 
 -- --------------------------------------------------------
 
@@ -1244,7 +1285,16 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (90, 'App\\Models\\User', 13, 'access_token', '50d87fc6c1b9f5da84420b9da397cda2b93816e65828651f5315a5626c49f9c0', '[\"*\"]', NULL, NULL, '2023-11-25 01:19:46', '2023-11-25 01:19:46'),
 (91, 'App\\Models\\User', 13, 'access_token', 'ac81ab68ae716e940ef0c267d21a244e6a909e403ae4ca9e6f7527f1579de943', '[\"*\"]', NULL, NULL, '2023-11-25 02:07:05', '2023-11-25 02:07:05'),
 (92, 'App\\Models\\User', 13, 'access_token', 'fbf3b84f908015825d7588dfe2f7f7e9258035ce311d9d1763824a03f616ec91', '[\"*\"]', '2023-11-28 08:15:36', NULL, '2023-11-25 19:33:55', '2023-11-28 08:15:36'),
-(93, 'App\\Models\\User', 13, 'access_token', 'cc8e9580a2678ac6c49c156f21e24422a2560d9e380053db9bc3beebb1865bd0', '[\"*\"]', '2023-11-30 22:50:38', NULL, '2023-11-30 19:17:24', '2023-11-30 22:50:38');
+(93, 'App\\Models\\User', 13, 'access_token', 'cc8e9580a2678ac6c49c156f21e24422a2560d9e380053db9bc3beebb1865bd0', '[\"*\"]', '2023-12-03 18:55:59', NULL, '2023-11-30 19:17:24', '2023-12-03 18:55:59'),
+(94, 'App\\Models\\User', 14, 'access_token', '35a53563423cc6da04d9d5679ba2776536a3fb1d5ded27c65832c3b2064e6867', '[\"*\"]', '2023-12-03 04:53:18', NULL, '2023-12-03 04:44:56', '2023-12-03 04:53:18'),
+(95, 'App\\Models\\User', 14, 'access_token', 'ae464c1aa2045fea4f6c016ec025b0769ce3a008082e0ed3abf1826c70bd098a', '[\"*\"]', '2023-12-03 04:54:04', NULL, '2023-12-03 04:54:01', '2023-12-03 04:54:04'),
+(96, 'App\\Models\\User', 14, 'access_token', 'eb593c7e94029cb825d98b6974c97ac9d53c4026490a9d1c0b1f62ab34b6484f', '[\"*\"]', '2023-12-03 05:27:10', NULL, '2023-12-03 05:26:48', '2023-12-03 05:27:10'),
+(97, 'App\\Models\\User', 14, 'access_token', 'c2dfe512ee7981e3cc6eb178f9ac65d04e7b9ff9b6b5b31aaeff8f86ee1553f5', '[\"*\"]', '2023-12-03 06:54:13', NULL, '2023-12-03 05:28:52', '2023-12-03 06:54:13'),
+(98, 'App\\Models\\User', 13, 'access_token', '97e9e9be3dffc9a363b04eed58f0c5cbda731cb52956d6f399f7b5eb1126dd2f', '[\"*\"]', '2023-12-06 00:36:17', NULL, '2023-12-03 06:54:45', '2023-12-06 00:36:17'),
+(99, 'App\\Models\\User', 14, 'access_token', 'afa8bf7c57396b0b2ddcca2cf3686c13f8f27c54883ddd7fc5b6c09fbc1bfae7', '[\"*\"]', '2023-12-06 08:50:07', NULL, '2023-12-04 00:58:16', '2023-12-06 08:50:07'),
+(100, 'App\\Models\\User', 13, 'access_token', '2b9963ee85d8b2804895ee02bd6960bc06ad634da93b2c6bf53b402d102ebb01', '[\"*\"]', '2023-12-10 02:26:36', NULL, '2023-12-06 07:43:56', '2023-12-10 02:26:36'),
+(101, 'App\\Models\\User', 14, 'access_token', '0d448f5d4d5efb246ee9006aa4e9d4e0d2e6e1c2a6611d5df3e942d28c6f7498', '[\"*\"]', NULL, NULL, '2023-12-07 00:22:43', '2023-12-07 00:22:43'),
+(102, 'App\\Models\\User', 14, 'access_token', '9f3b7e345d4143e13980b5dfb5fef1cb5cf3b6fef66dad5c7d36402ef245f97b', '[\"*\"]', '2023-12-10 02:14:36', NULL, '2023-12-07 00:23:56', '2023-12-10 02:14:36');
 
 -- --------------------------------------------------------
 
@@ -1278,7 +1328,12 @@ CREATE TABLE `products` (
   `sold` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `status` varchar(50) DEFAULT 'in_stock',
   `category_id` bigint(20) UNSIGNED NOT NULL DEFAULT 100,
+  `brand_id` bigint(20) UNSIGNED DEFAULT NULL,
   `seller_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `weight` tinyint(3) UNSIGNED NOT NULL,
+  `length` tinyint(3) UNSIGNED NOT NULL,
+  `width` tinyint(3) UNSIGNED NOT NULL,
+  `height` tinyint(3) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1287,19 +1342,20 @@ CREATE TABLE `products` (
 -- Đang đổ dữ liệu cho bảng `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `price`, `discount`, `short_desc`, `detail`, `thumbnail`, `quantity`, `sold`, `status`, `category_id`, `seller_id`, `created_at`, `updated_at`) VALUES
-(10, 'Máy tính cầm tay', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp', 100, 0, 'in_stock', 3, NULL, '2023-11-25 20:45:35', '2023-11-25 20:45:35'),
-(11, 'Điện thoại VSmart Bee Line', 20000000, 20, 'Điện thoại VSmart Bee Line', 'Điện thoại VSmart Bee Line', 'https://salt.tikicdn.com/cache/750x750/ts/product/a7/aa/10/a854de1119e37e29c90de817e10b4635.jpg.webp', 100, 0, 'in_stock', 3, NULL, '2023-11-26 01:28:09', '2023-11-26 01:28:09'),
-(12, 'Samsung Galaxy Y', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/5e/8e/5a/ffd57c334ad997d311d311be41ef6aa8.png.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:28:43', '2023-11-26 01:28:43'),
-(13, 'Redmi Note 10T 5G', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/bf/75/49/c8aa5e2218348a6b422259d67bd516dc.jpg.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:29:13', '2023-11-26 01:29:13'),
-(14, 'Vaseline Gluta-Hya Dưỡng Thể Nâng Tông Tức Thì Gấp 4 Lần 300ML', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/2f/50/38/784cf906175139d81a4919ed523806f7.png.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:29:53', '2023-11-26 01:29:53'),
-(15, 'Combo 2 Sữa dưỡng thể dưỡng sáng da tức thì VASELINE Healthy Bright Instant Radiance 350ML/chai', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/8c/93/d5/50e72d58a2580bb4fdaf30c06dcdbda6.png.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:30:16', '2023-11-26 01:30:16'),
-(16, 'Kem rửa mặt Vitamin Acnes Vitamin Cleanser 100g', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/a6/b4/fe8b437588e231367a8275d0b077b027.jpg.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:30:46', '2023-11-26 01:30:46'),
-(17, 'Dầu Gội Chống Gàu Selsun (100ml)', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/9c/a5/4bd1312c3bcdbe0475df20cffee3c5a6.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-26 01:32:00', '2023-11-26 01:32:00'),
-(18, '[Coupon 20K đơn 299K] Bộ Nồi Inox 3 Đáy Sunhouse SH335(16cm, 20cm, 24cm ) - Dùng trên mọi loại bếp - Hàng chính hãng', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/72/05/67/a69641d3492b5f69e447b8d05da9257c.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-26 01:32:38', '2023-11-26 01:32:38'),
-(19, '[ TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-26 01:33:02', '2023-11-26 01:33:02'),
-(20, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-30 22:45:25', '2023-11-30 22:45:25'),
-(21, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-30 22:50:38', '2023-11-30 22:50:38');
+INSERT INTO `products` (`id`, `name`, `price`, `discount`, `short_desc`, `detail`, `thumbnail`, `quantity`, `sold`, `status`, `category_id`, `brand_id`, `seller_id`, `weight`, `length`, `width`, `height`, `created_at`, `updated_at`) VALUES
+(10, 'Máy tính cầm tay', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp', 100, 0, 'in_stock', 3, NULL, NULL, 0, 0, 0, 0, '2023-11-25 20:45:35', '2023-11-25 20:45:35'),
+(11, 'Điện thoại VSmart Bee Line', 20000000, 20, 'Điện thoại VSmart Bee Line', 'Điện thoại VSmart Bee Line', 'https://salt.tikicdn.com/cache/750x750/ts/product/a7/aa/10/a854de1119e37e29c90de817e10b4635.jpg.webp', 100, 0, 'in_stock', 3, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:28:09', '2023-11-26 01:28:09'),
+(12, 'Samsung Galaxy Y', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/5e/8e/5a/ffd57c334ad997d311d311be41ef6aa8.png.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:28:43', '2023-11-26 01:28:43'),
+(13, 'Redmi Note 10T 5G', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/bf/75/49/c8aa5e2218348a6b422259d67bd516dc.jpg.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:29:13', '2023-11-26 01:29:13'),
+(14, 'Vaseline Gluta-Hya Dưỡng Thể Nâng Tông Tức Thì Gấp 4 Lần 300ML', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/2f/50/38/784cf906175139d81a4919ed523806f7.png.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:29:53', '2023-11-26 01:29:53'),
+(15, 'Combo 2 Sữa dưỡng thể dưỡng sáng da tức thì VASELINE Healthy Bright Instant Radiance 350ML/chai', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/8c/93/d5/50e72d58a2580bb4fdaf30c06dcdbda6.png.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:30:16', '2023-11-26 01:30:16'),
+(16, 'Kem rửa mặt Vitamin Acnes Vitamin Cleanser 100g', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/a6/b4/fe8b437588e231367a8275d0b077b027.jpg.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:30:46', '2023-11-26 01:30:46'),
+(17, 'Dầu Gội Chống Gàu Selsun (100ml)', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/9c/a5/4bd1312c3bcdbe0475df20cffee3c5a6.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:32:00', '2023-11-26 01:32:00'),
+(18, '[Coupon 20K đơn 299K] Bộ Nồi Inox 3 Đáy Sunhouse SH335(16cm, 20cm, 24cm ) - Dùng trên mọi loại bếp - Hàng chính hãng', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/72/05/67/a69641d3492b5f69e447b8d05da9257c.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:32:38', '2023-11-26 01:32:38'),
+(19, '[ TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:33:02', '2023-11-26 01:33:02'),
+(20, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-30 22:45:25', '2023-11-30 22:45:25'),
+(21, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 85, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-30 22:50:38', '2023-12-04 00:59:38'),
+(22, 'Ốp lưng kèm bàn phím ZAGG Messenger Folio 2 iPad 10.2/10.5', 988000, 34, 'Đây là chiếc điện thoại Iphone 14', 'Tính năng: Thuộc thương hiệu ốp lưng bảo vệ cao cấp dành cho iPad đến từ Mỹ Thiết kế gọn nhẹ, linh hoạt, dễ dàng mang theo, hỗ trợ tối đa các chức năng khi sử dụng Sử dụng cho các dòng: iPad 10.2’’ (iPad gen 7th & 8th), iPad 10.5’’ (iPad Air 3rd gen) Chất liệu vải Fabric cao cấp tạo sự sang trọng, bảo vệ iPad khỏi các vết bẩn, vết trầy xước khi để thiết bị cùng với các vật dụng trong túi xách của bạn. Bàn phím có độ nảy tốt, êm ái, tốc độ ghi nhận nhanh giúp dễ dàng thao tác, sử dụng Thời lượng sử dụng pin lên tới 1 năm giữa các lần sạc Tích hợp cổng sạc Type C nạp nhanh năng lượng cho thiết bị Kết nối dễ dàng, nhanh chóng thông qua bluetooth Đế gập dựng linh hoạt giúp thay đổi ở nhiều góc nhìn, thoải mái khi đánh máy hay xem phim.', 'https://salt.tikicdn.com/cache/750x750/ts/product/45/e4/50/49b0abca428616dbd94a67dab20590cb.png.webp', 31, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-12-03 05:43:56', '2023-12-06 08:04:32');
 
 -- --------------------------------------------------------
 
@@ -1350,7 +1406,10 @@ INSERT INTO `product_brands` (`product_id`, `brand_id`) VALUES
 (20, 3),
 (21, 1),
 (21, 2),
-(21, 3);
+(21, 3),
+(22, 1),
+(22, 2),
+(22, 3);
 
 -- --------------------------------------------------------
 
@@ -1405,7 +1464,12 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_url`, `image_alt`) VALU
 (48, 20, 'public/img3.png', NULL),
 (49, 21, 'public/img1.png', NULL),
 (50, 21, 'public/img2.png', NULL),
-(51, 21, 'public/img3.png', NULL);
+(51, 21, 'public/img3.png', NULL),
+(52, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/58/3e/2c/68bb1f5e80be0e402e2736300d069547.png.webp', NULL),
+(53, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/82/f5/e2/5b3d086ce512f6d267045b208be5ee55.png.webp', NULL),
+(54, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/9c/ab/0b/b48008f2968911f54607676b5514e83f.png.webp', NULL),
+(55, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/82/8e/f2/dc23d6860005c902e6e44860bbc7e967.png.webp', NULL),
+(56, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/cf/13/c2/60356f750bc1636c04c8a0aa3d023be8.png.webp', NULL);
 
 -- --------------------------------------------------------
 
@@ -1470,7 +1534,9 @@ INSERT INTO `product_tags` (`product_id`, `tag_id`) VALUES
 (21, 1),
 (21, 2),
 (21, 3),
-(21, 4);
+(21, 4),
+(22, 1),
+(22, 2);
 
 -- --------------------------------------------------------
 
@@ -1496,7 +1562,92 @@ INSERT INTO `product_variants` (`id`, `product_id`, `variant_type_id`, `value`, 
 (3, 21, 1, 'Cam', '26000'),
 (4, 21, 5, '12', '25000'),
 (5, 21, 2, '4', '25000'),
-(6, 21, 2, '5', '25000');
+(6, 21, 2, '5', '25000'),
+(7, 22, 1, 'Đỏ', '30000'),
+(8, 22, 1, 'Vàng', '25000'),
+(9, 22, 1, 'Cam', '40000'),
+(10, 22, 2, '4 inch', '100000'),
+(11, 22, 2, '5 inch', '125000');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `provinceghn`
+--
+
+CREATE TABLE `provinceghn` (
+  `id` int(11) NOT NULL,
+  `province_name` varchar(128) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `provinceghn`
+--
+
+INSERT INTO `provinceghn` (`id`, `province_name`) VALUES
+(201, 'Hà Nội'),
+(202, 'Hồ Chí Minh'),
+(203, 'Đà Nẵng'),
+(204, 'Đồng Nai'),
+(205, 'Bình Dương'),
+(206, 'Bà Rịa - Vũng Tàu'),
+(207, 'Gia Lai'),
+(208, 'Khánh Hòa'),
+(209, 'Lâm Đồng'),
+(210, 'Đắk Lắk'),
+(211, 'Long An'),
+(212, 'Tiền Giang'),
+(213, 'Bến Tre'),
+(214, 'Trà Vinh'),
+(215, 'Vĩnh Long'),
+(216, 'Đồng Tháp'),
+(217, 'An Giang'),
+(218, 'Sóc Trăng'),
+(219, 'Kiên Giang'),
+(220, 'Cần Thơ'),
+(221, 'Vĩnh Phúc'),
+(223, 'Thừa Thiên - Huế'),
+(224, 'Hải Phòng'),
+(225, 'Hải Dương'),
+(226, 'Thái Bình'),
+(227, 'Hà Giang'),
+(228, 'Tuyên Quang'),
+(229, 'Phú Thọ'),
+(230, 'Quảng Ninh'),
+(231, 'Nam Định'),
+(232, 'Hà Nam'),
+(233, 'Ninh Bình'),
+(234, 'Thanh Hóa'),
+(235, 'Nghệ An'),
+(236, 'Hà Tĩnh'),
+(237, 'Quảng Bình'),
+(238, 'Quảng Trị'),
+(239, 'Bình Phước'),
+(240, 'Tây Ninh'),
+(241, 'Đắk Nông'),
+(242, 'Quảng Ngãi'),
+(243, 'Quảng Nam'),
+(244, 'Thái Nguyên'),
+(245, 'Bắc Kạn'),
+(246, 'Cao Bằng'),
+(247, 'Lạng Sơn'),
+(248, 'Bắc Giang'),
+(249, 'Bắc Ninh'),
+(250, 'Hậu Giang'),
+(252, 'Cà Mau'),
+(253, 'Bạc Liêu'),
+(258, 'Bình Thuận'),
+(259, 'Kon Tum'),
+(260, 'Phú Yên'),
+(261, 'Ninh Thuận'),
+(262, 'Bình Định'),
+(263, 'Yên Bái'),
+(264, 'Lai Châu'),
+(265, 'Điện Biên'),
+(266, 'Sơn La'),
+(267, 'Hòa Bình'),
+(268, 'Hưng Yên'),
+(269, 'Lào Cai');
 
 -- --------------------------------------------------------
 
@@ -1611,7 +1762,13 @@ INSERT INTO `reviews` (`id`, `product_id`, `user_id`, `rating`, `comment`, `crea
 (10, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:57', '2023-11-26 07:16:57'),
 (11, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:58', '2023-11-26 07:16:58'),
 (12, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:58', '2023-11-26 07:16:58'),
-(13, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:59', '2023-11-26 07:16:59');
+(13, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:59', '2023-11-26 07:16:59'),
+(14, 11, 13, 5, 'Good job amazing', '2023-12-02 07:47:12', '2023-12-02 07:47:12'),
+(15, 11, 13, 5, 'Sản phẩm này ngon', '2023-12-02 07:47:24', '2023-12-02 07:47:24'),
+(16, 11, 13, 2, 'Không Ok lắm', '2023-12-02 07:52:07', '2023-12-02 07:52:07'),
+(17, 11, 13, 4, 'tạm tạm được', '2023-12-02 07:52:21', '2023-12-02 07:52:21'),
+(18, 11, 13, 3, 'nhìn như cc', '2023-12-02 07:52:29', '2023-12-02 07:52:29'),
+(19, 11, 13, 1, 'k bao giờ mua nữa', '2023-12-02 07:52:39', '2023-12-02 07:52:39');
 
 -- --------------------------------------------------------
 
@@ -12496,9 +12653,7 @@ INSERT INTO `wards` (`id`, `name`, `type`, `slug`, `name_with_type`, `path`, `pa
 --
 ALTER TABLE `addresses`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `addresses_phone_unique` (`phone`),
-  ADD KEY `addresses_user_id_foreign` (`user_id`),
-  ADD KEY `addresses_ward_id_foreign` (`ward_id`);
+  ADD KEY `addresses_user_id_foreign` (`user_id`);
 
 --
 -- Chỉ mục cho bảng `brands`
@@ -12640,7 +12795,8 @@ ALTER TABLE `posts`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD KEY `products_seller_id_foreign` (`seller_id`),
-  ADD KEY `products_category_id_foreign` (`category_id`);
+  ADD KEY `products_category_id_foreign` (`category_id`),
+  ADD KEY `products_brand_id_foreign` (`brand_id`);
 
 --
 -- Chỉ mục cho bảng `product_brands`
@@ -12670,6 +12826,12 @@ ALTER TABLE `product_variants`
   ADD PRIMARY KEY (`id`),
   ADD KEY `product_variants_product_id_foreign` (`product_id`),
   ADD KEY `product_variants_variant_type_id_foreign` (`variant_type_id`);
+
+--
+-- Chỉ mục cho bảng `provinceghn`
+--
+ALTER TABLE `provinceghn`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Chỉ mục cho bảng `provinces`
@@ -12753,25 +12915,25 @@ ALTER TABLE `wards`
 -- AUTO_INCREMENT cho bảng `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -12807,19 +12969,19 @@ ALTER TABLE `hot_searches`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -12837,7 +12999,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
 
 --
 -- AUTO_INCREMENT cho bảng `posts`
@@ -12849,19 +13011,19 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `provinces`
@@ -12873,7 +13035,7 @@ ALTER TABLE `provinces`
 -- AUTO_INCREMENT cho bảng `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT cho bảng `roles`
@@ -12920,13 +13082,6 @@ ALTER TABLE `wards`
 --
 -- Các ràng buộc cho các bảng đã đổ
 --
-
---
--- Các ràng buộc cho bảng `addresses`
---
-ALTER TABLE `addresses`
-  ADD CONSTRAINT `addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `addresses_ward_id_foreign` FOREIGN KEY (`ward_id`) REFERENCES `wards` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `carts`
@@ -12985,6 +13140,7 @@ ALTER TABLE `payments`
 -- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
+  ADD CONSTRAINT `products_brand_id_foreign` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_seller_id_foreign` FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`) ON DELETE CASCADE;
 

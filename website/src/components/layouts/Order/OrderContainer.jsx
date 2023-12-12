@@ -55,7 +55,7 @@ export default function OrderContainer({ data }) {
             <h4>Đơn hàng</h4>
             <div className="order-detail">
                 {data?.map((item) => (
-                    <div className="order-detail__item">
+                    <div className="order-detail__item" key={item.id}>
                         <div className="img">
                             <img
                                 className="img-c"

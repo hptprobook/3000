@@ -17,6 +17,14 @@ const CartService = {
             return err.response;
         }
     },
+    fetchWithIds: async (data) => {
+        try {
+            const res = await request.post("carts/get_cart_with_ids", data);
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
 };
 
 export default CartService;

@@ -4,6 +4,7 @@ import CartService from "@/services/cart.service";
 const initialState = {
     carts: {},
     cartList: [],
+    cartWithIds: [],
     status: "idle",
     error: null,
 };
@@ -26,6 +27,18 @@ export const fetchAllCart = createAsyncThunk(
         try {
             const response = await CartService.fetchAllCart();
             return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const fetchWithIds = createAsyncThunk(
+    "carts/fetchWithIds",
+    async (data, { rejectWithValue }) => {
+        try {
+            const res = await CartService.fetchWithIds(data);
+            return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -57,6 +70,17 @@ const cartSlice = createSlice({
                 state.cartList = action.payload;
             })
             .addCase(fetchAllCart.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(fetchWithIds.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(fetchWithIds.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.cartWithIds = action.payload;
+            })
+            .addCase(fetchWithIds.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });
