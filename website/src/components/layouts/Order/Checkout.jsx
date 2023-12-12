@@ -40,7 +40,7 @@ export default function Checkout({ totalPrice }) {
                         color: "#808089",
                     }}
                 >
-                    {totalPrice}
+                    {Number(totalPrice).toLocaleString()}đ
                 </p>
             </div>
             <div className="jc-sb mt-6">
@@ -58,7 +58,7 @@ export default function Checkout({ totalPrice }) {
                         color: "#808089",
                     }}
                 >
-                    {totalPrice}
+                    0đ
                 </p>
             </div>
             <div className="jc-sb mt-6">
@@ -76,7 +76,7 @@ export default function Checkout({ totalPrice }) {
                         color: "#00ab56",
                     }}
                 >
-                    {totalPrice}
+                    0đ
                 </span>
             </div>
             <div

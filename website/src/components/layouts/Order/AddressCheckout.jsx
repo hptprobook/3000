@@ -11,7 +11,15 @@ const StyledAddressCheckout = styled("div")(() => ({
 }));
 
 export default function AddressCheckout({ data }) {
-    let defaultAddress = data.find((address) => address.default === 1);
+    console.log(
+        "🚀 ~ file: AddressCheckout.jsx:14 ~ AddressCheckout ~ data:",
+        data
+    );
+    let defaultAddress = "";
+
+    if (data.length > 0) {
+        defaultAddress = data?.find((address) => address.default === 1);
+    }
 
     return (
         <StyledAddressCheckout>
