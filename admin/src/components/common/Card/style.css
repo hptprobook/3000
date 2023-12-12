@@ -36,4 +36,14 @@
     font-size: 14px;
 }
 
-.ListCardOrder h6 {}
+/* Card Action Order */
+.CardActionOrder {
+    padding: 24px;
+    border-radius: 14px;
+    margin: 16px 0;
+}
+
+.CardActionOrder p {
+    font-size: 16px;
+    font-weight: 500;
+}

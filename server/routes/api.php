@@ -78,6 +78,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('orders', OrderController::class);
 
     Route::get("/orders/get_detail/{id}", [OrderController::class, 'showNotAuth']);
+    Route::put("/orders/update_order/{id}", [OrderController::class, 'updateNotAuth']);
+
 
     Route::apiResource('order_details', OrderDetailController::class);
 

@@ -20,6 +20,14 @@ const OrdersService = {
             throw err;
         }
     },
+    updateStatusOrder: async (id, data) => {
+        try {
+            const res = await request.put(`orders/update_order/${id}`, data);
+            return res;
+        } catch (err) {
+            throw err;
+        }
+    },
 };
 
 export default OrdersService;

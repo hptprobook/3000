@@ -1,6 +1,8 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import color from '../../../config/colorConfig';
+import { ChipStatusOrder } from '../Chip/ChipStatusOrder';
+
 export const ListCardOrder = ({ title, content, status = '' }) => {
     return (
         <div className='ListCardOrder'>
@@ -9,7 +11,7 @@ export const ListCardOrder = ({ title, content, status = '' }) => {
                     <h6 style={{ color: color.textColor.dark }}>{title}</h6>
                 </Grid>
                 <Grid item xs={12} md={10}>
-                    <p style={{ color: color.textColor.gray }}>{content}</p>
+                    {content ? <p style={{ color: color.textColor.gray }}>{content}</p> : <ChipStatusOrder status={status} />}
                 </Grid>
             </Grid>
         </div>

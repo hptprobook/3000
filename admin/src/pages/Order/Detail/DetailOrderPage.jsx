@@ -1,13 +1,16 @@
 import { Box } from '@mui/material'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonBackFullW from '~/components/common/Button/ButtonBackFullW';
 import HeaderOrderDetail from '~/components/common/HeaderPage/HeaderOrderDetail';
 
-import { fetchOneOrder } from '../../../redux/slices/ordersSlice';
+import { fetchOneOrder, resetState, updateStatusOrder } from '../../../redux/slices/ordersSlice';
 import { useParams } from 'react-router-dom';
 import Loading from '../../../components/common/Loading/Loading';
 import CardOrder from '../../../components/common/Card/CardOrder';
+import TableOrderProducts from '../../../components/common/Table/TableOrderProducts';
+import LinearIndeterminate from '../../../components/common/Loading/LoadingLine';
+import SuccessAlert from '../../../components/common/Alert/SuccessAlert';
 
 export const DetailOrderPage = () => {
     const dispatch = useDispatch();
@@ -15,13 +18,30 @@ export const DetailOrderPage = () => {
     const order = useSelector((state) => state.orders.order);
     const status = useSelector((state) => state.orders.statusFetchOne);
     const error = useSelector((state) => state.orders.errorOne);
+    const statusUpdate = useSelector((state) => state.orders.statusUpdate);
+    const dataReturn = useSelector((state) => state.orders.orderUpdate);
+    const [successAlert, setSuccessAlert] = useState(false);
     useEffect(() => {
         if (id) {
             dispatch(fetchOneOrder({ id }));
+
         }
     }, [id]);
-    const handleOrder = () => {
-        console.log(order);
+    console.log(dataReturn);
+    useEffect(() => {
+        if (statusUpdate === 'success') {
+            setSuccessAlert(true);
+            dispatch(resetState());
+        }
+        if (statusUpdate === 'loading') {
+            setSuccessAlert(false);
+        }
+    }, [statusUpdate]);
+    const handleUpdateStatus = (data) => {
+        const dataUpdate = {
+            status: data,
+        }
+        dispatch(updateStatusOrder({ id: id, data: dataUpdate }));
     }
     if (status == 'loading') {
         return (
@@ -31,9 +51,12 @@ export const DetailOrderPage = () => {
     if (status == 'success') {
         return (
             <Box>
+                {successAlert ? <SuccessAlert label={'Cập nhật đơn hàng thành công'} /> : null}
+                {statusUpdate === 'loading' ? <LinearIndeterminate /> : null}
                 <ButtonBackFullW label={'Đơn hàng'} />
-                <HeaderOrderDetail label={'Đơn hàng'} create_at={order.created_at} />
+                <HeaderOrderDetail label={'Đơn hàng'} create_at={order.created_at} handleUpdateStatus={handleUpdateStatus} status={order.status} />
                 <CardOrder data={order} />
+                <TableOrderProducts data={order.order_details} />
             </Box>
         )
     }
