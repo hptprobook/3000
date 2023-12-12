@@ -5,6 +5,7 @@ import AddressCheckout from "@/components/layouts/Order/AddressCheckout";
 import Checkout from "@/components/layouts/Order/Checkout";
 import OrderContainer from "@/components/layouts/Order/OrderContainer";
 import OrderCoupon from "@/components/layouts/Order/OrderCoupon";
+import { getAddresses } from "@/redux/slices/addressSlice";
 import { fetchWithIds } from "@/redux/slices/cartSlice";
 import { Grid } from "@mui/material";
 import { useSearchParams } from "next/navigation";
@@ -117,7 +118,16 @@ export default function OrderPage() {
 
     const dispatch = useDispatch();
     const cartWithIds = useSelector((state) => state.carts.cartWithIds);
-    const status = useSelector((state) => state.carts.status);
+    const cartStatus = useSelector((state) => state.carts.status);
+
+    const addresses = useSelector((state) => state.addresses);
+    const addressFetchStatus = useSelector((state) => state.addresses.status);
+
+    useEffect(() => {
+        if (addressFetchStatus == "idle") {
+            dispatch(getAddresses());
+        }
+    }, [addressFetchStatus]);
 
     useEffect(() => {
         if (cartItemIds.length > 0) {
@@ -129,7 +139,7 @@ export default function OrderPage() {
         }
     }, [cartItemIds]);
 
-    if (status == "loading") {
+    if (cartStatus == "loading" || addressFetchStatus == "loading") {
         return <CirLoading />;
     }
 
@@ -146,7 +156,7 @@ export default function OrderPage() {
                         <OrderContainer data={cartWithIds} />
                     </Grid>
                     <Grid item xs={3}>
-                        <AddressCheckout data={addressFake} />
+                        <AddressCheckout data={addresses.addresses} />
                         <OrderCoupon />
                         <Checkout totalPrice={totalPrice} />
                     </Grid>

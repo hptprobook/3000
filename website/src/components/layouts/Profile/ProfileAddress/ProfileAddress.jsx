@@ -57,7 +57,7 @@ const StyledProfileAddress = styled("div")(() => ({
     },
 }));
 
-export default function ProfileAddress() {
+export default function ProfileAddress({ data }) {
     return (
         <StyledProfileAddress>
             <p>Sổ địa chỉ</p>
@@ -71,29 +71,43 @@ export default function ProfileAddress() {
                     Thêm địa chỉ mới
                 </div>
             </Link>
-            <div className="item">
-                <div className="head jc-sb">
-                    <p className="name d-flex">
-                        PHAN THANH HÓA
-                        <span className="default at-c">
-                            <CheckCircleOutlineIcon
-                                sx={{ fontSize: "13px", marginRight: "4px" }}
-                            />
-                            Địa chỉ mặc định
-                        </span>
-                    </p>
-                    <div className="handle">
-                        <Link href={"/profile/address/edit"}>Chỉnh sửa</Link>
-                        <button>Xóa</button>
+            {data?.map((address) => (
+                <div className="item">
+                    <div className="head jc-sb">
+                        <p className="name d-flex">
+                            {address.name.toUpperCase()}
+                            {address.default === 1 ? (
+                                <span className="default at-c">
+                                    <CheckCircleOutlineIcon
+                                        sx={{
+                                            fontSize: "13px",
+                                            marginRight: "4px",
+                                        }}
+                                    />
+                                    Địa chỉ mặc định
+                                </span>
+                            ) : (
+                                ""
+                            )}
+                        </p>
+                        <div className="handle">
+                            <Link
+                                href={{
+                                    pathname: "/profile/address/edit",
+                                    query: { addressId: address.id },
+                                }}
+                            >
+                                Chỉnh sửa
+                            </Link>
+                            <button>Xóa</button>
+                        </div>
+                    </div>
+                    <div className="content">
+                        <p>Địa chỉ: {address.address_info}</p>
+                        <p>Điện thoại: {address.phone}</p>
                     </div>
                 </div>
-                <div className="content">
-                    <p>
-                        Địa chỉ: 45 Nguyễn Viết Xuân, Tân Thành, Buôn Mê Thuột
-                    </p>
-                    <p>Điện thoại: 0833129021</p>
-                </div>
-            </div>
+            ))}
         </StyledProfileAddress>
     );
 }

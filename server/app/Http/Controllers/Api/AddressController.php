@@ -32,6 +32,18 @@ class AddressController extends Controller
         }
     }
 
+    public function show(string $id)
+    {
+        try {
+            $address = Address::findOrFail($id);
+
+            return response()->json($address, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function store(Request $request)
     {
