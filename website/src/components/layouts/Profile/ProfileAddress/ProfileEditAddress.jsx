@@ -90,6 +90,7 @@ export default function ProfileEditAddress({ data, provinces }) {
 
     const handleProvinceChange = (event, value) => {
         if (value) {
+            formik.setFieldValue("province", value);
             setSelectedProvinceId(value.id);
             setSelectedDistrictId(null);
             setSelectedWardId(null);
@@ -115,7 +116,8 @@ export default function ProfileEditAddress({ data, provinces }) {
     const handleDistrictChange = (event, value) => {
         if (value) {
             setSelectedDistrictId(value.DistrictID);
-            setSelectedWardId(null); // Reset ward selection
+            formik.setFieldValue("district", value);
+            setSelectedWardId(null);
             setWardOptions([]);
             dispatch(getWardList({ district_id: value.DistrictID }))
                 .then((response) => {
@@ -150,18 +152,17 @@ export default function ProfileEditAddress({ data, provinces }) {
             dispatch(getAddressById(data));
         }
     }, [data]);
-
-    const [provinceDefault, districtDefault, wardDefault, streetDefault] =
-        addressById
-            ? addressById?.address_info.split(",").map((part) => part.trim())
-            : [];
-
     // Formik
     const formik = useFormik({
         initialValues: {
             name: "",
             phone: "",
-            province: null,
+            province:
+                (provinces &&
+                    provinces?.data?.find(
+                        (p) => p.id === addressById?.province_id
+                    )) ||
+                null,
             district: null,
             ward: null,
             address: "",
@@ -223,19 +224,41 @@ export default function ProfileEditAddress({ data, provinces }) {
                     provinces.data.find(
                         (p) => p.id === addressById.province_id
                     ) || null,
-                district:
-                    districtOptions.find(
-                        (d) => d.DistrictID === addressById.district_id
-                    ) || null,
-                ward:
-                    wardOptions.find(
-                        (w) => w.WardCode === addressById.ward_id
-                    ) || null,
+                district: null, // Sẽ được set sau khi có dữ liệu từ API
+                ward: null, // Tương tự như district
                 address: addressById.street || "",
                 isDefault: addressById.default === 1,
             });
+            // Lấy dữ liệu district
+            dispatch(
+                getDistrictList({ province_id: addressById.province_id })
+            ).then((response) => {
+                const districts = response.payload.data;
+                setDistrictOptions(districts);
+                formik.setFieldValue(
+                    "district",
+                    districts.find(
+                        (d) => d.DistrictID === addressById.district_id
+                    ) || null
+                );
+
+                // Lấy dữ liệu ward sau khi có district
+                dispatch(
+                    getWardList({ district_id: addressById.district_id })
+                ).then((response) => {
+                    const wards = response.payload.data;
+                    setWardOptions(wards);
+                    formik.setFieldValue(
+                        "ward",
+                        wards.find((w) => w.WardCode == addressById.ward_id) ||
+                            null
+                    );
+                });
+            });
         }
-    }, [addressById, provinces.data, districtOptions, wardOptions]);
+    }, [addressById]);
+
+    console.log(formik.values.ward);
 
     if (!addressById) {
         return <CirLoading />;
@@ -291,6 +314,9 @@ export default function ProfileEditAddress({ data, provinces }) {
                                 options={provinces.data}
                                 value={formik.values.province}
                                 onChange={handleProvinceChange}
+                                onBlur={() => {
+                                    formik.setFieldTouched("province", true);
+                                }}
                                 getOptionLabel={(option) =>
                                     option ? option.province_name : ""
                                 }
@@ -312,14 +338,12 @@ export default function ProfileEditAddress({ data, provinces }) {
                                 disablePortal
                                 size="small"
                                 id="combo-box-district"
-                                value={
-                                    districtOptions.find(
-                                        (d) =>
-                                            d.DistrictID === selectedDistrictId
-                                    ) || null
-                                }
+                                value={formik.values.district}
                                 options={districtOptions}
                                 onChange={handleDistrictChange}
+                                onBlur={() => {
+                                    formik.setFieldTouched("district", true);
+                                }}
                                 getOptionLabel={(option) =>
                                     option ? option.DistrictName : ""
                                 }
@@ -343,11 +367,10 @@ export default function ProfileEditAddress({ data, provinces }) {
                                 id="combo-box-demo"
                                 options={wardOptions}
                                 sx={{ width: 300 }}
-                                value={
-                                    wardOptions.find(
-                                        (w) => w.WardCode === selectedWardId
-                                    ) || null
-                                }
+                                value={formik.values.ward}
+                                onBlur={() => {
+                                    formik.setFieldTouched("district", true);
+                                }}
                                 onChange={handleWardChange}
                                 getOptionLabel={(option) =>
                                     option ? option.WardName : ""
