@@ -21,17 +21,22 @@ export const DetailOrderPage = () => {
     const statusUpdate = useSelector((state) => state.orders.statusUpdate);
     const dataReturn = useSelector((state) => state.orders.orderUpdate);
     const [successAlert, setSuccessAlert] = useState(false);
+    const [statusOrder, setStatusOrder] = useState('');
     useEffect(() => {
         if (id) {
             dispatch(fetchOneOrder({ id }));
-
         }
     }, [id]);
-    console.log(dataReturn);
+    useEffect(() => {
+        if (status == 'success') {
+            setStatusOrder(order.status);
+        }
+    }, [status]);
     useEffect(() => {
         if (statusUpdate === 'success') {
             setSuccessAlert(true);
             dispatch(resetState());
+            setStatusOrder(dataReturn.status);
         }
         if (statusUpdate === 'loading') {
             setSuccessAlert(false);
@@ -54,7 +59,7 @@ export const DetailOrderPage = () => {
                 {successAlert ? <SuccessAlert label={'Cập nhật đơn hàng thành công'} /> : null}
                 {statusUpdate === 'loading' ? <LinearIndeterminate /> : null}
                 <ButtonBackFullW label={'Đơn hàng'} />
-                <HeaderOrderDetail label={'Đơn hàng'} create_at={order.created_at} handleUpdateStatus={handleUpdateStatus} status={order.status} />
+                <HeaderOrderDetail label={'Đơn hàng'} create_at={order.created_at} handleUpdateStatus={handleUpdateStatus} status={statusOrder} />
                 <CardOrder data={order} />
                 <TableOrderProducts data={order.order_details} />
             </Box>

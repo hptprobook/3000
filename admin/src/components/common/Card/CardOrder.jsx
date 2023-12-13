@@ -7,7 +7,6 @@ import FormatVND from '../Function/FormatVND';
 import FormatDate from '../Function/FormatDate';
 
 export default function CardOrder({ data }) {
-    console.log(data);
     return (
         <div className='OrderPaper' style={{ backgroundColor: color.backgroundColorSub.dark }}>
             <div

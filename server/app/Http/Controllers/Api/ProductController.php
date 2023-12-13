@@ -85,7 +85,7 @@ class ProductController extends Controller
             }
 
             $data = $request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'brand_id'
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'brand_id', 'weight', 'length', 'width', 'height'
             ]);
 
             if ($request->has('quantity')) {
