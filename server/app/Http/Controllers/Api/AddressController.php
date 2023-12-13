@@ -52,10 +52,6 @@ class AddressController extends Controller
         try {
             $user = Auth::user();
 
-            if ($user->addresses()->count() >= 4) {
-                return response()->json(['error' => 'Người dùng được tối đa 4 địa chỉ.'], Response::HTTP_BAD_REQUEST);
-            }
-
             $request->validate([
                 'name' => "required|string|min:3|max:100",
                 'phone' => "required|string|min:8|max:10",
@@ -67,9 +63,8 @@ class AddressController extends Controller
             ]);
 
             $isFirstAddress = $user->addresses()->count() == 0;
-            $isDefaultRequested = $request->input('is_default', false);
+            $isDefaultRequested = $request->input('default', 1) == 1;
             $isDefault = $isDefaultRequested || $isFirstAddress;
-
             if ($isDefault) {
                 $user->addresses()->update(['default' => 0]);
             }
@@ -83,7 +78,7 @@ class AddressController extends Controller
                 'ward_id' => $request->ward_id,
                 'address_info' => $request->address_info,
                 'street' => $request->street,
-                'default' => $isDefault ? 1 : 0
+                'default' => $request->default,
             ]);
 
             DB::commit();
@@ -96,6 +91,7 @@ class AddressController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     public function update(Request $request, string $id)

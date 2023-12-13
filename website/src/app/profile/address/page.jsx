@@ -10,12 +10,12 @@ export default function ProfileAddressPage() {
 
     const addresses = useSelector((state) => state.addresses);
     const addressFetchStatus = useSelector((state) => state.addresses.status);
+    const address = useSelector((state) => state.addresses.address);
+    const deleted = useSelector((state) => state.addresses.deleted);
 
     useEffect(() => {
-        if (addressFetchStatus == "idle") {
-            dispatch(getAddresses());
-        }
-    }, []);
+        dispatch(getAddresses());
+    }, [address, deleted]);
 
     if (addressFetchStatus == "loading") {
         return <CirLoading />;

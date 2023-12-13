@@ -5,6 +5,9 @@ import { styled } from "@mui/material/styles";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import Link from "next/link";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { deleteAddress } from "@/redux/slices/addressSlice";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
 
 const StyledProfileAddress = styled("div")(() => ({
     "& .create": {
@@ -59,7 +62,25 @@ const StyledProfileAddress = styled("div")(() => ({
 }));
 
 export default function ProfileAddress({ data }) {
-    if (data.length == 0) {
+    const dispatch = useDispatch();
+
+    const handleDelete = (id, isDefault) => {
+        if (isDefault) {
+            toast.error("Không thể xóa địa chỉ mặc định");
+            return;
+        }
+
+        dispatch(deleteAddress(id))
+            .then(() => {
+                toast.success(`Xóa thành công địa chỉ`);
+            })
+            .catch((error) => {
+                toast.error("Xảy ra lỗi khi xóa địa chỉ");
+                console.error(error);
+            });
+    };
+
+    if (!data) {
         return <CirLoading />;
     }
 
@@ -104,7 +125,16 @@ export default function ProfileAddress({ data }) {
                             >
                                 Chỉnh sửa
                             </Link>
-                            <button>Xóa</button>
+                            <button
+                                onClick={() =>
+                                    handleDelete(
+                                        address.id,
+                                        address.default === 1
+                                    )
+                                }
+                            >
+                                Xóa
+                            </button>
                         </div>
                     </div>
                     <div className="content">

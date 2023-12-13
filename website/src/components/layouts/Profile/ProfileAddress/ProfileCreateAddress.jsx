@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { addAddresses, clearAddress } from "@/redux/slices/addressSlice";
+import { useRouter } from "next/navigation";
 
 const addressSchema = Yup.object().shape({
     name: Yup.string()
@@ -138,6 +140,8 @@ export default function ProfileCreateAddress({ provinces }) {
 
     const dispatch = useDispatch();
     const districtList = useSelector((state) => state.deliveries);
+    const address = useSelector((state) => state.addresses.address);
+    const router = useRouter();
 
     // Formik
     const formik = useFormik({
@@ -177,10 +181,23 @@ export default function ProfileCreateAddress({ provinces }) {
                 address_info: fullAddress,
                 default: values.isDefault,
             };
-            console.log(
-                "🚀 ~ file: ProfileCreateAddress.jsx:178 ~ ProfileCreateAddress ~ payload:",
-                payload
-            );
+
+            dispatch(addAddresses(payload))
+                .then(() => {
+                    toast.success("Thêm mới địa chỉ thành công", {
+                        autoClose: 2000,
+                    });
+                    setTimeout(() => {
+                        router.push("/profile/address");
+                    }, 1000);
+                })
+                .catch((error) => {
+                    toast.error(error);
+                });
+
+            if (address) {
+                dispatch(clearAddress());
+            }
         },
     });
 
@@ -376,7 +393,7 @@ export default function ProfileCreateAddress({ provinces }) {
                     </Grid>
                     <Grid item xs={12}>
                         <button className="submit" type="submit">
-                            Chỉnh sửa
+                            Thêm mới
                         </button>
                     </Grid>
                 </Grid>

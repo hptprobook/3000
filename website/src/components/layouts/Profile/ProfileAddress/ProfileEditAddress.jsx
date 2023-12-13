@@ -11,6 +11,7 @@ import {
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { getDistrictList, getWardList } from "@/redux/slices/deliverySlice";
 import { useDispatch, useSelector } from "react-redux";
+import { getAddressById } from "@/redux/slices/addressSlice";
 
 const StyledProfileEditAddress = styled("div")(() => ({
     "& .form": {
@@ -35,6 +36,10 @@ const StyledProfileEditAddress = styled("div")(() => ({
 }));
 
 export default function ProfileEditAddress({ data, provinces }) {
+    console.log(
+        "🚀 ~ file: ProfileEditAddress.jsx:38 ~ ProfileEditAddress ~ data:",
+        data
+    );
     const [selectedProvinceId, setSelectedProvinceId] = useState(null);
     const [selectedDistrictId, setSelectedDistrictId] = useState(null);
     const [selectedWardId, setSelectedWardId] = useState(null);
@@ -94,6 +99,17 @@ export default function ProfileEditAddress({ data, provinces }) {
 
     const dispatch = useDispatch();
     const districtList = useSelector((state) => state.deliveries);
+    const addressById = useSelector((state) => state.addresses);
+    console.log(
+        "🚀 ~ file: ProfileEditAddress.jsx:103 ~ ProfileEditAddress ~ addressById:",
+        addressById
+    );
+
+    useEffect(() => {
+        if (data) {
+            dispatch(getAddressById(data));
+        }
+    }, [data]);
 
     return (
         <StyledProfileEditAddress>

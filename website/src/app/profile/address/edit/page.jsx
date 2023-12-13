@@ -27,11 +27,11 @@ export default function EditAddressPage() {
     const addressById = useSelector((state) => state.addresses.addressById);
     const addressFetchStatus = useSelector((state) => state.addresses.status);
 
-    useEffect(() => {
-        if (addressId && addressFetchStatus === "idle") {
-            dispatch(getAddressById(addressId));
-        }
-    }, [addressId, addressFetchStatus, dispatch]);
+    // useEffect(() => {
+    //     if (addressId) {
+    //         dispatch(getAddressById(addressId));
+    //     }
+    // }, []);
 
     const addressGHN = useSelector((state) => state.addresses.addressGHN);
     const addressGHNfetchStatus = useSelector(
@@ -44,10 +44,7 @@ export default function EditAddressPage() {
 
     return (
         <ThemeProvider theme={theme}>
-            <ProfileEditAddress
-                data={addressById.data}
-                provinces={addressGHN}
-            />
+            <ProfileEditAddress data={addressId} provinces={addressGHN} />
         </ThemeProvider>
     );
 }

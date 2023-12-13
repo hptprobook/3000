@@ -15,9 +15,9 @@ export default function CreateAddressPage() {
     const dispatch = useDispatch();
 
     const addressGHN = useSelector((state) => state.addresses.addressGHN);
-    // const addressGHNfetchStatus = useSelector(
-    //     (state) => state.addresses.status
-    // );
+    const addressGHNfetchStatus = useSelector(
+        (state) => state.addresses.status
+    );
 
     useEffect(() => {
         dispatch(getAddressGHN());

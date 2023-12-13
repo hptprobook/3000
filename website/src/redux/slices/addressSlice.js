@@ -1,11 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AddressService from "@/services/address.service";
+import authSlice from "./authSlice";
 
 const initialState = {
     addresses: [],
     address: {},
     addressGHN: [],
     addressById: {},
+    deleted: false,
     status: "idle",
     error: null,
 };
@@ -69,10 +71,29 @@ export const updateAddress = createAsyncThunk(
     }
 );
 
+export const deleteAddress = createAsyncThunk(
+    "address/deleteAddress",
+    async (id, { rejectWithValue }) => {
+        try {
+            const response = await AddressService.deleteAddress(id);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
 const addressSlice = createSlice({
     name: "addresses",
     initialState,
-    reducers: {},
+    reducers: {
+        clearAddress: (state) => {
+            state.address = {};
+        },
+        resetDeleted: (state) => {
+            state.deleted = false;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAddresses.pending, (state) => {
@@ -129,8 +150,20 @@ const addressSlice = createSlice({
             .addCase(getAddressGHN.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
+            })
+            .addCase(deleteAddress.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(deleteAddress.fulfilled, (state) => {
+                state.status = "succeeded";
+                state.deleted = true;
+            })
+            .addCase(deleteAddress.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
             });
     },
 });
 
+export const { clearAddress, resetDeleted } = addressSlice.actions;
 export default addressSlice.reducer;

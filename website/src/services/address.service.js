@@ -46,6 +46,14 @@ const AddressService = {
             return err.response;
         }
     },
+    deleteAddress: async (id) => {
+        try {
+            const res = await request.delete(`addresses/${id}`);
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
 };
 
 export default AddressService;
