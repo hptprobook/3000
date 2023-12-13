@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, Typography } from '@mui/material';
+import { Box, FormHelperText, Grid, IconButton, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ButtonBackFullW from '~/components/common/Button/ButtonBackFullW';
@@ -10,120 +10,233 @@ import InputEdit from '~/components/common/TextField/InputEdit';
 import ButtonNormal from '~/components/common/Button/ButtonNormal';
 import { fetchCategoryById } from "~/redux/slices/categoriesSlice";
 import ModalAddress from '../../../components/common/Modal/ModalAddress';
+import HeaderPage from '../../../components/common/HeaderPage/HeaderPage';
+import InfoBox from '../../../components/common/Box/InforBox';
+import SelectEdit from '../../../components/common/Select/SelectEdit';
+import ButtonUploadImg from '../../../components/common/Button/ButtonUploadImg';
+import { fetchCategoriesAsync, updateCategoryByID } from '../../../redux/slices/categoriesSlice';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { storageFirebase } from '../../../config/firebaseConfig';
+import { v4 } from 'uuid';
+import BasicAlertl from '../../../components/common/Alert/BasicAlertl';
+import LinearIndeterminate from '../../../components/common/Loading/LoadingLine';
 
-const ButtonEdit = styled(IconButton)(({ theme }) => ({
-    position: 'absolute',
-    right: '16px',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    backgroundColor: color.backgroundColorSub2.dark,
-    '& svg': {
-        color: color.textColor.dark
-    }
-}))
+const DivMargin = styled.div(({ theme }) => ({
+    paddingBottom: '24px',
+}));
 
 const EditCategoryPage = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
 
-    const [loadData, setLoadData] = useState(false);
     const [name, setName] = useState('');
-    const [parentId, setParentId] = useState('');
-    const [iconUrl, setIconUrl] = useState('');
+    const [parent_id, setParentId] = useState('');
+    const error = useSelector((state) => state.categories.errorCreate);
     
-    const category = useSelector((state) => state.categories.selectedCategory);
-    const status = useSelector((state) => state.categories.status);
-    useEffect(() => {
-        if (!loadData) {
-            dispatch(fetchCategoryById(id))
-                .then((result) => {
-                    // Xử lý dữ liệu được trả về từ API ở đây
-                    console.log('Data from API:', result);
-                })
-                .catch((error) => {
-                    // Xử lý lỗi nếu có
-                    console.error('Error fetching data:', error);
-                });
-            setLoadData(true);
-        }
-    }, [loadData, dispatch, id]);
+    const [errorName, setErrorName] = useState('');
 
+    
+    const categories = useSelector((state) => state.categories.data);
+    const status = useSelector((state) => state.categories.status);
+    const statusUpdate = useSelector((state) => state.categories.statusUpdate);
+    const [success, setSuccess] = useState(false);
+//Xuat
+useEffect(() => {
+    if (status == 'idle') {
+        dispatch(fetchCategoriesAsync());
+    }
+    if (status == 'succeeded') {
+        const data = categories.filter((category) => category.id == id);
+        console.log(data);
+        setName(data[0].name);
+        setParentId(data[0].parent_id);
+        setThumbnailPreview(data[0].icon_url)
+    }
+}, [status, id])
+useEffect(() => {
+    if (statusUpdate == 'loading') {
+        setLoadingUpload(true);
+    }
+    if (statusUpdate == 'success') {
+        setLoadingUpload(false);
+    }
+
+}, [statusUpdate])
+useEffect(() => {
+    if (error === 'The name has already been taken.' && status === 'failed') {
+        setErrorName('Tên phân loại đã tồn tại');
+        setSuccess(false);
+    }
+
+}, [error, status])
+useEffect(() => {
+    if (statusUpdate === 'success') {
+        setSuccess(true);
+    }
+    if (statusUpdate === 'loading') {
+        setSuccess(false);
+    }
+}, [statusUpdate]);
+//UPLOAD 
+const [thumbnail, setThumbnail] = useState('');
+const [thumbnailPreview, setThumbnailPreview] = useState('');
+const [loadingUpload, setLoadingUpload] = useState(false);
+const [successUpload, setSuccessUpload] = useState(false);
+
+const [errorUpload, setErrorUpload] = useState(false);
+
+const handleUploadThumnail = (name) => {
+    const thumbnailRef = ref(storageFirebase, `categories/${name}/${v4()}`);
+    const uploadTask = uploadBytesResumable(thumbnailRef, thumbnail);
+    uploadTask.on('state_changed',
+        (snapshot) => {
+            // Observe state change events such as progress, pause, and resume
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            switch (snapshot.state) {
+                case 'paused':
+                    console.log('Upload is paused');
+                    break;
+                case 'running':
+                    setLoadingUpload(true);
+                    setSuccessUpload(false);
+                    break;
+            }
+        },
+        (error) => {
+            // Handle unsuccessful uploads
+        },
+        () => {
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                setLoadingUpload(false);
+                const data = {
+                    name: name,
+                    parent_id: parent_id ? parent_id : null,
+                    icon_url: downloadURL
+                }
+                dispatch(updateCategoryByID({ id, data }));
+                setSuccessUpload(true);
+            });
+        }
+    );
+};
+const handleUploadFile = (file) => {
+    setThumbnail(file);
+    const imageUrl = URL.createObjectURL(file);
+    setThumbnailPreview(imageUrl);
+}
+
+const handleUpdateCategory = () => {
+    if (handleCheckError('name', name) && thumbnail !== '') {
+        handleUploadThumnail(name);
+        setErrorUpload(false);
+    }
+    else {
+        setLoadingUpload(false);
+        const data = {
+            name: name,
+            parent_id: parent_id ? parent_id : null,
+            icon_url: thumbnailPreview
+        }
+        dispatch(updateCategoryByID({ id, data }));
+    }
+}
+
+    
     const handleCloseModal = () => {
         // Đóng modal nếu cần
     };
 
-    const handleEditCategory = () => {
-        // Thực hiện logic cập nhật danh mục với các giá trị mới của name, parentId và iconUrl
-        console.log({ name, parentId, iconUrl });
+    const handleCheckError = (field, value) => {
+        switch (field) {
+            case 'name': {
+                if (value === '') {
+                    setErrorName('Thể loại không được để trống!');
+                    return false;
+                }
+                else if (value.length > 128) {
+                    setErrorName('Thể loại không được quá 128 kí tự!');
+                    return false;
+                }
+                else if (categories.find((category) => category.id != id && category.name.toLowerCase() === value.trim().toLowerCase())) {
+                    setErrorName('Thể loại không được trùng!');
+                    return false;
+                }
+                else {
+                    setErrorName('');
+                    return true;
+                }
+            }
+                break;
 
+            default:
+                return false; // Default to no error
+        }
     };
+    if (status === 'succeeded' && name != ''&& parent_id != '' ) {
 
-    if (status === "loading") {
-        return <Loading />;
-    }
-
-    if (status === "failed") {
-        return <div>Error:</div>;
-    }
-
-      
-    if (loadData) {
-        console.log(category)
         return (
-            <Box sx={{ padding: '32px', display: 'flex', flexDirection: 'column' }}>
-                <ModalAddress openModal={false} handleClose={handleCloseModal} />
-                <ButtonBackFullW label={'Trở lại'} />
-
+            <Box>
+                {successUpload && statusUpdate != 'success' ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
+                {statusUpdate == 'success' ? <BasicAlertl label={'Thay đổi đã lưu'} severity={'success'} /> : null}
+                {loadingUpload ? <LinearIndeterminate /> : null}
+                <HeaderPage
+                    namePage={"Chỉnh sửa"}
+                    Breadcrumb={["Phân loại", "Chỉnh sửa"]}
+                />
                 <Box sx={{
-                    flexGrow: 1,
-                    padding: '32px',
-                    marginTop: '32px',
-                    backgroundColor: color.backgroundColorSub.dark,
-                    borderRadius: '14px'
-                }} >
-                    <Typography sx={{ color: color.textColor.dark, fontSize: '16px' }}>
-                        Chỉnh sửa
-                    </Typography>
-                    <Grid container spacing={4} sx={{ paddingTop: '32px' }}>
-                        <Grid item sm={12} md={6} lg={4}>
+                    marginTop: '32px'
+                }}>
+                    <InfoBox title="Thông tin">
+                        <DivMargin>
                             <InputEdit
-                                label={'Tên'}
-                                value={category.name}
-                                onChange={(e) => setName(e.target.value)}
+                                id={'name'}
+                                onBlur={(event) => {
+                                    setName(event.target.value);
+                                    handleCheckError('name', event.target.value)
+                                }}
+                                value={name}
+                                label={'Phân loại'}
+                                error={errorName ? true : false}
+                                helperText={errorName}
                             />
-                        </Grid>
-                        <Grid item sm={12} md={6} lg={4}>
-                            <InputEdit
-                                label={'Parent ID'}
-                                value={category.parent_id}
-                                onChange={(e) => setParentId(e.target.value)}
-                            />
-                        </Grid>
-                        <Grid item sm={12} md={6} lg={4}>
-                            <InputEdit
-                                label={'Icon URL'}
-                                value={category.icon_url}
-                                onChange={(e) => setIconUrl(e.target.value)}
-                            />
-                        </Grid>
-                    </Grid>
 
-                    <Box sx={{
-                        flexGrow: 1,
-                        marginTop: '32px',
-                        backgroundColor: color.backgroundColorSub.dark,
-                        borderRadius: '14px'
-                    }} >
-                        <ButtonNormal label={'Cập nhật'} bg='true' onClick={handleEditCategory} />
-                        <ButtonNormal label={'Hủy'} />
-                    </Box>
+                        </DivMargin>
+                        <DivMargin>
+                            <SelectEdit
+                                label={'Phân loại cha'}
+                                data={categories}
+                                value={parent_id}
+                                onChange={(e) => {
+                                    setParentId(e.target.value)
+                                }}
+                                nullData={true}
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <DivMargin>
+                                <Grid container>
+                                    <Grid item xs={3}>
+                                        <ButtonUploadImg handleOnChange={handleUploadFile} />
+                                    </Grid>
+                                    <Grid item xs={9}>
+                                        {thumbnailPreview ? <img src={thumbnailPreview} alt="Selected" style={{ maxWidth: '100%' }} /> : null}
+                                        <FormHelperText sx={{
+                                            color: color.textColor.error
+                                        }}>{errorUpload ? errorUpload : null}</FormHelperText>
+                                    </Grid>
+                                </Grid>
+                            </DivMargin>
+
+                        </DivMargin>
+                        <DivMargin>
+                            <ButtonNormal bg={'true'} label={'Lưu'} onClick={handleUpdateCategory} />
+                        </DivMargin>
+                    </InfoBox>
                 </Box>
             </Box>
-        )
+        );
     }
-
-    // Nếu không có dữ liệu, bạn có thể thực hiện một xử lý khác ở đây
-    return null;
 }
 
 export default EditCategoryPage;

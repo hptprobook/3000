@@ -37,6 +37,18 @@ export const createCategoryAsync = createAsyncThunk(
   }
 );
 
+export const updateCategoryByID = createAsyncThunk(
+  "categories/updateCategoryByID",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await CategoryService.updateCategoryByID(id, data);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
+
 
 
 export const setStatus = createAction('address/setStatus');
@@ -78,6 +90,17 @@ const categoriesSlice = createSlice({
       })      
       .addCase(createCategoryAsync.rejected, (state, action) => {
         state.status = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(updateCategoryByID.pending, (state) => {
+        state.statusUpdate = 'loading';
+      })
+      .addCase(updateCategoryByID.fulfilled, (state, action) => {
+        state.statusUpdate = 'success';
+        state.dataUpdate = action.payload; // Storing only the brands array
+      })
+      .addCase(updateCategoryByID.rejected, (state, action) => {
+        state.statusUpdate = 'failed';
         state.error = action.error.message;
       })
   },
