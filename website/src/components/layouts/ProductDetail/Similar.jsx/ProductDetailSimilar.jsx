@@ -28,7 +28,7 @@ const StyledProductDetailSimilar = styled("div")(() => ({
     },
 }));
 
-export default function ProductDetailSimilar() {
+export default function ProductDetailSimilar({ data }) {
     return (
         <StyledProductDetailSimilar>
             <h4>Sản phẩm tương tự</h4>
@@ -47,14 +47,12 @@ export default function ProductDetailSimilar() {
                 modules={[Grid, Autoplay]}
                 className="productDetailSimilar"
             >
-                {[...Array(20)].map((_, index) => (
-                    <SwiperSlide key={index}>
+                {data?.map((product) => (
+                    <SwiperSlide key={product?.id}>
                         <ProductItem
-                            name={`SP ${index + 1}`}
-                            price={30000 * (index + 1)}
-                            imgUrl={
-                                "https://salt.tikicdn.com/cache/280x280/ts/product/a8/a6/90/8ca9f3273103abd3e8a97466712fbf08.jpg.webp"
-                            }
+                            name={product?.name}
+                            price={product?.price}
+                            imgUrl={product?.thumbnail}
                             href={"#"}
                         />
                     </SwiperSlide>

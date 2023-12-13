@@ -1,5 +1,7 @@
 "use client";
 
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+
 export default function Loading() {
-    return <h2 style={{ color: "red" }}>Loading</h2>;
+    return <CirLoading />;
 }

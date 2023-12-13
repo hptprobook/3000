@@ -5,6 +5,7 @@ import "./style.css";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllSettings } from "@/redux/slices/settingSlice";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 export default function Banner() {
     const dispatch = useDispatch();
@@ -18,6 +19,10 @@ export default function Banner() {
             setLoadData(true);
         }
     }, [loadData, dispatch, loading]);
+
+    if (loading) {
+        return <CirLoading />;
+    }
 
     const mainBannerSetting = settings.find((s) => s.name === "main_banner");
     const childBannerSetting = settings.find((s) => s.name === "child_banner");

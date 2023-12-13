@@ -9,27 +9,30 @@ import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/Rec
 import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
 import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 export default function Home() {
     return (
-        <Grid className="appContainer" container>
-            <Grid
-                item
-                xs={2.2}
-                className="appContainer__sidebar"
-                sx={{ paddingRight: "12px" }}
-            >
-                <Sidebar />
+        <>
+            <Grid className="appContainer" container>
+                <Grid
+                    item
+                    xs={2.2}
+                    className="appContainer__sidebar"
+                    sx={{ paddingRight: "12px" }}
+                >
+                    <Sidebar />
+                </Grid>
+                <Grid item xs={9.8} className="appContainer__content">
+                    <Banner />
+                    <FlashSale />
+                    <BestSeller />
+                    <RecommendedProduct />
+                    <TopBrand />
+                    <MainListProduct />
+                    <HomeFooter />
+                </Grid>
             </Grid>
-            <Grid item xs={9.8} className="appContainer__content">
-                <Banner />
-                <FlashSale />
-                <BestSeller />
-                <RecommendedProduct />
-                <TopBrand />
-                <MainListProduct />
-                <HomeFooter />
-            </Grid>
-        </Grid>
+        </>
     );
 }

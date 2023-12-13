@@ -1,5 +1,5 @@
 // src/redux/userSlice.js
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import UserService from "../../services/user.service";
 
 export const fetchAllUsers = createAsyncThunk(
@@ -33,8 +33,6 @@ export const updateUserByID = createAsyncThunk(
             const response = await UserService.editUser(userId, data);
             return response;
         } catch (err) {
-            console.log("Error status:", err.response.status);
-            console.log("Error data:", err.response.data);
             return rejectWithValue(err.response.data);
         }
     }
@@ -47,7 +45,7 @@ const initialState = {
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
-
+export const setStatus = createAction('users/setStatus');
 const userSlice = createSlice({
     name: "users",
     initialState,
@@ -69,7 +67,7 @@ const userSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(fetchUserById.fulfilled, (state, action) => {
-                state.status = "succeeded";
+                state.status = "user already";
                 state.selectedUser = action.payload;
             })
             .addCase(fetchUserById.rejected, (state, action) => {
@@ -81,12 +79,15 @@ const userSlice = createSlice({
             })
             .addCase(updateUserByID.fulfilled, (state, action) => {
                 state.status = "update successful";
-                state.selectedUser = action.payload;
+                state.updateUser = action.payload;
             })
             .addCase(updateUserByID.rejected, (state, action) => {
                 state.status = "update failed";
                 state.error = action.payload;
-            });
+            })
+            .addCase(setStatus, (state, action) => {
+                state.status = action.payload;
+            });;
     },
 });
 

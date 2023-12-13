@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import PrimaryBtn from "../../Button/PrimaryButton/PrimaryBtn";
@@ -9,13 +9,12 @@ import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import CountBtn from "../../Button/CountButton/CountButton";
-import { Box, List } from "@mui/material";
+import { Box } from "@mui/material";
 import LoginModal from "../LoginModel/LoginModel";
 import useAuth from "@/hooks/useAuth";
 import { logoutUser } from "@/redux/slices/authSlice";
 import "./style.css";
-import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const UserBarContainer = styled("div")(() => ({}));
 
@@ -69,6 +68,12 @@ export default function UserBar() {
     const handleCloseModal = () => {
         setIsLoginModalOpen(false);
     };
+
+    // const cartList = useSelector((state) => state.carts.cartList);
+
+    // useEffect(() => {
+    //     dispatch(fetchAllCart());
+    // }, []);
 
     return (
         <UserBarContainer>
@@ -143,7 +148,7 @@ export default function UserBar() {
                                     },
                                 }}
                             >
-                                <Link href={"/"}>
+                                <Link href={"/profile"}>
                                     <p>Thông tin tài khoản</p>
                                 </Link>
                                 <Link href={"/"}>
@@ -164,7 +169,7 @@ export default function UserBar() {
                 </UserBarLink>
 
                 <div style={{ paddingLeft: "16px" }}>
-                    <CountBtn icon={<ShoppingCartRoundedIcon />} count={3} />
+                    <CountBtn icon={<ShoppingCartRoundedIcon />} count={0} />
                 </div>
             </UserBarTop>
 

@@ -14,7 +14,7 @@ import { BiUser } from 'react-icons/bi';
 import { MdDateRange, MdEdit, MdEmail, MdLocationOn, MdPhone } from 'react-icons/md';
 import SelectEdit from '~/components/common/Select/SelectEdit';
 import ModalAddress from '../../../components/common/Modal/ModalAddress';
-import { updateUserByID } from '../../../redux/slices/userSlice';
+import { setStatus, updateUserByID } from '../../../redux/slices/userSlice';
 
 const ButtonEdit = styled(IconButton)(({ theme }) => ({
     position: 'absolute',
@@ -43,6 +43,8 @@ const EditUserPage = () => {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.users.selectedUser);
     const status = useSelector((state) => state.users.status);
+    const statusUpdate = useSelector((state) => state.users.status);
+
     const error = useSelector((state) => state.users.error);
     const [name, setName] = useState('');
     const [nameError, setNameError] = useState('');
@@ -54,6 +56,7 @@ const EditUserPage = () => {
     const [emailError, setEmailError] = useState('');
 
     const [addressRender, setAddressRender] = useState('');
+    const [addressRenderError, setAddressRenderError] = useState('');
 
     const [phone_number, setPhone_number] = useState('');
     const [phone_numberError, setPhone_numberError] = useState('');
@@ -64,19 +67,26 @@ const EditUserPage = () => {
     useEffect(() => {
         if (!loadData) {
             dispatch(fetchUserById(id));
-            if (status == 'succeeded') {
+            if (status == 'user already') {
                 setLoadData(true);
                 setName(user.name);
                 setGender(user.gender);
                 setEmail(user.email);
                 setPhone_number(user.phone_number);
                 setBirth_date(user.birth_date);
-                setAddressRender(user.addresses[0].address_info + ', ' + user.addresses[0].ward.path_with_type);
+                if (user.addresses[0] != null) {
+                    setAddressRender(user.addresses[0].address_info + ', ' + user.addresses[0].ward.path_with_type);
+                }
+                dispatch(setStatus('idle'));
             }
-
         }
     }, [loadData, dispatch, id, status]);
-
+    useEffect(() => {
+        if (statusUpdate === '') {
+            alert('Uploading successful');
+            setStatus('idle');
+        }
+    }, [statusUpdate]);
     const handleFinalAddress = (addressData) => {
         setFinalAddress(addressData);
     };
@@ -157,20 +167,41 @@ const EditUserPage = () => {
         }
     }
 
-
     function handleEditUser() {
-        const dataUpdate = {
-            name: name,
-            email: email,
-            role: "USER",
-            phone_number: phone_number,
-            ward_id: finalAddress.ward_id,
-            gender: gender,
-            birth_date: formatDate(birth_date),
-            street: finalAddress.street,
+        if (finalAddress == null) {
+            if (user.addresses[0] == null) {
+                setAddressRenderError('Địa chỉ không được để trống');
+            }
+            else {
+                setAddressRenderError('');
+                const dataUpdate = {
+                    name: name,
+                    email: email,
+                    role: "USER",
+                    phone_number: phone_number,
+                    ward_id: user.addresses[0].ward.id,
+                    gender: gender,
+                    birth_date: formatDate(birth_date),
+                    street: user.addresses[0].address_info,
+                }
+                dispatch(updateUserByID({ userId: id, data: dataUpdate }));
+            }
         }
-        console.log(dataUpdate);
-        dispatch(updateUserByID({ userId: id, data: dataUpdate }));
+        else {
+            setAddressRenderError('');
+            const dataUpdate = {
+                name: name,
+                email: email,
+                role: "USER",
+                phone_number: phone_number,
+                ward_id: finalAddress.ward_id,
+                gender: gender,
+                birth_date: formatDate(birth_date),
+                street: finalAddress.street,
+            }
+            console.log(dataUpdate)
+            dispatch(updateUserByID({ userId: id, data: dataUpdate }));
+        }
     }
     if (status === "loading") {
         return <div><Loading /></div>;
@@ -234,7 +265,7 @@ const EditUserPage = () => {
                                     { id: 'other', name: 'Khác' },
                                 ]}
                                 value={gender}
-                                onBlur={(e) => {
+                                onChange={(e) => {
                                     setGender(e.target.value)
                                 }}
                                 error={genderError != '' ? true : false}
@@ -275,6 +306,8 @@ const EditUserPage = () => {
                                     label={'Địa chỉ'}
                                     value={addressRender}
                                     icon={<MdLocationOn />}
+                                    error={addressRenderError != '' ? true : false}
+                                    helperText={addressRenderError}
                                 />
                                 <ButtonEdit aria-label="Chỉnh sửa" size="lagre" onClick={() => setIsModalOpen(true)}>
                                     <MdEdit />

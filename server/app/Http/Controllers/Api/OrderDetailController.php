@@ -22,12 +22,14 @@ class OrderDetailController extends Controller
         return response()->json(['error' => 'Api does not exist!'], Response::HTTP_NOT_FOUND);
     }
 
-    public function show(string $id)
+    public function show($order_id)
     {
         try {
-            $order_detail = OrderDetail::with(['product'])->findOrFail($id);
+            $order_details = OrderDetail::with(['product'])
+                ->where('order_id', $order_id)
+                ->get();
 
-            return response()->json($order_detail, Response::HTTP_CREATED);
+            return response()->json($order_details, Response::HTTP_CREATED);
         } catch (ModelNotFoundException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {

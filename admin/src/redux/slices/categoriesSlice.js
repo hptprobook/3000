@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import CategoryService from '../../services/category.service';
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
+import CategoryService from "../../services/category.service";
 
 export const fetchCategoriesAsync = createAsyncThunk(
-  'categories/fetchCategories',
+  "categories/fetchCategories",
   async (_, thunkAPI) => {
     try {
       const res = await CategoryService.getAllCategories();
@@ -14,7 +14,7 @@ export const fetchCategoriesAsync = createAsyncThunk(
   }
 );
 export const fetchCategoryById = createAsyncThunk(
-  'categories/fetchCategoryById',
+  "categories/fetchCategoryById",
   async (categoryId, thunkAPI) => {
     try {
       const res = await CategoryService.getCategoryById(categoryId);
@@ -24,19 +24,34 @@ export const fetchCategoryById = createAsyncThunk(
     }
   }
 );
-
-export const fetchAllBrands = createAsyncThunk(
-  'brands/fetchBrands',
-  async (_, thunkAPI) => {
+export const createCategoryAsync = createAsyncThunk(
+  'categories/createCategory',
+  async (categoryData, thunkAPI) => {
     try {
-      const res = await CategoryService.getAllBrand();
-      // Extracting only the necessary data from the response
-      return res.data; // Assuming res.data contains the categories array
+      const res = await CategoryService.createCategory(categoryData);
+      console.log(res); // Log the received data
+      return res.data; // Return the received data
     } catch (error) {
       throw error;
     }
   }
 );
+
+export const updateCategoryByID = createAsyncThunk(
+  "categories/updateCategoryByID",
+  async ({ id, data }, { rejectWithValue }) => {
+    try {
+      const response = await CategoryService.updateCategoryByID(id, data);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
+
+
+
+export const setStatus = createAction('address/setStatus');
 
 const categoriesSlice = createSlice({
   name: 'categories',
@@ -66,17 +81,28 @@ const categoriesSlice = createSlice({
         state.status = 'failed';
         state.error = action.error.message;
       })
-      .addCase(fetchAllBrands.pending, (state) => {
+      .addCase(createCategoryAsync.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(fetchAllBrands.fulfilled, (state, action) => {
-        state.status = 'brands is ready';
-        state.data = action.payload; // Storing only the categories array
-      })
-      .addCase(fetchAllBrands.rejected, (state, action) => {
-        state.status = 'failed fetching brands';
+      .addCase(createCategoryAsync.fulfilled, (state, action) => {
+        state.status = 'created successfully';
+        state.newCategory = action.payload; // Update based on the actual structure
+      })      
+      .addCase(createCategoryAsync.rejected, (state, action) => {
+        state.status = 'failed';
         state.error = action.error.message;
-      });
+      })
+      .addCase(updateCategoryByID.pending, (state) => {
+        state.statusUpdate = 'loading';
+      })
+      .addCase(updateCategoryByID.fulfilled, (state, action) => {
+        state.statusUpdate = 'success';
+        state.dataUpdate = action.payload; // Storing only the brands array
+      })
+      .addCase(updateCategoryByID.rejected, (state, action) => {
+        state.statusUpdate = 'failed';
+        state.error = action.error.message;
+      })
   },
 });
 

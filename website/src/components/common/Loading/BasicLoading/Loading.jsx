@@ -1,27 +1,24 @@
-import React from "react";
-import { styled } from "@mui/material/styles";
-import "./style.css";
+import * as React from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import { Box } from "@mui/material";
 
-const StyledLoading = styled("div")(() => ({
-    postion: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vh",
-    height: "100vh",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-}));
-
-export default function Loading() {
+export default function BasicLoading() {
     return (
-        <StyledLoading>
-            <div className="loader">
-                <div class="face">
-                    <div class="circle"></div>
-                </div>
-                <div class="face">
-                    <div class="circle"></div>
-                </div>
-            </div>
-        </StyledLoading>
+        <Box
+            sx={{
+                width: "100%",
+                position: "fixed",
+                top: 0,
+                left: 0,
+                height: "100vh",
+                backgroundColor: "rgba(0, 0, 0, 0.4)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: "9999999999999999999999999",
+            }}
+        >
+            <CircularProgress />
+        </Box>
     );
 }

@@ -3,9 +3,9 @@
 import request from "../utils/request";
 
 const ProductsService = {
-    getAllCategories: async () => {
+    getAllProducts: async () => {
         try {
-            const res = await request.get("categories");
+            const res = await request.get("products");
             return res.data;
         } catch (err) {
             throw err;

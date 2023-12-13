@@ -1,8 +1,12 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./style.css";
+import { AddToCartContext } from "@/provider/AddToCartContext";
+import CloseIcon from "@mui/icons-material/Close";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Link from "next/link";
 
-const CountButton = styled("button")(() => ({
+const CountButton = styled("div")(({ isActive }) => ({
     position: "relative",
     display: "flex",
     justifyContent: "center",
@@ -20,13 +24,129 @@ const CountButton = styled("button")(() => ({
     "&:hover": {
         backgroundColor: "#e0ecff",
     },
+    "& .modal": {
+        position: "absolute",
+        top: "130%",
+        right: 0,
+        width: "280px",
+        backgroundColor: "#fff",
+        boxShadow: "-3px -2px 10px rgba(0, 0, 0, 0.2)",
+        zIndex: "9999",
+        borderRadius: "5px",
+        cursor: "default",
+        display: isActive ? "none" : "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        padding: "15px",
+        "&::after": {
+            content: "''",
+            position: "absolute",
+            top: "-18px",
+            right: "12px",
+            borderWidth: "10px",
+            borderStyle: "solid",
+            borderColor: "transparent transparent #fff transparent",
+        },
+    },
 }));
 
 export default function CountBtn({ icon, count }) {
+    const { addToCartSuccess, setAddToCartSuccess } =
+        useContext(AddToCartContext);
+    const [isActive, setIsActive] = useState(true);
+
+    useEffect(() => {
+        setIsActive(!addToCartSuccess);
+    }, [addToCartSuccess]);
+
+    useEffect(() => {
+        if (addToCartSuccess) {
+            const timer = setTimeout(() => {
+                setAddToCartSuccess(false);
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [addToCartSuccess, setAddToCartSuccess]);
+
+    const handleCloseModal = (e) => {
+        e.preventDefault();
+        setIsActive(true);
+        setAddToCartSuccess(false);
+    };
+
+    useEffect(() => {
+        const hideModal = () => {
+            setIsActive(true);
+        };
+
+        window.addEventListener("click", hideModal);
+
+        return () => {
+            window.removeEventListener("click", hideModal);
+        };
+    }, []);
+
     return (
-        <CountButton>
-            <span className="CountBtn__count">{count}</span>
-            {icon}
-        </CountButton>
+        <Link href={"/cart"}>
+            <CountButton isActive={isActive}>
+                <span className="CountBtn__count">{count}</span>
+                {icon}
+                <div className="modal">
+                    <CloseIcon
+                        onClick={(e) => {
+                            handleCloseModal(e);
+                            resetAddToCartSuccess();
+                        }}
+                        sx={{
+                            position: "absolute",
+                            top: "5px",
+                            right: "5px",
+                            cursor: "pointer",
+                            fontSize: "16px",
+                            color: "#9b9b9b",
+                        }}
+                    />
+                    <div className="at-c">
+                        <CheckCircleIcon
+                            sx={{ fontSize: "24px", color: "#4caf50" }}
+                        />{" "}
+                        <p
+                            style={{
+                                color: "#4f4f4f",
+                                fontSize: "14px",
+                                fontWeight: "400",
+                                marginLeft: "8px",
+                            }}
+                        >
+                            Thêm vào giỏ hàng thành công
+                        </p>
+                    </div>
+                    <Link href={"/cart"} className="css-link">
+                        <button
+                            style={{
+                                outline: "none",
+                                width: "100%",
+                                height: "37px",
+                                border: "none",
+                                backgroundColor: "#ff424e",
+                                borderRadius: "4px",
+                                marginTop: "16px",
+                                cursor: "pointer",
+                                color: "#fff",
+                                fontFamily: "var(--font-family)",
+                                fontSize: "14px",
+                                transition: ".2s ease",
+                                "&:hover": {
+                                    opacity: "0.8",
+                                },
+                            }}
+                        >
+                            Xem giỏ hàng và thanh toán
+                        </button>
+                    </Link>
+                </div>
+            </CountButton>
+        </Link>
     );
 }

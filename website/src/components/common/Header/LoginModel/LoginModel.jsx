@@ -98,7 +98,7 @@ const LoginModal = ({ isOpen, onClose }) => {
     }
 
     return (
-        <div className="loginModal">
+        <div className="loginModal" style={{ zIndex: "99999999" }}>
             <div className="loginModal__backdrop" onClick={onClose}></div>
             <div className="loginModal__content">
                 {loading && <CirLoading />}

@@ -1,7 +1,13 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { VariantContext } from "@/provider/VariantContext";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "@/redux/slices/cartSlice";
+import useAuth from "@/hooks/useAuth";
+import LoginModal from "@/components/common/Header/LoginModel/LoginModel";
+import Link from "next/link";
+import { AddToCartContext } from "@/provider/AddToCartContext";
 
 const StyledProductDetailAdd = styled("div")(() => ({
     width: "100%",
@@ -90,8 +96,9 @@ const StyledProductDetailAdd = styled("div")(() => ({
     },
 }));
 
-export default function ProductDetailAdd() {
+export default function ProductDetailAdd({ data }) {
     const [quantity, setQuantity] = useState(1);
+
     const incrementQuantity = () => {
         if (quantity < 100) {
             setQuantity(quantity + 1);
@@ -109,39 +116,93 @@ export default function ProductDetailAdd() {
     };
 
     const { activeText } = useContext(VariantContext);
+    const { totalPrice } = useContext(VariantContext);
+    const { addToCartSuccess, setAddToCartSuccess } =
+        useContext(AddToCartContext);
+
+    const tempPrice = totalPrice * quantity;
+
+    const dispatch = useDispatch();
+    const { status, carts, error } = useSelector((state) => state.carts);
+    const isLoggedIn = useAuth();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    const handleAddToCart = () => {
+        if (!isLoggedIn) {
+            setShowLoginModal(true);
+        } else {
+            const variantJson = JSON.stringify(
+                activeText.map((item) => item.optionName)
+            );
+            dispatch(
+                addToCart({
+                    quantity: quantity,
+                    product_id: data?.id,
+                    temp_price: tempPrice,
+                    variants: variantJson,
+                })
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (status === "succeeded") {
+            setAddToCartSuccess(true);
+        }
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }, [status]);
 
     return (
-        <StyledProductDetailAdd>
-            <div className="variant">
-                {activeText.map((item, index) => (
-                    <span key={index}>
-                        {item.optionName}
-                        {index < activeText.length - 1 ? ", " : ""}
-                    </span>
-                ))}
-            </div>
-            <h5 style={{ marginTop: "12px" }}>Số lượng</h5>
-            <div className="quantity-handle">
-                <button onClick={decrementQuantity}>-</button>
-                <input
-                    type="number"
-                    min={1}
-                    max={100}
-                    value={quantity}
-                    onChange={(e) =>
-                        setQuantity(
-                            Math.max(1, Math.min(100, Number(e.target.value)))
-                        )
-                    }
+        <>
+            <StyledProductDetailAdd>
+                <div className="variant">
+                    {activeText.map((item, index) => (
+                        <span key={index}>
+                            {item.optionName}
+                            {index < activeText.length - 1 ? ", " : ""}
+                        </span>
+                    ))}
+                </div>
+                <h5 style={{ marginTop: "12px" }}>Số lượng</h5>
+                <div className="quantity-handle">
+                    <button onClick={decrementQuantity}>-</button>
+                    <input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={quantity}
+                        onChange={(e) =>
+                            setQuantity(
+                                Math.max(
+                                    1,
+                                    Math.min(100, Number(e.target.value))
+                                )
+                            )
+                        }
+                    />
+                    <button onClick={incrementQuantity}>+</button>
+                </div>
+                <h5 style={{ marginTop: "12px" }}>Tạm tính</h5>
+                <div className="price">
+                    <p>{formatPriceToVND(tempPrice)}</p>
+                </div>
+                <button
+                    type="submit"
+                    onClick={handleAddToCart}
+                    className="add-to-cart"
+                >
+                    Thêm vào giỏ hàng
+                </button>
+            </StyledProductDetailAdd>
+            {showLoginModal && (
+                <LoginModal
+                    isOpen={showLoginModal}
+                    onClose={() => setShowLoginModal(false)}
                 />
-                <button onClick={incrementQuantity}>+</button>
-            </div>
-            <h5 style={{ marginTop: "12px" }}>Tạm tính</h5>
-            <div className="price">
-                <p>{formatPriceToVND(30000000)}</p>
-            </div>
-            <button className="buy-now">Mua ngay</button>
-            <button className="add-to-cart">Thêm vào giỏ hàng</button>
-        </StyledProductDetailAdd>
+            )}
+        </>
     );
 }

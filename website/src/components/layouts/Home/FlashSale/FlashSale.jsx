@@ -11,6 +11,7 @@ import "swiper/css/navigation";
 import FlashSaleProduct from "@/components/common/Home/FlashSaleProduct/FlashSaleProduct";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "@/redux/slices/productSlice";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 export default function FlashSale() {
     const [timeLeft, setTimeLeft] = useState({
@@ -59,6 +60,10 @@ export default function FlashSale() {
             }
         }
     }, [loadData, dispatch, loading]);
+
+    if (loading) {
+        return <CirLoading />;
+    }
 
     return (
         <div className="appContainer__flashSale">

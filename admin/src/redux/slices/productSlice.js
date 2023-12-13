@@ -2,11 +2,11 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import ProductsService from "../../services/product.service";
-export const fetchAllCategories = createAsyncThunk(
-    "categories/fetchCategories",
+export const fetchAllProducts = createAsyncThunk(
+    "products/fetchProducts",
     async (_, { rejectWithValue }) => {
         try {
-            const response = await ProductsService.getAllCategories();
+            const response = await ProductsService.getAllProducts();
             return response;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -16,19 +16,19 @@ export const fetchAllCategories = createAsyncThunk(
 
 
 const productsSlice = createSlice({
-    name: "categories",
+    name: "products",
     initialState: { data: [], status: "idle", error: null },
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(fetchAllCategories.pending, (state) => {
+            .addCase(fetchAllProducts.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(fetchAllCategories.fulfilled, (state, action) => {
-                state.status = "Category already";
-                state.categories = action.payload;
+            .addCase(fetchAllProducts.fulfilled, (state, action) => {
+                state.status = "products already";
+                state.products = action.payload;
             })
-            .addCase(fetchAllCategories.rejected, (state, action) => {
+            .addCase(fetchAllProducts.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.error.message;
             });

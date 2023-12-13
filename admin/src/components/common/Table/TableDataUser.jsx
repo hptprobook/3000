@@ -101,7 +101,7 @@ const headCells = [
         id: 'action',
         numeric: false,
         disablePadding: false,
-        label: 'Hàng động',
+        label: 'Hành động',
     },
 ];
 function EnhancedTableHead(props) {
@@ -455,7 +455,7 @@ export default function TableDataUser(props) {
                                                     }
                                                 }}
                                                 colSpan="5"
-                                                align="right"
+                                                align="center"
                                             >
                                                 <NavLink to={'/user/edit/' + row.id}>
                                                     <Tooltip title="Sửa" onClick={() => handleDelete(selected)} >

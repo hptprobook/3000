@@ -36,7 +36,7 @@ export const fetchWards = createAsyncThunk(
         }
     }
 );
-export const setStatus = createAction('address/setStatus');
+export const setStatus = createAction("address/setStatus");
 const initialState = {
     address: [],
     selected: null,

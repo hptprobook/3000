@@ -14,6 +14,15 @@ import CreatePostPage from "../pages/Post/Add/CreatePostPage";
 import EditPostPage from "../pages/Post/Edit/EditPostPage";
 import CreateCategoryPage from "../pages/Category/Add/CreateCategoryPage";
 import EditCategoryPage from "../pages/Category/Edit/EditCategoryPage";
+import ListOrderPage from "../pages/Order/List/ListOrderPage";
+import ComingSoon from "../components/common/ComingSoon/ComingSoon";
+import ListTagsPage from "../pages/Tags/List/ListTagsPage";
+import CreateTagsPage from "../pages/Tags/Create/CreateTagsPage";
+import EditTagsPage from "../pages/Tags/Edit/EditTagsPage";
+import ListBrandPage from "../pages/Brand/List/ListBrandPage";
+import CreateBrandPage from "../pages/Brand/Create/CreateBrandPage";
+import EditBrandPage from "../pages/Brand/Edit/EditBrandPage";
+import { DetailOrderPage } from "../pages/Order/Detail/DetailOrderPage";
 
 function DashboardRoute() {
     return (
@@ -28,13 +37,21 @@ function DashboardRoute() {
             <Route path="post/list" element={<ListPostPage />} />
             <Route path="post/create" element={<CreatePostPage />} />
             <Route path="post/edit/:id" element={<EditPostPage />} />
-            <Route
-                path="product/warehouse"
-                element={<WarehouseProductPage />}
-            />
-            <Route path="category/list" element={<ListCategoriesPage/>} />
-            <Route path="category/create" element={<CreateCategoryPage/>} />
+            <Route path="product/warehouse" element={<WarehouseProductPage />} />
+            <Route path="category/list" element={<ListCategoriesPage />} />
+            <Route path="category/create" element={<CreateCategoryPage />} />
             <Route path="category/edit/:id" element={<EditCategoryPage />} />
+            <Route path="category/tag" element={<ListTagsPage />} />
+            <Route path="category/tag/create" element={<CreateTagsPage />} />
+            <Route path="category/tag/edit/:id" element={<EditTagsPage />} />
+
+            <Route path="category/brand" element={<ListBrandPage />} />
+            <Route path="category/brand/create" element={<CreateBrandPage />} />
+            <Route path="category/brand/edit/:id" element={<EditBrandPage />} />
+
+            <Route path="order/detail/:id" element={<DetailOrderPage />} />
+            <Route path="order" element={<ListOrderPage />} />
+            <Route path="payment" element={<ComingSoon />} />
         </Routes>
     );
 }

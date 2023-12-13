@@ -33,7 +33,7 @@ const StyledProductDetailMain = styled("div")(({ isMore }) => ({
     },
 }));
 
-export default function ProductDetailMain() {
+export default function ProductDetailMain({ data }) {
     const [isMore, setIsMore] = useState(false);
     const toggleDetailHeight = () => {
         setIsMore(!isMore); // Khi bấm vào nút "Xem thêm", đảo ngược trạng thái isMore
@@ -42,43 +42,7 @@ export default function ProductDetailMain() {
     return (
         <StyledProductDetailMain isMore={isMore}>
             <h4>Chi tiết sản phẩm</h4>
-            <div className="detail">
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Placeat voluptatem doloremque architecto a aperiam in
-                    reprehenderit debitis vel recusandae rem earum explicabo
-                    quasi, ducimus alias tempore dolorem perspiciatis hic!
-                    Dolores?
-                </p>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Placeat voluptatem doloremque architecto a aperiam in
-                    reprehenderit debitis vel recusandae rem earum explicabo
-                    quasi, ducimus alias tempore dolorem perspiciatis hic!
-                    Dolores?
-                </p>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Placeat voluptatem doloremque architecto a aperiam in
-                    reprehenderit debitis vel recusandae rem earum explicabo
-                    quasi, ducimus alias tempore dolorem perspiciatis hic!
-                    Dolores?
-                </p>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Placeat voluptatem doloremque architecto a aperiam in
-                    reprehenderit debitis vel recusandae rem earum explicabo
-                    quasi, ducimus alias tempore dolorem perspiciatis hic!
-                    Dolores?
-                </p>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Placeat voluptatem doloremque architecto a aperiam in
-                    reprehenderit debitis vel recusandae rem earum explicabo
-                    quasi, ducimus alias tempore dolorem perspiciatis hic!
-                    Dolores?
-                </p>
-            </div>
+            <div className="detail">{data}</div>
             <div
                 onClick={toggleDetailHeight}
                 style={{

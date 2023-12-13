@@ -72,35 +72,8 @@ const StyledDetailInfo = styled("div")(() => ({
 }));
 
 export default function ProductDetailInfo({ product }) {
-    console.log(
-        "🚀 ~ file: ProductDetailInfo.jsx:75 ~ ProductDetailInfo ~ product:",
-        product
-    );
     const formatPriceToVND = (price) => {
         return price ? price.toLocaleString("vi-VN") : 0;
-    };
-
-    const fakeData = {
-        productId: 12345,
-        productName: "Tủ Để Đồ Có Nắp Đậy",
-        variants: [
-            {
-                variantType: "Kích thước",
-                options: [
-                    { id: 1, name: "4 tầng", price: 20000000 },
-                    { id: 2, name: "5 tầng", price: 25000000 },
-                    { id: 3, name: "6 tầng", price: 30000000 },
-                ],
-            },
-            {
-                variantType: "Màu sắc",
-                options: [
-                    { id: 1, name: "Đỏ" },
-                    { id: 2, name: "Xanh" },
-                    { id: 3, name: "Trắng" },
-                ],
-            },
-        ],
     };
 
     const [selectedOptions, setSelectedOptions] = useState({});
@@ -109,7 +82,7 @@ export default function ProductDetailInfo({ product }) {
         const initialSelections = {};
         const initialActiveText = [];
 
-        fakeData.variants.forEach((variant) => {
+        product?.variants.forEach((variant) => {
             const firstOptionName = variant.options[0].name;
             initialSelections[variant.variantType] = firstOptionName;
             initialActiveText.push({
@@ -120,14 +93,33 @@ export default function ProductDetailInfo({ product }) {
 
         setSelectedOptions(initialSelections);
         setActiveText(initialActiveText);
-    }, []);
+        // calculateTotalPrice();
+    }, [product]);
+
+    useEffect(() => {
+        calculateTotalPrice();
+    }, [selectedOptions]);
+
+    const calculateTotalPrice = () => {
+        let additionalPrice = 0;
+        Object.keys(selectedOptions).forEach((variantType) => {
+            const selectedOption = product.variants
+                .find((v) => v.variantType === variantType)
+                .options.find((o) => o.name === selectedOptions[variantType]);
+            additionalPrice += Number(selectedOption.price);
+        });
+        const basePrice = Number(product?.price) || 0;
+        setTotalPrice(basePrice + additionalPrice);
+    };
 
     const handleOptionSelect = (variantType, optionName) => {
         setSelectedOptions((prev) => ({ ...prev, [variantType]: optionName }));
         handleActiveTextChange(variantType, optionName);
+        calculateTotalPrice();
     };
 
-    const { activeText, setActiveText } = useContext(VariantContext);
+    const { activeText, setActiveText, setTotalPrice } =
+        useContext(VariantContext);
 
     const handleActiveTextChange = (variantType, optionName) => {
         const updatedActiveText = activeText.filter(
@@ -139,11 +131,9 @@ export default function ProductDetailInfo({ product }) {
 
     let brand = "";
 
-    product?.brands.map((item) => {
+    product?.brands?.map((item) => {
         brand = item.name;
     });
-
-    console.log(brand);
 
     return (
         <StyledDetailInfo>
@@ -167,9 +157,9 @@ export default function ProductDetailInfo({ product }) {
             </div>
             <div className="productDetailInfo__variant">
                 <div>
-                    {product?.variants.map((variant) => (
+                    {product?.variants.map((variant, i) => (
                         <div
-                            key={variant.variantType}
+                            key={i}
                             style={{
                                 marginTop: "16px",
                             }}
@@ -182,10 +172,10 @@ export default function ProductDetailInfo({ product }) {
                             >
                                 {variant.variantType}
                             </h5>
-                            {variant.options.map((option) => (
+                            {variant.options.map((option, index) => (
                                 <Variant
                                     onActiveChange={handleActiveTextChange}
-                                    key={option.id}
+                                    key={index}
                                     text={option.name}
                                     onClick={() =>
                                         handleOptionSelect(

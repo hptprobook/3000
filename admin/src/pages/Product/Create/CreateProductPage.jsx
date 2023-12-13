@@ -18,6 +18,7 @@ import Loading from "../../../components/common/Loading/Loading";
 import { fetchAllBrands } from "../../../redux/slices/brandsSlice";
 import { fetchAllTags } from "../../../redux/slices/tagsSlice";
 import AutoFillTag from "../../../components/common/AutoCompelete/AutoFillTag";
+import ButtonNormal from "../../../components/common/Button/ButtonNormal";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -52,29 +53,46 @@ export default function CreateProductPage() {
     const [selectedCategoryChild, setSelectedCategoryChild] = useState('');
     const [selectedErrorCategoryChild, setSelectedErrorCategoryChild] = useState('');
 
-    const [name, setName] = useState('');
-    const [errorName, setErrorName] = useState('');
+    const [form, setForm] = useState({
+        name: { value: '', error: '' },
+        quantity: { value: '', error: '' },
+        price: { value: '', error: '' },
+        discount: { value: '', error: '' },
+        weight: { value: '', error: '' },
+        length: { value: '', error: '' },
+        width: { value: '', error: '' },
+        height: { value: '', error: '' },
+        // Thêm các trường khác vào đây nếu cần
+    });
 
-    const [quantity, setQuantity] = useState('');
-    const [errorQuantity, setErrorQuantity] = useState('');
-
-    const [price, setPrice] = useState('');
-    const [errorPrice, setErrorPrice] = useState('');
-
-    const [discount, setDiscount] = useState('');
-    const [errorDiscount, setErrorDiscount] = useState('');
-
-    const [description, setDescription] = useState('');
+    // Các hàm xử lý lỗi và thay đổi giá trị của trường
+    const handleInputChange = (field, data) => {
+        setForm({
+            ...form,
+            [field]: {
+                ...form[field],
+                value: data,
+            },
+        });
+    };
+    useEffect(() => {
+        handleCheckError('name', form.name.value);
+    }, [form.name.value]);
+    // useEffect(() => {
+    //     Object.entries(form).forEach(([field, { value }]) => {
+    //         handleCheckError(field, value);
+    //     });
+    // }, Object.values(form));
 
     // lấy dữ liệu về category và tag
     useEffect(() => {
         dispatch(fetchCategoriesAsync());
     }, [dispatch]);
     useEffect(() => {
-        if (categories) {
+        if (statusLoad === 'succeeded') {
             dispatch(fetchAllBrands());
         }
-    }, [categories]);
+    }, [statusLoad]);
     useEffect(() => {
         if (statusLoadBrands == 'brands is ready') {
             dispatch(fetchAllTags());
@@ -92,74 +110,46 @@ export default function CreateProductPage() {
     }, [selectedCategory]);
 
     // hande check error input
-    const handleCheckError = (field, value) => {
+    const validateField = (field, value) => {
         switch (field) {
-            case 'name': {
-                if (value === '') {
-                    setErrorName('Tên sản phẩm không được để trống!');
-                }
-                else if (value.length > 254) {
-                    setErrorName('Tên sản phẩm không được quá 255 kí tự!');
-                }
-                else {
-                    setErrorName('');
-                }
-            }
-                break;
+            case 'name':
+                return value === '' ? 'Tên sản phẩm không được để trống!' : value.length > 254 ? 'Tên sản phẩm không được quá 255 kí tự!' : '';
 
-            // Add more cases for other fields if needed
-            case 'quantity': {
-                if (value === '') {
-                    setErrorQuantity('Số lượng không được để trống!');
-                }
-                else if (value < 0) {
-                    setErrorQuantity('Số lượng không được nhỏ hơn 0!');
-                }
-                else if (isNaN(value)) {
-                    setErrorQuantity('Số lượng không hợp lệ!');
-                }
-                else {
-                    setErrorQuantity('');
-                }
-            }
-                break;
-            case 'price': {
-                if (value === '') {
-                    setErrorPrice('Giá không được để trống!');
-                }
-                else if (value < 1) {
-                    setErrorPrice('Giá không được nhỏ hơn 1!');
-                }
-                else if (isNaN(value)) {
-                    setErrorPrice('Giá không hợp lệ!');
-                }
-                else {
-                    setErrorPrice('');
-                }
-            }
-                break;
-            case 'discount': {
-                if (value === '') {
-                    setErrorDiscount('Giảm giá không được để trống!');
-                }
-                else if (value < 0) {
-                    setErrorDiscount('Giảm giá không được nhỏ hơn 1!');
-                }
-                else if (value > 100) {
-                    setErrorDiscount('Giảm giá không được lớn hơn 100!');
-                }
-                else if (isNaN(value)) {
-                    setErrorDiscount('Giảm giá không hợp lệ!');
-                }
-                else {
-                    setErrorDiscount('');
-                }
-            }
-                break;
+            case 'quantity':
+                return value === '' ? 'Số lượng không được để trống!' : value < 0 ? 'Số lượng không được nhỏ hơn 0!' : isNaN(value) ? 'Số lượng không hợp lệ!' : '';
+
+            case 'price':
+                return value === '' ? 'Giá không được để trống!' : value < 1 ? 'Giá không được nhỏ hơn 1!' : isNaN(value) ? 'Giá không hợp lệ!' : '';
+
+            case 'discount':
+                return value === '' ? 'Giảm giá không được để trống!' : value < 0 ? 'Giảm giá không được nhỏ hơn 1!' : value > 100 ? 'Giảm giá không được lớn hơn 100!' : isNaN(value) ? 'Giảm giá không hợp lệ!' : '';
+
+            case 'width':
+                return value === '' ? 'Chiều rộng không được để trống!' : value < 0 ? 'Chiều rộng không được nhỏ hơn 1!' : isNaN(value) ? 'Chiều rộng không hợp lệ!' : '';
+
+            case 'height':
+                return value === '' ? 'Chiều cao không được để trống!' : value < 0 ? 'Chiều cao không được nhỏ hơn 1!' : isNaN(value) ? 'Chiều cao không hợp lệ!' : '';
+
+            case 'length':
+                return value === '' ? 'Chiều dài không được để trống!' : value < 0 ? 'Chiều dài không được nhỏ hơn 1!' : isNaN(value) ? 'Chiều dài không hợp lệ!' : '';
+
+            case 'weight':
+                return value === '' ? 'Cân nặng không được để trống!' : value < 0 ? 'Cân nặng không được nhỏ hơn 1!' : isNaN(value) ? 'Cân nặng không hợp lệ!' : '';
 
             default:
-                return false; // Default to no error
+                return ''; // Default to no error
         }
+    };
+
+    const handleCheckError = (field, value) => {
+        const error = validateField(field, value);
+        setForm({
+            ...form,
+            [field]: {
+                ...form[field],
+                error: error,
+            },
+        });
     };
 
     // if (selectedCategory == '') {
@@ -171,8 +161,6 @@ export default function CreateProductPage() {
         const uploadTask = uploadBytesResumable(thumbnailRef, thumbnail);
         uploadTask.on('state_changed',
             (snapshot) => {
-                // Observe state change events such as progress, pause, and resume
-                // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 console.log('Upload is ' + progress + '% done');
                 switch (snapshot.state) {
@@ -195,9 +183,26 @@ export default function CreateProductPage() {
             }
         );
     };
+    const handleSubmit = (event) => {
+        event.preventDefault(); // Ngăn chặn hành động mặc định của form
+        console.log(form); // Xử lý logic khi form được gửi
+    };
+    const handleCreateProduct = () => {
+        // Kiểm tra lỗi cho tất cả các trường
+        const isFormEmpty = Object.values(form).some((field) => field.value === '');
+        if (isFormEmpty) {
+            console.log('Rooxng')
+        }
+        else {
+            console.log('Không rỗng')
+        }
+        console.log(form)
 
+    };
+    const handleAddTag = (value) => {
+        console.log(value);
+    }
     // debug
-    console.log(tags)
 
     if (statusLoad === "loading") {
         return <div><Loading /></div>;
@@ -213,60 +218,51 @@ export default function CreateProductPage() {
                     marginTop: '32px'
                 }}>
                     <InfoBox title="Thông tin cơ bản">
-                        <DivMargin>
-                            <InputEdit
-                                id={name}
-                                onBlur={(event) => {
-                                    setName(event.target.value);
-                                    handleCheckError('name', event.target.value)
-                                }}
-                                label={'Tên sản phẩm'}
-                                error={errorName ? true : false}
-                                helperText={errorName}
-                            />
+                        <form action="#" onSubmit={handleSubmit}>
+                            <DivMargin>
+                                <InputEdit
+                                    id={'name'}
+                                    onBlur={(event) => handleInputChange('name', event.target.value)}
+                                    label={'Tên sản phẩm'}
+                                    error={form.name.error ? true : false}
+                                    helperText={form.name.error}
+                                />
+                            </DivMargin>
+                            <button type="submit">Heel</button>
+                        </form>
 
-                        </DivMargin>
                         <DivMargin>
                             <InputEdit
-                                id={quantity}
-                                onBlur={(event) => {
-                                    setQuantity(event.target.value);
-                                    handleCheckError('quantity', event.target.value)
-                                }}
+                                id={'quantity'}
+                                onBlur={(event) => handleInputChange('quantity', event.target.value)}
                                 label={'Số lượng'}
-                                error={errorQuantity ? true : false}
-                                helperText={errorQuantity}
+                                error={form.quantity.error ? true : false}
+                                helperText={form.quantity.error}
                             />
                         </DivMargin>
                         <DivMargin>
                             <InputEdit
-                                id={price}
-                                onBlur={(event) => {
-                                    setPrice(event.target.value);
-                                    handleCheckError('price', event.target.value)
-                                }}
-                                label={'Giá tiền'}
-                                error={errorPrice ? true : false}
-                                helperText={errorPrice}
+                                id={'price'}
+                                onBlur={(event) => handleInputChange('price', event.target.value)}
+                                label={'Giá'}
+                                error={form.price.error ? true : false}
+                                helperText={form.price.error}
                             />
                         </DivMargin>
                         <DivMargin>
                             <InputEdit
-                                id={discount}
-                                onBlur={(event) => {
-                                    setDiscount(event.target.value);
-                                    handleCheckError('discount', event.target.value)
-                                }}
-                                label={'Discount'}
-                                error={errorDiscount ? true : false}
-                                helperText={errorDiscount}
+                                id={'discount'}
+                                onBlur={(event) => handleInputChange('discount', event.target.value)}
+                                label={'Giảm giá'}
+                                error={form.discount.error ? true : false}
+                                helperText={form.discount.error}
                             />
                         </DivMargin>
                     </InfoBox>
                     <InfoBox title="Phân loại">
                         <DivMargin>
                             <SelectEdit
-                                label={'Phân loại'}
+                                label={'Phân loại cha'}
                                 data={parentCategories}
                                 value={''}
                                 onChange={(e) => {
@@ -277,9 +273,10 @@ export default function CreateProductPage() {
                         </DivMargin>
                         <DivMargin>
                             <SelectEdit
-                                label={'Phân loại'}
+                                label={'Phân loại con'}
                                 data={childCategories}
                                 value={''}
+                                disable={selectedCategory ? false : true}
                                 onChange={(e) => {
                                     setSelectedCategoryChild(e.target.value)
                                 }}
@@ -295,9 +292,49 @@ export default function CreateProductPage() {
                         </DivMargin>
 
                     </InfoBox>
-                    <InfoBox title="Nhãn sản phẩm">
+                    <InfoBox title="Thuộc tính">
                         <DivMargin>
-                            <AutoFillTag data={tags} />
+                            <AutoFillTag data={tags} handleFill={handleAddTag} />
+                        </DivMargin>
+                        <DivMargin>
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} md={6}>
+                                    <InputEdit
+                                        id={'height'}
+                                        onBlur={(event) => handleInputChange('height', event.target.value)}
+                                        label={'Chiều cao'}
+                                        error={form.height.error ? true : false}
+                                        helperText={form.height.error}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <InputEdit
+                                        id={'width'}
+                                        onBlur={(event) => handleInputChange('width', event.target.value)}
+                                        label={'Chiều rộng'}
+                                        error={form.width.error ? true : false}
+                                        helperText={form.width.error}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <InputEdit
+                                        id={'length'}
+                                        onBlur={(event) => handleInputChange('length', event.target.value)}
+                                        label={'Chiều dài'}
+                                        error={form.length.error ? true : false}
+                                        helperText={form.length.error}
+                                    />
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <InputEdit
+                                        id={'weight'}
+                                        onBlur={(event) => handleInputChange('weight', event.target.value)}
+                                        label={'Cân nặng'}
+                                        error={form.weight.error ? true : false}
+                                        helperText={form.weight.error}
+                                    />
+                                </Grid>
+                            </Grid>
                         </DivMargin>
                     </InfoBox>
                     <InfoBox title="Hình ảnh">
@@ -344,6 +381,16 @@ export default function CreateProductPage() {
                             <TinyEditor />
                         </div>
                     </InfoBox>
+                    <DivMargin
+                        style={{
+                            marginTop: '12px',
+                            float: 'right'
+                        }}
+                    >
+                        <ButtonNormal label={'Hủy'} />
+                        <ButtonNormal label={'Tạo'} bg={'true'} onClick={handleCreateProduct} />
+                    </DivMargin>
+
                 </Box>
             </Box>
         );

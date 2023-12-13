@@ -6,6 +6,11 @@ import authReducer from "./slices/authSlice";
 import settingReducer from "./slices/settingSlice";
 import categoryReducer from "./slices/categorySlice";
 import brandReducer from "./slices/brandSlice";
+import cartReducer from "./slices/cartSlice";
+import addressReducer from "./slices/addressSlice";
+import deliveryReducer from "./slices/deliverySlice";
+import orderReducer from "./slices/orderSlice";
+import couponReducer from "./slices/couponSlice";
 
 export const store = configureStore({
     reducer: {
@@ -16,5 +21,14 @@ export const store = configureStore({
         setting: settingReducer,
         categories: categoryReducer,
         brands: brandReducer,
+        carts: cartReducer,
+        addresses: addressReducer,
+        orders: orderReducer,
+        coupons: couponReducer,
+        deliveries: deliveryReducer,
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
 });

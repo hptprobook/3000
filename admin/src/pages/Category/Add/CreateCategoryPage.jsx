@@ -2,17 +2,22 @@ import React, { useEffect, useState } from "react";
 import "./style.css";
 import InputEdit from "../../../components/common/TextField/InputEdit";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
-import { Box, Grid } from "@mui/material";
+import { Box, FormHelperText, Grid } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import SelectEdit from "../../../components/common/Select/SelectEdit";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import { createCategoryAsync, fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import InfoBox from "../../../components/common/Box/InforBox";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import styled from "@emotion/styled";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storageFirebase } from "../../../config/firebaseConfig";
 import { v4 } from "uuid";
+import Loading from "../../../components/common/Loading/Loading";
+import ButtonUploadImg from "../../../components/common/Button/ButtonUploadImg";
+import color from "../../../config/colorConfig";
+import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
+import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 
 const DivMargin = styled.div(({ theme }) => ({
   paddingBottom: '24px',
@@ -22,79 +27,71 @@ const DivMargin = styled.div(({ theme }) => ({
 
 export default function CreateCategoryPage() {
   const dispatch = useDispatch();
-  const categories = useSelector((state) => state.categories.data); // Access categories from Redux store
+  const categories = useSelector((state) => state.categories.data);
+  const error = useSelector((state) => state.categories.error);
+  const status = useSelector((state) => state.categories.status);
+  // Access categories from Redux store
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
 
-  const [errorParentId, setErrorParentId] = useState('');
-
-  const [categoryData, setCategoryData] = useState({
-    name: "",
-    parent_id: null,
-    icon_url: "",
-  });
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission here.
-
-    // Clear the form fields after submission if needed.
-    setCategoryData({
-      name: "",
-      parent_id: null,
-      icon_url: "",
-    });
-  };
+  const [parent_id, setParentId] = useState('');
 
   useEffect(() => {
-    // Fetch categories when the component mounts
-    dispatch(fetchCategoriesAsync());
-  }, [dispatch]);
-
-  const handleCheckError = (field, value) => {
-    switch (field) {
-      case 'name': {
-        if (value === '') {
-          setErrorName('Tên phân loại không được để trống!');
-        } else if (value.length > 254) {
-          setErrorName('Tên phân loại không được quá 255 kí tự!');
-        } else {
-          setErrorName('');
-        }
-      }
-        break;
-        case 'parent_id': {
-          if (!value || value === 'none') {
-              setErrorParentId('Không chọn');
-          } else if (categories.length === 0) {
-              setErrorParentId('Lỗi');
-          } else {
-              setErrorParentId('');
-          }
-      }
-      break;
-      // ... other cases if needed
+    if (status == 'idle') {
+      dispatch(fetchCategoriesAsync());
     }
-  };
+
+  }, [status])
+  useEffect(() => {
+    if (status == 'loading') {
+      setLoadingUpload(true);
+    }
+    if (status == 'success') {
+      setLoadingUpload(false);
+    }
+
+  }, [status])
+  useEffect(() => {
+    if (error === 'The name has already been taken.' && status === 'failed') {
+      setErrorName('Tên phân loại đã tồn tại');
+      setSeccess(false);
+    }
+
+  }, [error, status])
+  useEffect(() => {
+    if (status === 'created successfully') {
+      setSeccess(true);
+    }
+    if (status === 'loading') {
+      setSeccess(false);
+    }
+  }, [status]);
 
   //add upload 
+  const [success, setSeccess] = useState(false);
   const [thumbnail, setThumbnail] = useState('');
-  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [thumbnailPreview, setThumbnailPreview] = useState('');
+
+  const [loadingUpload, setLoadingUpload] = useState(false);
+  const [successUpload, setSuccessUpload] = useState(false);
+
+  const [errorUpload, setErrorUpload] = useState(false);
 
   const handleUploadThumnail = (name) => {
-    const thumbnailRef = ref(storageFirebase, `category_image/${name}/${v4()}`);
+    const thumbnailRef = ref(storageFirebase, `categories/${name}/${v4()}`);
     const uploadTask = uploadBytesResumable(thumbnailRef, thumbnail);
     uploadTask.on('state_changed',
       (snapshot) => {
         // Observe state change events such as progress, pause, and resume
         // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
         switch (snapshot.state) {
           case 'paused':
             console.log('Upload is paused');
             break;
           case 'running':
-            console.log('Upload is running');
+            setLoadingUpload(true);
+            setSuccessUpload(false);
             break;
         }
       },
@@ -103,76 +100,121 @@ export default function CreateCategoryPage() {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log('File available at', downloadURL);
-          setThumbnailUrl(downloadURL);
+          setLoadingUpload(false);
+          const data = {
+            name: name,
+            parent_id: parent_id ? parent_id : null,
+            icon_url: downloadURL
+          }
+          dispatch(createCategoryAsync({ data }));
+          setSuccessUpload(true);
         });
       }
     );
   };
 
+  const handleUploadFile = (file) => {
+    setThumbnail(file);
+    const imageUrl = URL.createObjectURL(file);
+    setThumbnailPreview(imageUrl);
+  }
+  const handleCreateCategory = () => {
+    console.log(handleCheckError('name', name) );
+    if (handleCheckError('name', name) && thumbnail !== '') {
+      handleUploadThumnail(name);
+      setErrorUpload(false);
+    }
+    else {
+      if (thumbnail === '') {
+        setErrorUpload('Ảnh không được để trống!');
 
+      }
+    }
+  }
+  const handleCheckError = (field, value) => {
+    switch (field) {
+      case 'name': {
+        if (value === '') {
+            setErrorName('Thương hiệu không được để trống!');
+            return false;
+        }
+        else if (value.length > 128) {
+            setErrorName('Thương hiệu không được quá 128 kí tự!');
+            return false;
+        }
+        else if (categories.find((category) => category.name.toLowerCase() === value.trim().toLowerCase())) {
+            setErrorName('Thương hiệu không được trùng!');
+            return false;
+        }
+        else {
+            setErrorName('');
+            return true;
+        }
+    }
+        break;
+
+    default:
+        return false; // Default to no error
+    }
+  };
   return (
     <Box>
+      {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
+      {status == 'success' ? <BasicAlertl label={'Tạo phân loại thành công'} severity={'success'} /> : null}
+      {loadingUpload ? <LinearIndeterminate /> : null}
       <HeaderPage
         namePage={"Tạo mới"}
         Breadcrumb={["Phân loại", "Tạo"]}
       />
       <Box sx={{
         marginTop: '32px'
-      }}></Box>
-      <form onSubmit={handleSubmit}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+      }}>
+        <InfoBox title="Thông tin">
+          <DivMargin>
             <InputEdit
-              label="Tên"
-              value={name}
+              id={'name'}
               onBlur={(event) => {
                 setName(event.target.value);
-                handleCheckError('name', event.target.value);
+                handleCheckError('name', event.target.value)
               }}
-              // ... other props
+              label={'Phân loại'}
               error={errorName ? true : false}
               helperText={errorName}
             />
-          </Grid>
-          <Grid item xs={12}>
+
+          </DivMargin>
+          <DivMargin>
             <SelectEdit
               label={'Phân loại cha'}
               data={categories}
-              value={categoryData.parent_id}
-              onChange={(event) => {
-                setCategoryData({
-                  ...categoryData,
-                  parent_id: event.target.value,
-                });
-                handleCheckError('parent_id', event.target.value);
+              value={''}
+              onChange={(e) => {
+                setParentId(e.target.value)
               }}
-              // ... other props
-              error={errorParentId ? true : false}
-              helperText={errorParentId}
+              nullData={true}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <InfoBox title="Hình ảnh icon">
-              <DivMargin>
-                {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
-                <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
-                <button onClick={(e) => handleUploadThumnail('giap')}>upload</button>
-                {/* <ImageDropZone /> */}
-              </DivMargin>
-            </InfoBox>
-          </Grid>
-          <Grid item xs={12}>
-            <ButtonNormal
-              variant="contained"
-              label={"Thêm"}
-              bg="true"
-              type="submit"
-              sx={{ marginTop: "16px" }}
-            ></ButtonNormal>
-          </Grid>
-        </Grid>
-      </form>
+          </DivMargin>
+          <DivMargin>
+            <DivMargin>
+              <Grid container>
+                <Grid item xs={3}>
+                  <ButtonUploadImg handleOnChange={handleUploadFile} />
+                </Grid>
+                <Grid item xs={9}>
+                  {thumbnailPreview ? <img src={thumbnailPreview} alt="Selected" style={{ maxWidth: '100%' }} /> : null}
+                  <FormHelperText sx={{
+                    color: color.textColor.error
+                  }}>{errorUpload ? errorUpload : null}</FormHelperText>
+                </Grid>
+              </Grid>
+            </DivMargin>
+
+          </DivMargin>
+          <DivMargin>
+            <ButtonNormal bg={'true'} label={'Thêm'} onClick={handleCreateCategory} />
+          </DivMargin>
+        </InfoBox>
+      </Box>
     </Box>
   );
 }

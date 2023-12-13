@@ -62,13 +62,12 @@ export function getMenuNav() {
                 createList("Kho", "product-warehouse", "/product/warehouse"),
             ]),
             createList(
-                "Phân loại",
+                "Thuộc tính",
                 "category",
                 "/category",
                 <MdOutlineLabelImportant />,
                 [
-                    createList("Danh sách", "category-list", "/category/list"),
-                    createList("Tạo", "category-create", "/category/create"),
+                    createList("Phân loại", "category-list", "/category/list"),
                     createList(
                         "Thương hiệu",
                         "category-brand",

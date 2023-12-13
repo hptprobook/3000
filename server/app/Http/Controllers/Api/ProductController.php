@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ReviewResource;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductTag;
@@ -72,9 +73,11 @@ class ProductController extends Controller
                 'images.*' => 'string|min:3|max:255',
                 'tags.*' => 'string|min:1|max:128',
                 'quantity' => 'required|integer',
-                'variants' => 'array',
-                'variants.*.name' => 'string',
-                'variants.*.price' => 'numeric',
+                'brand_id' => 'integer',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             if ($validator->fails()) {
@@ -82,7 +85,7 @@ class ProductController extends Controller
             }
 
             $data = $request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status',
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'brand_id', 'weight', 'length', 'width', 'height'
             ]);
 
             if ($request->has('quantity')) {
@@ -90,10 +93,6 @@ class ProductController extends Controller
             }
 
             $product = Product::create($data);
-
-            if ($request->has('brand_ids') && is_array($request->brand_ids)) {
-                $product->brands()->attach($request->brand_ids);
-            }
 
             foreach ($request->images as $image_url) {
                 $product->images()->create([
@@ -132,10 +131,10 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category', 'brands', 'images', 'tags', 'reviews', 'variants'])
+            $product = Product::with(['category.products', 'images', 'reviews.user', 'variants', 'seller'])
                 ->findOrFail($id);
 
-            $averageRating = $product->reviews->avg('rating') ?? 'No rating';
+            $averageRating = $product->reviews->avg('rating') ?? 0;
 
             $groupedVariants = $product->variants->groupBy('name')->map(function ($variantGroup, $variantTypeName) {
                 return [
@@ -152,6 +151,8 @@ class ProductController extends Controller
             $productResource = $product->toArray();
             $productResource['average_rating'] = $averageRating;
             $productResource['variants'] = $groupedVariants;
+
+            $productResource['reviews'] = ReviewResource::collection($product->reviews);
 
             return response()->json($productResource, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
@@ -180,17 +181,18 @@ class ProductController extends Controller
                 'images' => 'sometimes|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags' => 'sometimes|string',
+                'brand_id' => 'integer',
                 'status' => 'required',
-                'quantity' => 'required|numeric|between:0,10000'
+                'quantity' => 'required|numeric|between:0,10000',
+                'variants' => 'sometimes|array',
+                'variants.*.name' => 'required_with:variants|string',
+                'variants.*.value' => 'required_with:variants',
+                'variants.*.price' => 'required_with:variants|numeric',
             ]);
 
             $product->update($request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity'
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity', 'brand_id'
             ]));
-
-            if ($request->has('brand_ids') && is_array($request->brand_ids)) {
-                $product->brands()->sync($request->brand_ids);
-            }
 
             if ($request->has('images')) {
                 $product->images()->delete();
@@ -212,6 +214,23 @@ class ProductController extends Controller
                     ProductTag::create([
                         'product_id' => $product->id,
                         'name' => $tag_name
+                    ]);
+                }
+            }
+
+            foreach ($request->variants as $variant) {
+                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+
+                $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
+                if ($existingVariant) {
+                    $product->variants()->updateExistingPivot($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
+                    ]);
+                } else {
+                    $product->variants()->attach($variantType->id, [
+                        'value' => $variant['value'],
+                        'price' => $variant['price']
                     ]);
                 }
             }
