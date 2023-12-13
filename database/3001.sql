@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 11, 2023 lúc 03:43 PM
+-- Thời gian đã tạo: Th12 13, 2023 lúc 09:51 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.2.4
 
@@ -31,10 +31,11 @@ CREATE TABLE `addresses` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
-  `phone` varchar(10) NOT NULL,
+  `phone` varchar(11) NOT NULL,
   `district_id` bigint(20) UNSIGNED DEFAULT NULL,
   `province_id` bigint(20) UNSIGNED DEFAULT NULL,
   `ward_id` bigint(20) UNSIGNED NOT NULL,
+  `street` varchar(128) NOT NULL,
   `address_info` varchar(255) NOT NULL,
   `default` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -43,13 +44,8 @@ CREATE TABLE `addresses` (
 -- Đang đổ dữ liệu cho bảng `addresses`
 --
 
-INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `district_id`, `province_id`, `ward_id`, `address_info`, `default`) VALUES
-(2, 13, 'Công ty TNHH MTV Hoàn Vũ', '1900.3842', 0, 0, 0, '45/19 Nguyễn Viết Xuân', 0),
-(4, 13, 'PHT', '0833129021', 0, 0, 0, 'Nguyễn Viết Xuân', 0),
-(5, 14, 'Nguyen Van A', '0123456789', 30, 13, 0, '123 Phố Xanh', 0),
-(6, 14, 'Phan Thanh Hóa', '0833129021', 30, 13, 0, '45/19 Nguyễn Viết Xuân', 1),
-(7, 14, 'Phan Thanh Hóa', '0833129021', NULL, NULL, 0, '45/19 Nguyễn Viết Xuân', 0),
-(8, 14, 'Phan Thanh Hóa', '0833129021', NULL, NULL, 0, '45/19 Nguyễn Viết Xuân', 0);
+INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `district_id`, `province_id`, `ward_id`, `street`, `address_info`, `default`) VALUES
+(45, 14, 'Phan Long', '0332741249', 1700, 204, 480413, '45 Nguyễn Viết Xuân', 'Đồng Nai, Huyện Định Quán, Xã Thanh Sơn, 45 Nguyễn Viết Xuân', 1);
 
 -- --------------------------------------------------------
 
@@ -109,7 +105,7 @@ CREATE TABLE `cart_items` (
   `cart_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `quantity` bigint(20) UNSIGNED NOT NULL,
-  `variants` varchar(255) NOT NULL,
+  `variants` varchar(128) NOT NULL,
   `price` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -177,19 +173,20 @@ INSERT INTO `categories` (`id`, `name`, `parent_id`, `icon_url`) VALUES
 CREATE TABLE `coupons` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `code` varchar(20) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `description` varchar(128) NOT NULL,
   `start_date` date NOT NULL DEFAULT '2023-11-05',
   `end_date` date NOT NULL,
-  `amount` varchar(48) NOT NULL,
-  `quantity` bigint(20) UNSIGNED NOT NULL
+  `amount` tinyint(10) NOT NULL,
+  `quantity` bigint(20) UNSIGNED NOT NULL,
+  `type` enum('percent','direct') NOT NULL DEFAULT 'direct'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `coupons`
 --
 
-INSERT INTO `coupons` (`id`, `code`, `description`, `start_date`, `end_date`, `amount`, `quantity`) VALUES
-(1, 'JD3T2', 'Giảm giá 100% phí giao hàng', '2023-11-08', '2023-12-22', '100%', 99);
+INSERT INTO `coupons` (`id`, `code`, `description`, `start_date`, `end_date`, `amount`, `quantity`, `type`) VALUES
+(1, 'JD3T2', 'Giảm giá 100% phí giao hàng', '2023-11-08', '2023-12-22', 100, 99, 'direct');
 
 -- --------------------------------------------------------
 
@@ -204,13 +201,6 @@ CREATE TABLE `coupon_usages` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `coupon_usages`
---
-
-INSERT INTO `coupon_usages` (`order_id`, `coupon_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 1, 13, '2023-11-08 00:58:22', '2023-11-08 00:58:22');
 
 -- --------------------------------------------------------
 
@@ -966,8 +956,8 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `hot_searches` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `keywords` varchar(255) NOT NULL,
-  `count` varchar(255) NOT NULL,
+  `keywords` varchar(50) NOT NULL,
+  `count` tinyint(10) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1037,31 +1027,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (61, '2023_12_03_133828_add_variants_and_delete_status_carts', 27),
 (63, '2023_12_06_153120_add_province_to_address', 28),
 (64, '2023_12_10_085724_add_brand_id_to_products', 29),
-(65, '2023_12_11_125953_add_to_products', 30);
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `model_has_permissions`
---
-
-CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `model_has_roles`
---
-
-CREATE TABLE `model_has_roles` (
-  `role_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+(65, '2023_12_11_125953_add_to_products', 30),
+(66, '2023_12_12_150844_add_street_to_address', 31);
 
 -- --------------------------------------------------------
 
@@ -1074,23 +1041,11 @@ CREATE TABLE `orders` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `total_amount` bigint(20) UNSIGNED NOT NULL,
   `address_id` bigint(20) UNSIGNED NOT NULL,
-  `status` varchar(255) NOT NULL,
-  `note` varchar(1000) DEFAULT NULL,
+  `status` varchar(50) NOT NULL,
+  `note` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `orders`
---
-
-INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `address_id`, `status`, `note`, `created_at`, `updated_at`) VALUES
-(1, 13, 0, 2, 'pending', NULL, '2023-11-07 02:07:43', '2023-11-07 02:07:43'),
-(2, 13, 0, 2, 'processing', NULL, '2023-11-07 02:39:59', '2023-11-07 07:57:22'),
-(3, 13, 0, 2, 'pending', NULL, '2023-11-07 02:40:12', '2023-11-07 02:40:12'),
-(4, 14, 20000000, 5, 'pending', NULL, '2023-12-04 00:59:38', '2023-12-04 00:59:38'),
-(5, 14, 0, 4, 'pending', NULL, '2023-12-06 08:03:49', '2023-12-06 08:03:49'),
-(6, 14, 4522000, 4, 'pending', NULL, '2023-12-06 08:04:32', '2023-12-06 08:04:32');
 
 -- --------------------------------------------------------
 
@@ -1102,20 +1057,9 @@ CREATE TABLE `order_details` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `order_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
-  `quantity` bigint(20) UNSIGNED NOT NULL,
-  `discount` varchar(50) NOT NULL
+  `quantity` tinyint(20) UNSIGNED NOT NULL,
+  `discount` tinyint(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `order_details`
---
-
-INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `quantity`, `discount`) VALUES
-(3, 4, 21, 15, '0'),
-(4, 6, 22, 59, '0'),
-(5, 6, 22, 4, '0'),
-(6, 6, 22, 5, '0'),
-(7, 6, 22, 1, '0');
 
 -- --------------------------------------------------------
 
@@ -1144,30 +1088,6 @@ CREATE TABLE `payments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `permissions`
---
-
-CREATE TABLE `permissions` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `permissions`
---
-
-INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'view products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(2, 'create products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(3, 'update products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(4, 'delete products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59');
 
 -- --------------------------------------------------------
 
@@ -1292,9 +1212,10 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (97, 'App\\Models\\User', 14, 'access_token', 'c2dfe512ee7981e3cc6eb178f9ac65d04e7b9ff9b6b5b31aaeff8f86ee1553f5', '[\"*\"]', '2023-12-03 06:54:13', NULL, '2023-12-03 05:28:52', '2023-12-03 06:54:13'),
 (98, 'App\\Models\\User', 13, 'access_token', '97e9e9be3dffc9a363b04eed58f0c5cbda731cb52956d6f399f7b5eb1126dd2f', '[\"*\"]', '2023-12-06 00:36:17', NULL, '2023-12-03 06:54:45', '2023-12-06 00:36:17'),
 (99, 'App\\Models\\User', 14, 'access_token', 'afa8bf7c57396b0b2ddcca2cf3686c13f8f27c54883ddd7fc5b6c09fbc1bfae7', '[\"*\"]', '2023-12-06 08:50:07', NULL, '2023-12-04 00:58:16', '2023-12-06 08:50:07'),
-(100, 'App\\Models\\User', 13, 'access_token', '2b9963ee85d8b2804895ee02bd6960bc06ad634da93b2c6bf53b402d102ebb01', '[\"*\"]', '2023-12-10 02:26:36', NULL, '2023-12-06 07:43:56', '2023-12-10 02:26:36'),
+(100, 'App\\Models\\User', 13, 'access_token', '2b9963ee85d8b2804895ee02bd6960bc06ad634da93b2c6bf53b402d102ebb01', '[\"*\"]', '2023-12-12 20:40:23', NULL, '2023-12-06 07:43:56', '2023-12-12 20:40:23'),
 (101, 'App\\Models\\User', 14, 'access_token', '0d448f5d4d5efb246ee9006aa4e9d4e0d2e6e1c2a6611d5df3e942d28c6f7498', '[\"*\"]', NULL, NULL, '2023-12-07 00:22:43', '2023-12-07 00:22:43'),
-(102, 'App\\Models\\User', 14, 'access_token', '9f3b7e345d4143e13980b5dfb5fef1cb5cf3b6fef66dad5c7d36402ef245f97b', '[\"*\"]', '2023-12-10 02:14:36', NULL, '2023-12-07 00:23:56', '2023-12-10 02:14:36');
+(102, 'App\\Models\\User', 14, 'access_token', '9f3b7e345d4143e13980b5dfb5fef1cb5cf3b6fef66dad5c7d36402ef245f97b', '[\"*\"]', '2023-12-12 20:39:39', NULL, '2023-12-07 00:23:56', '2023-12-12 20:39:39'),
+(103, 'App\\Models\\User', 14, 'access_token', '5cfa1ec9da5b5f6d04086ba9333964958d266f57fb7014e5f0baf3f04f910d25', '[\"*\"]', '2023-12-13 00:52:01', NULL, '2023-12-12 20:41:54', '2023-12-13 00:52:01');
 
 -- --------------------------------------------------------
 
@@ -1319,7 +1240,7 @@ CREATE TABLE `posts` (
 CREATE TABLE `products` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
-  `price` bigint(20) UNSIGNED NOT NULL,
+  `price` float UNSIGNED NOT NULL,
   `discount` tinyint(3) UNSIGNED NOT NULL,
   `short_desc` varchar(1000) NOT NULL,
   `detail` text NOT NULL,
@@ -1548,8 +1469,8 @@ CREATE TABLE `product_variants` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `variant_type_id` bigint(20) UNSIGNED NOT NULL,
-  `value` varchar(255) NOT NULL,
-  `price` varchar(255) NOT NULL
+  `value` varchar(128) NOT NULL,
+  `price` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1557,17 +1478,17 @@ CREATE TABLE `product_variants` (
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `variant_type_id`, `value`, `price`) VALUES
-(1, 21, 1, 'Đỏ', '26000'),
-(2, 21, 1, 'Vàng', '26000'),
-(3, 21, 1, 'Cam', '26000'),
-(4, 21, 5, '12', '25000'),
-(5, 21, 2, '4', '25000'),
-(6, 21, 2, '5', '25000'),
-(7, 22, 1, 'Đỏ', '30000'),
-(8, 22, 1, 'Vàng', '25000'),
-(9, 22, 1, 'Cam', '40000'),
-(10, 22, 2, '4 inch', '100000'),
-(11, 22, 2, '5 inch', '125000');
+(1, 21, 1, 'Đỏ', 26000),
+(2, 21, 1, 'Vàng', 26000),
+(3, 21, 1, 'Cam', 26000),
+(4, 21, 5, '12', 25000),
+(5, 21, 2, '4', 25000),
+(6, 21, 2, '5', 25000),
+(7, 22, 1, 'Đỏ', 30000),
+(8, 22, 1, 'Vàng', 25000),
+(9, 22, 1, 'Cam', 40000),
+(10, 22, 2, '4 inch', 100000),
+(11, 22, 2, '5 inch', 125000);
 
 -- --------------------------------------------------------
 
@@ -1773,54 +1694,6 @@ INSERT INTO `reviews` (`id`, `product_id`, `user_id`, `rating`, `comment`, `crea
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `roles`
---
-
-CREATE TABLE `roles` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `roles`
---
-
-INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'ADMIN', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(2, 'USER', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(3, 'SELLER', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `role_has_permissions`
---
-
-CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `role_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `role_has_permissions`
---
-
-INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
-(1, 1),
-(1, 3),
-(2, 1),
-(2, 3),
-(3, 1),
-(3, 3),
-(4, 1),
-(4, 3);
-
--- --------------------------------------------------------
-
---
 -- Cấu trúc bảng cho bảng `sellers`
 --
 
@@ -1830,17 +1703,10 @@ CREATE TABLE `sellers` (
   `email` varchar(255) NOT NULL,
   `phone_number` varchar(11) NOT NULL,
   `address_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL DEFAULT 13,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL DEFAULT 13
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `sellers`
---
-
-INSERT INTO `sellers` (`id`, `name`, `email`, `phone_number`, `address_id`, `created_at`, `updated_at`, `user_id`) VALUES
-(1, 'Công ty TNHH MTV Hoàn Vũ', 'hoanvu@gmail.com', '1900.3842', 2, '2023-11-09 02:17:46', '2023-11-09 02:17:46', 13);
 
 -- --------------------------------------------------------
 
@@ -1850,7 +1716,7 @@ INSERT INTO `sellers` (`id`, `name`, `email`, `phone_number`, `address_id`, `cre
 
 CREATE TABLE `settings` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `value` text NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1896,7 +1762,7 @@ INSERT INTO `tags` (`id`, `name`, `description`) VALUES
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone_number` varchar(10) DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
@@ -1907,7 +1773,6 @@ CREATE TABLE `users` (
   `role` varchar(20) NOT NULL DEFAULT 'USER',
   `remember_token` varchar(100) DEFAULT NULL,
   `address_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1916,54 +1781,54 @@ CREATE TABLE `users` (
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `phone_number`, `email_verified_at`, `password`, `gender`, `birth_date`, `status`, `role`, `remember_token`, `address_id`, `token`, `created_at`, `updated_at`) VALUES
-(1, 'hpt', 'hptprobook@gmail.com', NULL, NULL, '$2y$10$ubun7sQZl0RJudTdKoU8ZO6JKliwx0D5aOH17/iOn2MiPOV6j5zy2', NULL, NULL, 'active', 'ADMIN', NULL, NULL, NULL, '2023-10-15 07:39:14', '2023-10-15 07:39:14'),
-(2, 'John Doe', 'user1@mail.com', NULL, NULL, '$2y$10$aaQleogwL7Et5LUKDCxm4O/GvXWxhNpkJNq3XjhFGOpdU/YgzSKLe', NULL, NULL, 'active', 'ADMIN', NULL, NULL, NULL, '2023-10-15 19:53:14', '2023-10-15 19:53:14'),
-(3, 'Elian Morissette', 'erich.pollich@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'm0SrQM1CmG', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(4, 'Edmond Pfeffer', 'hortense.witting@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'sa1yACtmix', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(5, 'Cecelia Koch III', 'witting.lilyan@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'pLgiVKybT9', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(6, 'Shannon Strosin', 'amber38@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9ejGixmXrY', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(7, 'Estefania Mayer', 'lavonne.hintz@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'v6xT6lg59U', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(8, 'Emely Ziemann', 'pete.murphy@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'zemFPO8cPr', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(9, 'Kaya Barrows', 'hhowe@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'hQJ7bShrbQ', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(10, 'Dr. Hadley Renner I', 'vhuels@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'df3Wh6aWQP', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(11, 'Mr. Alvis Gislason III', 'loraine97@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '0rPiNPz6yt', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(12, 'Beulah Johnson IV', 'hhilpert@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '5koMfSoKlA', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(13, 'PHT', 'test@gmail.com', '0833129021', '2023-10-19 19:05:51', '$2y$10$TaqI3w5TVZipqXnqc3wFnO39uCc/0kBgSJ.5GAT5MO9bhIbzxklYC', NULL, NULL, 'active', 'SELLER', 'dq1FS0CJ9V', NULL, NULL, '2023-10-19 19:05:51', '2023-11-30 19:20:20'),
-(14, 'Phan Thanh Hoá', 'hptp@gmail.com', NULL, NULL, '$2y$10$2UdWu.Cp6mW0KWPLX5rqguhUzvDQuTwd4MJoqP1A6CDt3Kj4K0Lg.', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-10-28 20:40:41', '2023-10-28 20:40:41'),
-(15, 'John Doe', 'admin23@gmail.com', NULL, NULL, '$2y$10$vG5ejDou8wRDvv/qTpBEMOElv6h3C61xiQyFbr.deXlICp9Pzi8ke', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-10-28 20:46:38', '2023-10-28 20:46:38'),
-(16, 'Wilford Murazik', 'marta36@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'cutipOQr8d', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(17, 'Prof. Berta Denesik III', 'schmitt.keyon@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'ew3QJmEqaY', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(18, 'Jana Fay', 'gordon12@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9XGvzXpcuX', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(19, 'Casey Marks', 'rhalvorson@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'NAwOU7uRaA', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(20, 'Maryse Mante', 'florine.weimann@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'qZ1gXDjWjj', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(21, 'Skylar Howell Jr.', 'wilhelm46@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'kW30BP9kzK', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(22, 'Dorris Cormier', 'unolan@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'HQ4iebujrV', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(23, 'Melba Rutherford', 'carolyne.pfeffer@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '6bQJr3Oycb', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(24, 'Dr. Bartholome Bosco', 'kenny.koelpin@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'Xu0jyJIHwD', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(25, 'Dr. Lina Kertzmann III', 'shanelle.mclaughlin@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '4v3qW6GTOc', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(27, 'Phan Thanh Hoá', 'hptp1@gmail.com', NULL, NULL, '$2y$10$LGGsXwlI7c0WDitu.KEqtO6JcsS24Q6x3luZnSqtYOBkDvH.uMEEG', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:21:47', '2023-11-24 00:21:47'),
-(28, 'Phan Thanh Hoá', 'hptp2@gmail.com', NULL, NULL, '$2y$10$ImyvZr3eOWcd6R1ua4DbwutNyXza/mcywOnueSc.c5a3JrSH39.GO', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:22:08', '2023-11-24 00:22:08'),
-(29, 'hoaphan', 'sd', NULL, NULL, '$2y$10$EHHHk2AXYTPIVXGH7IHGNeeTiAH3PcHiWlUb118CKwfCWBMDdyLja', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:26:46', '2023-11-24 00:26:46'),
-(30, 'hptprobook', '123456@gmail.com', NULL, NULL, '$2y$10$iw.eWLNHEuaG2HXOyRCMB.h0ANOZj5Weld2jPZg3FgdZm566GBdii', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:28:04', '2023-11-24 00:28:04'),
-(31, 'hoaphan', 'hot@gmail.com', NULL, NULL, '$2y$10$kQZWR9p0QgCcUgsqLPJhROBcvEDJ11zNSov5vf0fmZuOTPFvJuzra', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:09:51', '2023-11-25 01:09:51'),
-(32, 'hoaphan', 'hot1@gmail.com', NULL, NULL, '$2y$10$GHVDAGVjNrCgetDJqDZqoOeCxxrmsn4skNTYonfONW5.UfSmbWkcO', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:16:23', '2023-11-25 01:16:23'),
-(33, '12344', '1234@gmail.com', NULL, NULL, '$2y$10$cxztEa79GFg04BUKu6twkOg27hD/RK8LrPwsw.bTrW.qqsjgMWtue', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:18:11', '2023-11-25 01:18:11'),
-(34, '12344', '12345@gmail.com', NULL, NULL, '$2y$10$1UJuc2dV3pRiZv/fju7B0eqWC5KgdUfqdiYivq6KI2o0/jKIlLivy', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:19:08', '2023-11-25 01:19:08'),
-(35, '123456', '123456@gmail.com2', NULL, NULL, '$2y$10$6OW9YDV4ZPN15mzoYfg5wOTWbgN5kOu38jGuO6U1qWyJn/TjIJ.02', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:22:29', '2023-11-25 01:22:29'),
-(36, '123456', '1234562@gmail.com2', NULL, NULL, '$2y$10$yBrADBB5/DLF66kJ104Bye0YZESc/BtWmy8lufqVCPsWpp84R3fn2', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:23:42', '2023-11-25 01:23:42'),
-(37, '12345412', '12ni@gmail.com', NULL, NULL, '$2y$10$CxBjLS2YnbMETacHcUgzCeWgnNCuuBwC/lT/2Y7EQDvH5PWEXjGa2', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:33:36', '2023-11-25 01:33:36'),
-(38, '12345412', '12n23i@gmail.com', NULL, NULL, '$2y$10$gr4gdSaW73IbFbN8TEl9FOBZpWA3yxL13Ck5oBPxaDaOWMPLmqmKK', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:33:59', '2023-11-25 01:33:59'),
-(39, '12345412', '12n23wi@gmail.com', NULL, NULL, '$2y$10$9eSG41NgA1IACqD9QF.WZ.lfudpqmrmSHFyn5ip60jPWp/u6BEyLe', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:34:12', '2023-11-25 01:34:12'),
-(40, '12345623', 'admi2n@gmail.com', NULL, NULL, '$2y$10$fQG/PiN03UEiJPnKtSxcZuF1VfegRET4k4rtaPpFXaqWHQjiCg9Cm', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:35:00', '2023-11-25 01:35:00'),
-(41, '123456213', '123412@gmail.com', NULL, NULL, '$2y$10$PePC/aoZ5gSSOmqP/j9EsORdndDWnOuS6IUfOqHmbJJcgbIAwf/fS', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:35:28', '2023-11-25 01:35:28'),
-(42, 'hptprobooksd@gmail.com', 'hptprobooksd@gmail.com', NULL, NULL, '$2y$10$SFSqP8EfpgNTHymrlc2XW.o234eDUZZsUG69PjJLfF4ynSPI/G0YG', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:37:52', '2023-11-25 01:37:52'),
-(43, 'hptproboos3ek@gmail.com', 'hptproboos3ek@gmail.com', NULL, NULL, '$2y$10$hYCiB3KYGZnOQsJ0uTInDumCm0Tc2qM9ItyhwucgrwYHlHONBxXhi', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:40:12', '2023-11-25 01:40:12'),
-(44, 'hoaphan0420@gmail.com', 'hoaphan02420@gmail.com', NULL, NULL, '$2y$10$EPOOhENN461E.oMX9MwfSOvh6PKN28wxLsrChWRAOwYSEJ0pSbbJ.', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:46:46', '2023-11-25 01:46:46'),
-(45, '213412', '123421321@gmail.com', NULL, NULL, '$2y$10$8zorWeHrZyZPxzf9O/74oeUucyEGTKTjbf8tHIEbzMrVxkJVxIIk2', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:55:04', '2023-11-25 01:55:04'),
-(46, '1231242', 'adminqeqw@gmail.com', NULL, NULL, '$2y$10$sOl6GdC5tnR./sJI0fTH0um4vMO7qPYhPTttk24Q4XqV1om47sYtu', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 02:03:52', '2023-11-25 02:03:52'),
-(47, 'hoaphan0420@gmail.com', 'admin1232@gmail.com', NULL, NULL, '$2y$10$mVYLzZmZlPhsa5ZOnNuK9O0C8CzZlU.4Tv84Pd0Dty8LOoCOwytVC', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 19:28:56', '2023-11-25 19:28:56'),
-(48, '123213123', 'hotpr@gmail.com', NULL, NULL, '$2y$10$aLYcOItghc3u96MAQhtbJ.U/LdHhhU/eTsJpDMGjOVN9O.HBW3jTC', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 19:30:02', '2023-11-25 19:30:02');
+INSERT INTO `users` (`id`, `name`, `email`, `phone_number`, `email_verified_at`, `password`, `gender`, `birth_date`, `status`, `role`, `remember_token`, `address_id`, `created_at`, `updated_at`) VALUES
+(1, 'hpt', 'hptprobook@gmail.com', NULL, NULL, '$2y$10$ubun7sQZl0RJudTdKoU8ZO6JKliwx0D5aOH17/iOn2MiPOV6j5zy2', NULL, NULL, 'active', 'ADMIN', NULL, NULL, '2023-10-15 07:39:14', '2023-10-15 07:39:14'),
+(2, 'John Doe', 'user1@mail.com', NULL, NULL, '$2y$10$aaQleogwL7Et5LUKDCxm4O/GvXWxhNpkJNq3XjhFGOpdU/YgzSKLe', NULL, NULL, 'active', 'ADMIN', NULL, NULL, '2023-10-15 19:53:14', '2023-10-15 19:53:14'),
+(3, 'Elian Morissette', 'erich.pollich@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'm0SrQM1CmG', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(4, 'Edmond Pfeffer', 'hortense.witting@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'sa1yACtmix', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(5, 'Cecelia Koch III', 'witting.lilyan@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'pLgiVKybT9', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(6, 'Shannon Strosin', 'amber38@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9ejGixmXrY', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(7, 'Estefania Mayer', 'lavonne.hintz@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'v6xT6lg59U', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(8, 'Emely Ziemann', 'pete.murphy@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'zemFPO8cPr', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(9, 'Kaya Barrows', 'hhowe@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'hQJ7bShrbQ', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(10, 'Dr. Hadley Renner I', 'vhuels@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'df3Wh6aWQP', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(11, 'Mr. Alvis Gislason III', 'loraine97@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '0rPiNPz6yt', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(12, 'Beulah Johnson IV', 'hhilpert@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '5koMfSoKlA', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(13, 'PHT', 'test@gmail.com', '0833129021', '2023-10-19 19:05:51', '$2y$10$TaqI3w5TVZipqXnqc3wFnO39uCc/0kBgSJ.5GAT5MO9bhIbzxklYC', NULL, NULL, 'active', 'SELLER', 'dq1FS0CJ9V', NULL, '2023-10-19 19:05:51', '2023-11-30 19:20:20'),
+(14, 'Phan Thanh Hoá', 'hptp@gmail.com', NULL, NULL, '$2y$10$2UdWu.Cp6mW0KWPLX5rqguhUzvDQuTwd4MJoqP1A6CDt3Kj4K0Lg.', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-10-28 20:40:41', '2023-10-28 20:40:41'),
+(15, 'John Doe', 'admin23@gmail.com', NULL, NULL, '$2y$10$vG5ejDou8wRDvv/qTpBEMOElv6h3C61xiQyFbr.deXlICp9Pzi8ke', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-10-28 20:46:38', '2023-10-28 20:46:38'),
+(16, 'Wilford Murazik', 'marta36@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'cutipOQr8d', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(17, 'Prof. Berta Denesik III', 'schmitt.keyon@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'ew3QJmEqaY', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(18, 'Jana Fay', 'gordon12@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9XGvzXpcuX', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(19, 'Casey Marks', 'rhalvorson@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'NAwOU7uRaA', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(20, 'Maryse Mante', 'florine.weimann@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'qZ1gXDjWjj', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(21, 'Skylar Howell Jr.', 'wilhelm46@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'kW30BP9kzK', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(22, 'Dorris Cormier', 'unolan@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'HQ4iebujrV', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(23, 'Melba Rutherford', 'carolyne.pfeffer@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '6bQJr3Oycb', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(24, 'Dr. Bartholome Bosco', 'kenny.koelpin@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'Xu0jyJIHwD', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(25, 'Dr. Lina Kertzmann III', 'shanelle.mclaughlin@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '4v3qW6GTOc', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(27, 'Phan Thanh Hoá', 'hptp1@gmail.com', NULL, NULL, '$2y$10$LGGsXwlI7c0WDitu.KEqtO6JcsS24Q6x3luZnSqtYOBkDvH.uMEEG', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:21:47', '2023-11-24 00:21:47'),
+(28, 'Phan Thanh Hoá', 'hptp2@gmail.com', NULL, NULL, '$2y$10$ImyvZr3eOWcd6R1ua4DbwutNyXza/mcywOnueSc.c5a3JrSH39.GO', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:22:08', '2023-11-24 00:22:08'),
+(29, 'hoaphan', 'sd', NULL, NULL, '$2y$10$EHHHk2AXYTPIVXGH7IHGNeeTiAH3PcHiWlUb118CKwfCWBMDdyLja', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:26:46', '2023-11-24 00:26:46'),
+(30, 'hptprobook', '123456@gmail.com', NULL, NULL, '$2y$10$iw.eWLNHEuaG2HXOyRCMB.h0ANOZj5Weld2jPZg3FgdZm566GBdii', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:28:04', '2023-11-24 00:28:04'),
+(31, 'hoaphan', 'hot@gmail.com', NULL, NULL, '$2y$10$kQZWR9p0QgCcUgsqLPJhROBcvEDJ11zNSov5vf0fmZuOTPFvJuzra', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:09:51', '2023-11-25 01:09:51'),
+(32, 'hoaphan', 'hot1@gmail.com', NULL, NULL, '$2y$10$GHVDAGVjNrCgetDJqDZqoOeCxxrmsn4skNTYonfONW5.UfSmbWkcO', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:16:23', '2023-11-25 01:16:23'),
+(33, '12344', '1234@gmail.com', NULL, NULL, '$2y$10$cxztEa79GFg04BUKu6twkOg27hD/RK8LrPwsw.bTrW.qqsjgMWtue', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:18:11', '2023-11-25 01:18:11'),
+(34, '12344', '12345@gmail.com', NULL, NULL, '$2y$10$1UJuc2dV3pRiZv/fju7B0eqWC5KgdUfqdiYivq6KI2o0/jKIlLivy', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:19:08', '2023-11-25 01:19:08'),
+(35, '123456', '123456@gmail.com2', NULL, NULL, '$2y$10$6OW9YDV4ZPN15mzoYfg5wOTWbgN5kOu38jGuO6U1qWyJn/TjIJ.02', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:22:29', '2023-11-25 01:22:29'),
+(36, '123456', '1234562@gmail.com2', NULL, NULL, '$2y$10$yBrADBB5/DLF66kJ104Bye0YZESc/BtWmy8lufqVCPsWpp84R3fn2', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:23:42', '2023-11-25 01:23:42'),
+(37, '12345412', '12ni@gmail.com', NULL, NULL, '$2y$10$CxBjLS2YnbMETacHcUgzCeWgnNCuuBwC/lT/2Y7EQDvH5PWEXjGa2', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:33:36', '2023-11-25 01:33:36'),
+(38, '12345412', '12n23i@gmail.com', NULL, NULL, '$2y$10$gr4gdSaW73IbFbN8TEl9FOBZpWA3yxL13Ck5oBPxaDaOWMPLmqmKK', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:33:59', '2023-11-25 01:33:59'),
+(39, '12345412', '12n23wi@gmail.com', NULL, NULL, '$2y$10$9eSG41NgA1IACqD9QF.WZ.lfudpqmrmSHFyn5ip60jPWp/u6BEyLe', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:34:12', '2023-11-25 01:34:12'),
+(40, '12345623', 'admi2n@gmail.com', NULL, NULL, '$2y$10$fQG/PiN03UEiJPnKtSxcZuF1VfegRET4k4rtaPpFXaqWHQjiCg9Cm', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:35:00', '2023-11-25 01:35:00'),
+(41, '123456213', '123412@gmail.com', NULL, NULL, '$2y$10$PePC/aoZ5gSSOmqP/j9EsORdndDWnOuS6IUfOqHmbJJcgbIAwf/fS', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:35:28', '2023-11-25 01:35:28'),
+(42, 'hptprobooksd@gmail.com', 'hptprobooksd@gmail.com', NULL, NULL, '$2y$10$SFSqP8EfpgNTHymrlc2XW.o234eDUZZsUG69PjJLfF4ynSPI/G0YG', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:37:52', '2023-11-25 01:37:52'),
+(43, 'hptproboos3ek@gmail.com', 'hptproboos3ek@gmail.com', NULL, NULL, '$2y$10$hYCiB3KYGZnOQsJ0uTInDumCm0Tc2qM9ItyhwucgrwYHlHONBxXhi', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:40:12', '2023-11-25 01:40:12'),
+(44, 'hoaphan0420@gmail.com', 'hoaphan02420@gmail.com', NULL, NULL, '$2y$10$EPOOhENN461E.oMX9MwfSOvh6PKN28wxLsrChWRAOwYSEJ0pSbbJ.', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:46:46', '2023-11-25 01:46:46'),
+(45, '213412', '123421321@gmail.com', NULL, NULL, '$2y$10$8zorWeHrZyZPxzf9O/74oeUucyEGTKTjbf8tHIEbzMrVxkJVxIIk2', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:55:04', '2023-11-25 01:55:04'),
+(46, '1231242', 'adminqeqw@gmail.com', NULL, NULL, '$2y$10$sOl6GdC5tnR./sJI0fTH0um4vMO7qPYhPTttk24Q4XqV1om47sYtu', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 02:03:52', '2023-11-25 02:03:52'),
+(47, 'hoaphan0420@gmail.com', 'admin1232@gmail.com', NULL, NULL, '$2y$10$mVYLzZmZlPhsa5ZOnNuK9O0C8CzZlU.4Tv84Pd0Dty8LOoCOwytVC', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 19:28:56', '2023-11-25 19:28:56'),
+(48, '123213123', 'hotpr@gmail.com', NULL, NULL, '$2y$10$aLYcOItghc3u96MAQhtbJ.U/LdHhhU/eTsJpDMGjOVN9O.HBW3jTC', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 19:30:02', '2023-11-25 19:30:02');
 
 -- --------------------------------------------------------
 
@@ -12726,20 +12591,6 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `model_has_permissions`
---
-ALTER TABLE `model_has_permissions`
-  ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
-  ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
-
---
--- Chỉ mục cho bảng `model_has_roles`
---
-ALTER TABLE `model_has_roles`
-  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
-  ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
-
---
 -- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
@@ -12767,13 +12618,6 @@ ALTER TABLE `password_reset_tokens`
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`),
   ADD KEY `payments_order_id_foreign` (`order_id`);
-
---
--- Chỉ mục cho bảng `permissions`
---
-ALTER TABLE `permissions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
 
 --
 -- Chỉ mục cho bảng `personal_access_tokens`
@@ -12850,20 +12694,6 @@ ALTER TABLE `reviews`
   ADD KEY `reviews_user_id_foreign` (`user_id`);
 
 --
--- Chỉ mục cho bảng `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
-
---
--- Chỉ mục cho bảng `role_has_permissions`
---
-ALTER TABLE `role_has_permissions`
-  ADD PRIMARY KEY (`permission_id`,`role_id`),
-  ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
-
---
 -- Chỉ mục cho bảng `sellers`
 --
 ALTER TABLE `sellers`
@@ -12915,7 +12745,7 @@ ALTER TABLE `wards`
 -- AUTO_INCREMENT cho bảng `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT cho bảng `brands`
@@ -12969,7 +12799,7 @@ ALTER TABLE `hot_searches`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
@@ -12990,16 +12820,10 @@ ALTER TABLE `payments`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `permissions`
---
-ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
 -- AUTO_INCREMENT cho bảng `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT cho bảng `posts`
@@ -13036,12 +12860,6 @@ ALTER TABLE `provinces`
 --
 ALTER TABLE `reviews`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
-
---
--- AUTO_INCREMENT cho bảng `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `sellers`
@@ -13105,18 +12923,6 @@ ALTER TABLE `coupon_usages`
   ADD CONSTRAINT `coupon_usages_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Các ràng buộc cho bảng `model_has_permissions`
---
-ALTER TABLE `model_has_permissions`
-  ADD CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `model_has_roles`
---
-ALTER TABLE `model_has_roles`
-  ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
-
---
 -- Các ràng buộc cho bảng `orders`
 --
 ALTER TABLE `orders`
@@ -13177,13 +12983,6 @@ ALTER TABLE `product_variants`
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `role_has_permissions`
---
-ALTER TABLE `role_has_permissions`
-  ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `sellers`
