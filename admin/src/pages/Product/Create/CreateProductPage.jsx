@@ -19,10 +19,52 @@ import { fetchAllBrands } from "../../../redux/slices/brandsSlice";
 import { fetchAllTags } from "../../../redux/slices/tagsSlice";
 import AutoFillTag from "../../../components/common/AutoCompelete/AutoFillTag";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
 }));
+const addressSchema = Yup.object().shape({
+    name: Yup.string()
+        .required("Họ và tên không được để trống")
+        .min(3, "Giá trị không hợp lệ")
+        .test(
+            "two-words",
+            "Họ và phải chứa ít nhất hai từ",
+            (value) => value && value.trim().split(/\s+/).length >= 2
+        )
+        .max(255, "Họ và tên không vượt quá 255 ký tự"),
+    phone: Yup.string()
+        .required("Số điện thoại không được để trống")
+        .matches(/^[0-9]+$/, "Chỉ nhập số")
+        .min(10, "Số điện thoại phải có ít nhất 10 chữ số")
+        .max(11, "Số điện thoại không quá 11 chữ số"),
+    province: Yup.object()
+        .nullable()
+        .required("Tỉnh / Thành phố không được để trống")
+        .shape({
+            id: Yup.number().required("Chưa chọn tỉnh / thành phố"),
+            province_name: Yup.string().required(),
+        }),
+    district: Yup.object()
+        .nullable()
+        .required("Quận / Huyện không được để trống")
+        .shape({
+            DistrictID: Yup.number().required("Chưa chọn quận / huyện"),
+            DistrictName: Yup.string().required(),
+        }),
+    ward: Yup.object()
+        .nullable()
+        .required("Phường / Trị trấn không được để trống")
+        .shape({
+            WardCode: Yup.string().required("Chưa chọn phường / trị trấn"),
+            WardName: Yup.string().required(),
+        }),
+    address: Yup.string()
+        .required("Số nhà / đường không được để trống")
+        .max(255, "Địa chỉ không vượt quá 255 ký tự"),
+});
 export default function CreateProductPage() {
 
     // khai báo các hàm liên quan đến fecth data 
