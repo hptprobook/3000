@@ -278,7 +278,8 @@ export default function ProfileCreateAddress({ provinces }) {
                                     {...params}
                                     error={Boolean(formik.errors.province)}
                                     helperText={formik.errors.province}
-                                    value={formik.values.province}
+                                    // value={formik.values.province}
+                                    value="Hà Nội"
                                     label="Tỉnh / Thành phố *"
                                 />
                             )}

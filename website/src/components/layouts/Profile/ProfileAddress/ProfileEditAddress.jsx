@@ -213,16 +213,29 @@ export default function ProfileEditAddress({ data, provinces }) {
             // }
         },
     });
+
     useEffect(() => {
         if (addressById) {
             formik.setValues({
-                name: addressById.name,
-                phone: addressById.phone,
-                address: addressById.street,
-                isDefault: addressById.default == 0 ? false : true,
+                name: addressById.name || "",
+                phone: addressById.phone || "",
+                province:
+                    provinces.data.find(
+                        (p) => p.id === addressById.province_id
+                    ) || null,
+                district:
+                    districtOptions.find(
+                        (d) => d.DistrictID === addressById.district_id
+                    ) || null,
+                ward:
+                    wardOptions.find(
+                        (w) => w.WardCode === addressById.ward_id
+                    ) || null,
+                address: addressById.street || "",
+                isDefault: addressById.default === 1,
             });
         }
-    }, [addressById]);
+    }, [addressById, provinces.data, districtOptions, wardOptions]);
 
     if (!addressById) {
         return <CirLoading />;
