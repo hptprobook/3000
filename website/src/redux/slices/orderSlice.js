@@ -6,7 +6,7 @@ export const getAllOrder = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await OrderService.getAllOrders();
-            return response;
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -18,7 +18,7 @@ export const getOrderById = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
             const response = await OrderService.getOrderById(id);
-            return response;
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -30,7 +30,7 @@ export const addOrder = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await OrderService.addOrder(data);
-            return response;
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -42,7 +42,7 @@ export const updateOrder = createAsyncThunk(
     async ({ data, id }, { rejectWithValue }) => {
         try {
             const response = await OrderService.updateOrder(data, id);
-            return response;
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -54,7 +54,7 @@ export const deleteOrder = createAsyncThunk(
     async (id, { rejectWithValue }) => {
         try {
             const response = await OrderService.deleteOrder(id);
-            return response;
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }

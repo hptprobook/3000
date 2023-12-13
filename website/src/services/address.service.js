@@ -14,6 +14,14 @@ const AddressService = {
     getAddress: async () => {
         return handleRequest("addresses");
     },
+    getProvinceGHN: async () => {
+        try {
+            const res = await request.get("addresses/getProvinceGHN");
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
     getAddressById: async (id) => {
         try {
             const res = await request.get(`addresses/${id}`);
@@ -33,6 +41,14 @@ const AddressService = {
     updateAddress: async (data, id) => {
         try {
             const res = await request.put(`addresses/${id}`, data);
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
+    deleteAddress: async (id) => {
+        try {
+            const res = await request.delete(`addresses/${id}`);
             return res;
         } catch (err) {
             return err.response;

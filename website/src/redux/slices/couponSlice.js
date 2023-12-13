@@ -25,15 +25,15 @@ const couponSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getAllOrder.pending, (state) => {
+            .addCase(addCoupon.pending, (state) => {
                 state.status = "loading";
                 state.error = null;
             })
-            .addCase(getAllOrder.fulfilled, (state, action) => {
+            .addCase(addCoupon.fulfilled, (state, action) => {
                 state.status = "succeeded";
                 state.couponUsage = action.payload;
             })
-            .addCase(getAllOrder.rejected, (state, action) => {
+            .addCase(addCoupon.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });

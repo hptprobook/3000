@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
     Autocomplete,
@@ -8,6 +8,55 @@ import {
     Grid,
     TextField,
 } from "@mui/material";
+import { getDistrictList, getWardList } from "@/redux/slices/deliverySlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { addAddresses, clearAddress } from "@/redux/slices/addressSlice";
+import { useRouter } from "next/navigation";
+
+const addressSchema = Yup.object().shape({
+    name: Yup.string()
+        .required("Họ và tên không được để trống")
+        .min(3, "Giá trị không hợp lệ")
+        .test(
+            "two-words",
+            "Họ và phải chứa ít nhất hai từ",
+            (value) => value && value.trim().split(/\s+/).length >= 2
+        )
+        .max(255, "Họ và tên không vượt quá 255 ký tự"),
+    phone: Yup.string()
+        .required("Số điện thoại không được để trống")
+        .matches(/^[0-9]+$/, "Chỉ nhập số")
+        .min(10, "Số điện thoại phải có ít nhất 10 chữ số")
+        .max(11, "Số điện thoại không quá 11 chữ số"),
+    province: Yup.object()
+        .nullable()
+        .required("Tỉnh / Thành phố không được để trống")
+        .shape({
+            id: Yup.number().required("Chưa chọn tỉnh / thành phố"),
+            province_name: Yup.string().required(),
+        }),
+    district: Yup.object()
+        .nullable()
+        .required("Quận / Huyện không được để trống")
+        .shape({
+            DistrictID: Yup.number().required("Chưa chọn quận / huyện"),
+            DistrictName: Yup.string().required(),
+        }),
+    ward: Yup.object()
+        .nullable()
+        .required("Phường / Trị trấn không được để trống")
+        .shape({
+            WardCode: Yup.string().required("Chưa chọn phường / trị trấn"),
+            WardName: Yup.string().required(),
+        }),
+    address: Yup.string()
+        .required("Số nhà / đường không được để trống")
+        .max(255, "Địa chỉ không vượt quá 255 ký tự"),
+});
 
 const StyledProfileCreateAddress = styled("div")(() => ({
     "& .form": {
@@ -31,30 +80,183 @@ const StyledProfileCreateAddress = styled("div")(() => ({
     },
 }));
 
-export default function ProfileCreateAddress() {
+export default function ProfileCreateAddress({ provinces }) {
+    const [selectedProvinceId, setSelectedProvinceId] = useState(null);
+    const [selectedDistrictId, setSelectedDistrictId] = useState(null);
+    const [selectedWardId, setSelectedWardId] = useState(null);
+
+    const [districtOptions, setDistrictOptions] = useState([]);
+    const [wardOptions, setWardOptions] = useState([]);
+
+    const handleProvinceChange = (event, value) => {
+        if (value) {
+            setSelectedProvinceId(value.id);
+            setSelectedDistrictId(null);
+            setSelectedWardId(null);
+            setDistrictOptions([]);
+            setWardOptions([]);
+            dispatch(getDistrictList({ province_id: value.id }))
+                .then((response) => {
+                    const districts = response.payload.data;
+                    setDistrictOptions(districts);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+            setSelectedProvinceId(null);
+            setSelectedDistrictId(null);
+            setSelectedWardId(null);
+            setDistrictOptions([]);
+            setWardOptions([]);
+        }
+    };
+
+    const handleDistrictChange = (event, value) => {
+        if (value) {
+            setSelectedDistrictId(value.DistrictID);
+            setSelectedWardId(null);
+            setWardOptions([]);
+            dispatch(getWardList({ district_id: value.DistrictID }))
+                .then((response) => {
+                    const wards = response.payload.data;
+                    setWardOptions(wards);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+            setSelectedDistrictId(null);
+            setSelectedWardId(null);
+            setWardOptions([]);
+        }
+    };
+
+    const handleWardChange = (event, value) => {
+        if (value) {
+            setSelectedWardId(value.WardCode);
+        }
+    };
+
+    const dispatch = useDispatch();
+    const districtList = useSelector((state) => state.deliveries);
+    const address = useSelector((state) => state.addresses.address);
+    const router = useRouter();
+
+    // Formik
+    const formik = useFormik({
+        initialValues: {
+            name: "",
+            phone: "",
+            province: null,
+            district: null,
+            ward: null,
+            address: "",
+            isDefault: 0,
+        },
+        validationSchema: addressSchema,
+        onSubmit: (values) => {
+            const province_id = values.province ? values.province.id : null;
+            const district_id = values.district
+                ? values.district.DistrictID
+                : null;
+            const ward_code = values.ward ? values.ward.WardCode : null;
+
+            const province_name = values.province
+                ? values.province.province_name
+                : "";
+            const district_name = values.district
+                ? values.district.DistrictName
+                : "";
+            const ward_name = values.ward ? values.ward.WardName : "";
+            const fullAddress = `${province_name}, ${district_name}, ${ward_name}, ${values.address}`;
+
+            const payload = {
+                name: values.name,
+                phone: values.phone,
+                province_id,
+                district_id,
+                street: values.address,
+                ward_id: ward_code,
+                address_info: fullAddress,
+                default: values.isDefault,
+            };
+
+            dispatch(addAddresses(payload))
+                .then(() => {
+                    toast.success("Thêm mới địa chỉ thành công", {
+                        autoClose: 2000,
+                    });
+                    setTimeout(() => {
+                        router.push("/profile/address");
+                    }, 1000);
+                })
+                .catch((error) => {
+                    toast.error(error);
+                });
+
+            if (address) {
+                dispatch(clearAddress());
+            }
+        },
+    });
+
+    const handleProvinceSelect = (event, value) => {
+        formik.setFieldValue("province", value);
+        handleProvinceChange(event, value);
+    };
+
+    const handleDistrictSelect = (event, value) => {
+        formik.setFieldValue("district", value);
+        handleDistrictChange(event, value);
+    };
+
+    const handleWardSelect = (event, value) => {
+        formik.setFieldValue("ward", value);
+        handleWardChange(event, value);
+    };
+
     return (
         <StyledProfileCreateAddress>
             <p>Tạo sổ địa chỉ</p>
-            <form className="form" action="">
+            <form className="form" onSubmit={formik.handleSubmit}>
                 <Grid container spacing={1.5}>
                     <Grid item xs={6}>
                         <TextField
                             fullWidth
+                            name="name"
                             size="small"
-                            required
+                            value={formik.values.name}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={
+                                formik.touched.name &&
+                                Boolean(formik.errors.name)
+                            }
+                            helperText={
+                                formik.touched.name && formik.errors.name
+                            }
                             id="outlined-required"
                             label="Họ và tên"
-                            defaultValue="Phan Hóa"
                         />
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
                             fullWidth
                             size="small"
-                            required
+                            name="phone"
+                            value={formik.values.phone}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={
+                                formik.touched.phone &&
+                                Boolean(formik.errors.phone)
+                            }
+                            helperText={
+                                formik.touched.phone && formik.errors.phone
+                            }
                             id="outlined-required"
                             label="Số điện thoại"
-                            defaultValue="0833129021"
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -62,12 +264,58 @@ export default function ProfileCreateAddress() {
                             disablePortal
                             size="small"
                             id="combo-box-demo"
-                            options={top100Films}
+                            options={provinces.data}
+                            onChange={handleProvinceSelect}
+                            value={formik.values.province}
+                            getOptionLabel={(option) =>
+                                option ? option.province_name : ""
+                            }
+                            getOptionSelected={(option, value) =>
+                                option.id === value.id
+                            }
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    error={Boolean(formik.errors.province)}
+                                    helperText={formik.errors.province}
+                                    value={formik.values.province}
+                                    label="Tỉnh / Thành phố *"
+                                />
+                            )}
+                            sx={{ width: 300 }}
+                        />
+                    </Grid>
+
+                    <Grid item xs={6}>
+                        <Autocomplete
+                            disablePortal
+                            size="small"
+                            id="combo-box-district"
+                            key={selectedProvinceId}
+                            value={
+                                (formik.values.district &&
+                                    districtOptions.find(
+                                        (d) =>
+                                            d.DistrictID === selectedDistrictId
+                                    )) ||
+                                null
+                            }
+                            options={districtOptions}
+                            onChange={handleDistrictSelect}
+                            getOptionLabel={(option) =>
+                                option ? option.DistrictName : ""
+                            }
+                            getOptionSelected={(option, value) =>
+                                option.DistrictID === value.id
+                            }
                             sx={{ width: 300 }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    label="Tỉnh / Thành phố *"
+                                    label="Quận / Huyện *"
+                                    error={Boolean(formik.errors.district)}
+                                    helperText={formik.errors.district}
+                                    value={formik.values.district}
                                 />
                             )}
                         />
@@ -77,24 +325,29 @@ export default function ProfileCreateAddress() {
                             disablePortal
                             size="small"
                             id="combo-box-demo"
-                            options={top100Films}
+                            options={wardOptions}
                             sx={{ width: 300 }}
-                            renderInput={(params) => (
-                                <TextField {...params} label="Quận / Huyện *" />
-                            )}
-                        />
-                    </Grid>
-                    <Grid item xs={6}>
-                        <Autocomplete
-                            disablePortal
-                            size="small"
-                            id="combo-box-demo"
-                            options={top100Films}
-                            sx={{ width: 300 }}
+                            value={
+                                (formik.values.ward &&
+                                    wardOptions.find(
+                                        (w) => w.WardCode === selectedWardId
+                                    )) ||
+                                null
+                            }
+                            onChange={handleWardSelect}
+                            getOptionLabel={(option) =>
+                                option ? option.WardName : ""
+                            }
+                            getOptionSelected={(option, value) =>
+                                option.WardCode === value.id
+                            }
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     label="Phường / Trị trấn *"
+                                    error={Boolean(formik.errors.ward)}
+                                    helperText={formik.errors.ward}
+                                    value={formik.values.ward}
                                 />
                             )}
                         />
@@ -103,19 +356,38 @@ export default function ProfileCreateAddress() {
                         <TextField
                             fullWidth
                             size="small"
-                            required
                             id="outlined-required"
                             label="Số nhà / đường"
+                            name="address"
+                            value={formik.values.address}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={
+                                formik.touched.address &&
+                                Boolean(formik.errors.address)
+                            }
+                            helperText={
+                                formik.touched.address && formik.errors.address
+                            }
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <FormControlLabel
                             sx={{
-                                "& .MuiTypography-root": {
-                                    fontSize: "14px",
-                                },
+                                "& .MuiTypography-root": { fontSize: "14px" },
                             }}
-                            control={<Checkbox />}
+                            control={
+                                <Checkbox
+                                    checked={formik.values.isDefault === 1}
+                                    onChange={(event) =>
+                                        formik.setFieldValue(
+                                            "isDefault",
+                                            event.target.checked ? 1 : 0
+                                        )
+                                    }
+                                    name="isDefault"
+                                />
+                            }
                             label="Đặt địa chỉ làm mặc định"
                         />
                     </Grid>
@@ -129,130 +401,3 @@ export default function ProfileCreateAddress() {
         </StyledProfileCreateAddress>
     );
 }
-
-const top100Films = [
-    { label: "The Shawshank Redemption", year: 1994 },
-    { label: "The Godfather", year: 1972 },
-    { label: "The Godfather: Part II", year: 1974 },
-    { label: "The Dark Knight", year: 2008 },
-    { label: "12 Angry Men", year: 1957 },
-    { label: "Schindler's List", year: 1993 },
-    { label: "Pulp Fiction", year: 1994 },
-    {
-        label: "The Lord of the Rings: The Return of the King",
-        year: 2003,
-    },
-    { label: "The Good, the Bad and the Ugly", year: 1966 },
-    { label: "Fight Club", year: 1999 },
-    {
-        label: "The Lord of the Rings: The Fellowship of the Ring",
-        year: 2001,
-    },
-    {
-        label: "Star Wars: Episode V - The Empire Strikes Back",
-        year: 1980,
-    },
-    { label: "Forrest Gump", year: 1994 },
-    { label: "Inception", year: 2010 },
-    {
-        label: "The Lord of the Rings: The Two Towers",
-        year: 2002,
-    },
-    { label: "One Flew Over the Cuckoo's Nest", year: 1975 },
-    { label: "Goodfellas", year: 1990 },
-    { label: "The Matrix", year: 1999 },
-    { label: "Seven Samurai", year: 1954 },
-    {
-        label: "Star Wars: Episode IV - A New Hope",
-        year: 1977,
-    },
-    { label: "City of God", year: 2002 },
-    { label: "Se7en", year: 1995 },
-    { label: "The Silence of the Lambs", year: 1991 },
-    { label: "It's a Wonderful Life", year: 1946 },
-    { label: "Life Is Beautiful", year: 1997 },
-    { label: "The Usual Suspects", year: 1995 },
-    { label: "Léon: The Professional", year: 1994 },
-    { label: "Spirited Away", year: 2001 },
-    { label: "Saving Private Ryan", year: 1998 },
-    { label: "Once Upon a Time in the West", year: 1968 },
-    { label: "American History X", year: 1998 },
-    { label: "Interstellar", year: 2014 },
-    { label: "Casablanca", year: 1942 },
-    { label: "City Lights", year: 1931 },
-    { label: "Psycho", year: 1960 },
-    { label: "The Green Mile", year: 1999 },
-    { label: "The Intouchables", year: 2011 },
-    { label: "Modern Times", year: 1936 },
-    { label: "Raiders of the Lost Ark", year: 1981 },
-    { label: "Rear Window", year: 1954 },
-    { label: "The Pianist", year: 2002 },
-    { label: "The Departed", year: 2006 },
-    { label: "Terminator 2: Judgment Day", year: 1991 },
-    { label: "Back to the Future", year: 1985 },
-    { label: "Whiplash", year: 2014 },
-    { label: "Gladiator", year: 2000 },
-    { label: "Memento", year: 2000 },
-    { label: "The Prestige", year: 2006 },
-    { label: "The Lion King", year: 1994 },
-    { label: "Apocalypse Now", year: 1979 },
-    { label: "Alien", year: 1979 },
-    { label: "Sunset Boulevard", year: 1950 },
-    {
-        label: "Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb",
-        year: 1964,
-    },
-    { label: "The Great Dictator", year: 1940 },
-    { label: "Cinema Paradiso", year: 1988 },
-    { label: "The Lives of Others", year: 2006 },
-    { label: "Grave of the Fireflies", year: 1988 },
-    { label: "Paths of Glory", year: 1957 },
-    { label: "Django Unchained", year: 2012 },
-    { label: "The Shining", year: 1980 },
-    { label: "WALL·E", year: 2008 },
-    { label: "American Beauty", year: 1999 },
-    { label: "The Dark Knight Rises", year: 2012 },
-    { label: "Princess Mononoke", year: 1997 },
-    { label: "Aliens", year: 1986 },
-    { label: "Oldboy", year: 2003 },
-    { label: "Once Upon a Time in America", year: 1984 },
-    { label: "Witness for the Prosecution", year: 1957 },
-    { label: "Das Boot", year: 1981 },
-    { label: "Citizen Kane", year: 1941 },
-    { label: "North by Northwest", year: 1959 },
-    { label: "Vertigo", year: 1958 },
-    {
-        label: "Star Wars: Episode VI - Return of the Jedi",
-        year: 1983,
-    },
-    { label: "Reservoir Dogs", year: 1992 },
-    { label: "Braveheart", year: 1995 },
-    { label: "M", year: 1931 },
-    { label: "Requiem for a Dream", year: 2000 },
-    { label: "Amélie", year: 2001 },
-    { label: "A Clockwork Orange", year: 1971 },
-    { label: "Like Stars on Earth", year: 2007 },
-    { label: "Taxi Driver", year: 1976 },
-    { label: "Lawrence of Arabia", year: 1962 },
-    { label: "Double Indemnity", year: 1944 },
-    {
-        label: "Eternal Sunshine of the Spotless Mind",
-        year: 2004,
-    },
-    { label: "Amadeus", year: 1984 },
-    { label: "To Kill a Mockingbird", year: 1962 },
-    { label: "Toy Story 3", year: 2010 },
-    { label: "Logan", year: 2017 },
-    { label: "Full Metal Jacket", year: 1987 },
-    { label: "Dangal", year: 2016 },
-    { label: "The Sting", year: 1973 },
-    { label: "2001: A Space Odyssey", year: 1968 },
-    { label: "Singin' in the Rain", year: 1952 },
-    { label: "Toy Story", year: 1995 },
-    { label: "Bicycle Thieves", year: 1948 },
-    { label: "The Kid", year: 1921 },
-    { label: "Inglourious Basterds", year: 2009 },
-    { label: "Snatch", year: 2000 },
-    { label: "3 Idiots", year: 2009 },
-    { label: "Monty Python and the Holy Grail", year: 1975 },
-];
