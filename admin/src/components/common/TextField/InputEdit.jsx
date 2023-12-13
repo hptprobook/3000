@@ -44,7 +44,7 @@ const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
   }
 }))
 
-export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur, id, note, disabled }) {
+export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur, id, note, disabled, name }) {
 
   return (
     <FormControlEdit error={error} fullWidth sx={{ m: 1 }} variant="filled">
@@ -55,6 +55,7 @@ export default function InputEdit({ label, icon, value, onChange, type, error, h
         onChange={onChange}
         onBlur={onBlur}
         type={type || 'text'}
+        name={name}
         id={id}
         startAdornment={<InputAdornment position="start">{icon}</InputAdornment>}
       />
