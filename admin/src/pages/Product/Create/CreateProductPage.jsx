@@ -25,45 +25,45 @@ import { useFormik } from "formik";
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
 }));
-const addressSchema = Yup.object().shape({
+const productSchema = Yup.object().shape({
     name: Yup.string()
-        .required("Họ và tên không được để trống")
+        .required("Tên sản phẩm không được để trống")
         .min(3, "Giá trị không hợp lệ")
-        .test(
-            "two-words",
-            "Họ và phải chứa ít nhất hai từ",
-            (value) => value && value.trim().split(/\s+/).length >= 2
-        )
-        .max(255, "Họ và tên không vượt quá 255 ký tự"),
-    phone: Yup.string()
-        .required("Số điện thoại không được để trống")
-        .matches(/^[0-9]+$/, "Chỉ nhập số")
-        .min(10, "Số điện thoại phải có ít nhất 10 chữ số")
-        .max(11, "Số điện thoại không quá 11 chữ số"),
-    province: Yup.object()
+        .max(255, "Tên sản phẩm không vượt quá 255 ký tự"),
+    quantity: Yup.string()
+        .required("Số lượng không được để trống")
+        .matches(/^[1-9][0-9]*$/, "Số lương không được âm"),
+    price: Yup.number()
+        .required("Giá không được trống")
+        .min(0, "Giá không thể âm")
+        .integer("Giá phải là số nguyên"),
+    discount: Yup.number()
         .nullable()
-        .required("Tỉnh / Thành phố không được để trống")
-        .shape({
-            id: Yup.number().required("Chưa chọn tỉnh / thành phố"),
-            province_name: Yup.string().required(),
-        }),
-    district: Yup.object()
+        .max(100, "Giảm giá không thể lớn hơn 100")
+        .positive("Giảm giá phải là số dương"),
+    height: Yup.number()
         .nullable()
-        .required("Quận / Huyện không được để trống")
-        .shape({
-            DistrictID: Yup.number().required("Chưa chọn quận / huyện"),
-            DistrictName: Yup.string().required(),
-        }),
-    ward: Yup.object()
+        .required("Chiều cao không được để trống")
+        .positive("Chiều cao phải là số dương"),
+    weight: Yup.number()
         .nullable()
-        .required("Phường / Trị trấn không được để trống")
-        .shape({
-            WardCode: Yup.string().required("Chưa chọn phường / trị trấn"),
-            WardName: Yup.string().required(),
-        }),
-    address: Yup.string()
-        .required("Số nhà / đường không được để trống")
-        .max(255, "Địa chỉ không vượt quá 255 ký tự"),
+        .required("Cân nặng không được để trống")
+        .positive("Cân nặng phải là số dương"),
+    width: Yup.number()
+        .nullable()
+        .required("Chiều rộng không được để trống")
+        .positive("Chiều rộng phải là số dương"),
+    length: Yup.number()
+        .nullable()
+        .required("Chiều dài không được để trống")
+        .positive("Chiều dài phải là số dương"),
+    short_desc: Yup.string()
+        .nullable()
+        .required("Mô tả ngắn không được để trống")
+        .max(1000, "Mô tả ngắn không được quá 1000 kí tự"),
+    detail: Yup.string()
+        .nullable()
+        .required("Chi tiết sản phẩm không được để trống")
 });
 export default function CreateProductPage() {
 
@@ -241,6 +241,11 @@ export default function CreateProductPage() {
         console.log(form)
 
     };
+
+    const handleChangeBrand = (value) => {
+        console.log(value);
+    };
+
     const handleAddTag = (value) => {
         console.log(value);
     }
@@ -330,6 +335,7 @@ export default function CreateProductPage() {
                                 label={'Nhãn hàng'}
                                 data={brands}
                                 value={''}
+                                onChange={(e) => handleChangeBrand(e.target.value)}
                             />
                         </DivMargin>
 
