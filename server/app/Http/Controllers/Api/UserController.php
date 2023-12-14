@@ -47,6 +47,18 @@ class UserController extends Controller
         return response()->json(['error' => 'Api does not exist'], Response::HTTP_NOT_FOUND);
     }
 
+    public function getCurrentUser()
+    {
+        try {
+            $user = Auth::user();
+            return response()->json($user, Response::HTTP_OK);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function show($id)
     {
         try {
