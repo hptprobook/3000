@@ -80,7 +80,7 @@ class OrderController extends Controller
 
                 $product = Product::find($cartItem->product_id);
                 if ($product->quantity <= 0) {
-                    throw new Exception("Product with ID {$product->id} is out of stock.");
+                    throw new Exception("Product is out of stock.");
                 }
                 $product->decrement('quantity', $cartItem->quantity);
             }

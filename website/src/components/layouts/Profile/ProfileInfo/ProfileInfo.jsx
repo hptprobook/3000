@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import PersonIcon from "@mui/icons-material/Person";
 import IconField from "@/components/common/TextField/IconField/IconField";
@@ -10,6 +10,12 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { TextField } from "@mui/material";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 const StyledProfileInfo = styled("div")(() => ({
     borderRadius: "5px",
@@ -100,7 +106,69 @@ const StyledProfileInfo = styled("div")(() => ({
     },
 }));
 
-export default function ProfileInfo() {
+const updateUserSchema = Yup.object().shape({
+    name: Yup.string()
+        .required("Họ và tên không được để trống")
+        .min(5, "Giá trị không hợp lệ")
+        .test(
+            "two-words",
+            "Họ và phải chứa ít nhất hai từ",
+            (value) => value && value.trim().split(/\s+/).length >= 2
+        )
+        .max(128, "Họ và tên không vượt quá 255 ký tự"),
+    phone: Yup.string().matches(/^0[0-9]{9}$/, "Số điện thoại không hợp lệ"),
+    birth_date: Yup.date()
+        .max(new Date(), "Ngày sinh không thể là trong tương lai.")
+        .min(
+            new Date(new Date().setFullYear(new Date().getFullYear() - 120)),
+            "Tuổi không thể lớn hơn 120."
+        ),
+});
+
+export default function ProfileInfo({ user }) {
+    console.log("🚀 ~ file: ProfileInfo.jsx:104 ~ ProfileInfo ~ user:", user);
+    function formatDate(date) {
+        const d = new Date(date);
+        let month = "" + (d.getMonth() + 1);
+        let day = "" + d.getDate();
+        const year = d.getFullYear();
+
+        if (month.length < 2) month = "0" + month;
+        if (day.length < 2) day = "0" + day;
+
+        return [month, day, year].join("/");
+    }
+
+    const formik = useFormik({
+        initialValues: {
+            name: "",
+            phone: "",
+            birth_date: formatDate(new Date()),
+            gender: null,
+        },
+        validationSchema: updateUserSchema,
+        onSubmit: (value) => {
+            console.log("submit");
+        },
+    });
+
+    useEffect(() => {
+        if (user) {
+            formik.setValues({
+                name: user.name || "",
+                phone: user.phone_number || "",
+                birth_date: user?.birth_date
+                    ? formatDate(user.birth_date)
+                    : formatDate(new Date()),
+                gender: user.gender || "",
+            });
+        }
+    }, [user]);
+
+    if (!user) {
+        return <CirLoading />;
+    }
+
     return (
         <StyledProfileInfo>
             <div className="left">
@@ -116,10 +184,22 @@ export default function ProfileInfo() {
                     </div>
                     <div className="fullname">
                         <div>
-                            <IconField
-                                icon={<BadgeIcon />}
-                                text={"Họ và tên"}
-                                value={"Phan Thanh Hóa"}
+                            <TextField
+                                fullWidth
+                                name="name"
+                                size="small"
+                                value={formik.values.name}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={
+                                    formik.touched.name &&
+                                    Boolean(formik.errors.name)
+                                }
+                                helperText={
+                                    formik.touched.name && formik.errors.name
+                                }
+                                id="outlined-required"
+                                label="Họ và tên"
                             />
                         </div>
                         <div
@@ -127,16 +207,42 @@ export default function ProfileInfo() {
                                 marginTop: "12px",
                             }}
                         >
-                            <IconField
-                                icon={<LocalPhoneIcon />}
-                                text={"Số điện thoại"}
-                                value={"0833129021"}
+                            <TextField
+                                sx={{
+                                    width: "300px",
+                                }}
+                                size="small"
+                                name="phone"
+                                label="Số điện thoại"
+                                value={formik.values.phone}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={
+                                    formik.touched.phone &&
+                                    Boolean(formik.errors.phone)
+                                }
+                                helperText={
+                                    formik.touched.phone && formik.errors.phone
+                                }
                             />
                         </div>
                     </div>
                 </div>
                 <div className="birthdate">
-                    <BasicDatePicker label={"Ngày sinh"} date={"04/14/2000"} />
+                    <BasicDatePicker
+                        label={"Ngày sinh"}
+                        date={formik.values.birth_date}
+                        onBlur={formik.handleBlur}
+                        onChange={formik.handleChange}
+                        error={
+                            formik.touched.birth_date &&
+                            Boolean(formik.errors.birth_date)
+                        }
+                        helperText={
+                            formik.touched.birth_date &&
+                            formik.errors.birth_date
+                        }
+                    />
                 </div>
                 <div className="gender">
                     <GenderRadio />
@@ -148,7 +254,7 @@ export default function ProfileInfo() {
                 <div className="email item">
                     <div>
                         <EmailIcon sx={{ color: "#a2a2a3" }} />
-                        <span>Thay đổi địa chỉ Email</span>
+                        <span>Xác minh địa chỉ Email</span>
                     </div>
                     <Link href={""}>
                         <button className="update">Cập nhật</button>

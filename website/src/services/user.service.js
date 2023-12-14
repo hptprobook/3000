@@ -19,6 +19,15 @@ const UserService = {
         return handleRequest(`users/${id}`);
     },
 
+    getCurrentUser: async () => {
+        try {
+            const res = await request.get("users/current_user");
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
+
     updateUser: async (user, id) => {
         try {
             const res = await request.put(`users/${id}`, user);

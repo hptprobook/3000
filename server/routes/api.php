@@ -56,7 +56,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
     Route::get('/addresses/getProvinceGHN', [AddressController::class, 'getProvincesByGHN']);
 
+    Route::get('users/current_user', [UserController::class, 'getCurrentUser']);
     Route::apiResource('users', UserController::class);
+
 
     Route::apiResource('addresses', AddressController::class);
 
