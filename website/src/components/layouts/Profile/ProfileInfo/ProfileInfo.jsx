@@ -16,6 +16,10 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TextField } from "@mui/material";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const StyledProfileInfo = styled("div")(() => ({
     borderRadius: "5px",
@@ -126,7 +130,6 @@ const updateUserSchema = Yup.object().shape({
 });
 
 export default function ProfileInfo({ user }) {
-    console.log("🚀 ~ file: ProfileInfo.jsx:104 ~ ProfileInfo ~ user:", user);
     function formatDate(date) {
         const d = new Date(date);
         let month = "" + (d.getMonth() + 1);
@@ -148,7 +151,7 @@ export default function ProfileInfo({ user }) {
         },
         validationSchema: updateUserSchema,
         onSubmit: (value) => {
-            console.log("submit");
+            console.log(value);
         },
     });
 
@@ -171,84 +174,105 @@ export default function ProfileInfo({ user }) {
 
     return (
         <StyledProfileInfo>
-            <div className="left">
-                <p>Thông tin cá nhân</p>
-                <div className="first">
-                    <div className="avatar">
-                        <img
-                            className="img-c"
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png"
-                            alt=""
-                        />
-                        <div className="change">Thay đổi</div>
-                    </div>
-                    <div className="fullname">
-                        <div>
-                            <TextField
-                                fullWidth
-                                name="name"
-                                size="small"
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={
-                                    formik.touched.name &&
-                                    Boolean(formik.errors.name)
-                                }
-                                helperText={
-                                    formik.touched.name && formik.errors.name
-                                }
-                                id="outlined-required"
-                                label="Họ và tên"
+            <form action="" onSubmit={formik.handleSubmit}>
+                <div className="left">
+                    <p>Thông tin cá nhân</p>
+                    <div className="first">
+                        <div className="avatar">
+                            <img
+                                className="img-c"
+                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png"
+                                alt=""
                             />
+                            <div className="change">Thay đổi</div>
                         </div>
-                        <div
-                            style={{
-                                marginTop: "12px",
-                            }}
-                        >
-                            <TextField
-                                sx={{
-                                    width: "300px",
+                        <div className="fullname">
+                            <div>
+                                <TextField
+                                    fullWidth
+                                    name="name"
+                                    size="small"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={
+                                        formik.touched.name &&
+                                        Boolean(formik.errors.name)
+                                    }
+                                    helperText={
+                                        formik.touched.name &&
+                                        formik.errors.name
+                                    }
+                                    id="outlined-required"
+                                    label="Họ và tên"
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    marginTop: "12px",
                                 }}
-                                size="small"
-                                name="phone"
-                                label="Số điện thoại"
-                                value={formik.values.phone}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={
-                                    formik.touched.phone &&
-                                    Boolean(formik.errors.phone)
-                                }
-                                helperText={
-                                    formik.touched.phone && formik.errors.phone
-                                }
-                            />
+                            >
+                                <TextField
+                                    sx={{
+                                        width: "300px",
+                                    }}
+                                    size="small"
+                                    name="phone"
+                                    label="Số điện thoại"
+                                    value={formik.values.phone}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={
+                                        formik.touched.phone &&
+                                        Boolean(formik.errors.phone)
+                                    }
+                                    helperText={
+                                        formik.touched.phone &&
+                                        formik.errors.phone
+                                    }
+                                />
+                            </div>
                         </div>
                     </div>
+                    <div className="birthdate">
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DemoContainer
+                                components={["DatePicker"]}
+                                sx={{
+                                    width: "100%",
+                                    "& .MuiFormControl-root": {
+                                        width: "100%",
+                                        marginTop: "20px",
+                                    },
+                                }}
+                            >
+                                <DatePicker
+                                    value={dayjs(formik.values.birth_date)}
+                                    onChange={formik.handleChange}
+                                    label={"Ngày sinh"}
+                                    name={"birth_date"}
+                                />
+                            </DemoContainer>
+                        </LocalizationProvider>
+                    </div>
+                    <div className="gender">
+                        <GenderRadio
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.gender}
+                            name={"gender"}
+                            error={
+                                formik.touched.gender &&
+                                Boolean(formik.errors.gender)
+                            }
+                            helperText={
+                                formik.touched.gender && formik.errors.gender
+                            }
+                        />
+                    </div>
+                    <button className="save-info">Lưu thay đổi</button>
                 </div>
-                <div className="birthdate">
-                    <BasicDatePicker
-                        label={"Ngày sinh"}
-                        date={formik.values.birth_date}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                            formik.touched.birth_date &&
-                            Boolean(formik.errors.birth_date)
-                        }
-                        helperText={
-                            formik.touched.birth_date &&
-                            formik.errors.birth_date
-                        }
-                    />
-                </div>
-                <div className="gender">
-                    <GenderRadio />
-                </div>
-                <button className="save-info">Lưu thay đổi</button>
-            </div>
+            </form>
             <div className="right">
                 <p>Bảo mật</p>
                 <div className="email item">

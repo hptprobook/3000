@@ -5,7 +5,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 
-export default function GenderRadio() {
+export default function GenderRadio({ value, onChange, onBlur, name }) {
     return (
         <FormControl
             className="d-flex"
@@ -19,7 +19,10 @@ export default function GenderRadio() {
             <RadioGroup
                 row
                 aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
+                onChange={onChange}
+                onBlur={onBlur}
+                value={value}
+                name={name}
             >
                 <FormControlLabel
                     value="male"

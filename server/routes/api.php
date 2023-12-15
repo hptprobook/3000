@@ -59,7 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('users/current_user', [UserController::class, 'getCurrentUser']);
     Route::apiResource('users', UserController::class);
 
-
     Route::apiResource('addresses', AddressController::class);
 
     Route::apiResource('brands', BrandController::class)->except(['index', 'show', 'topBrand']);
