@@ -13,7 +13,7 @@ const StyledCheckout = styled("div")(() => ({
     },
 }));
 
-export default function Checkout({ totalPrice }) {
+export default function Checkout({ totalPrice, fee }) {
     return (
         <StyledCheckout>
             <div className="checkout_head jc-sb">
@@ -58,7 +58,7 @@ export default function Checkout({ totalPrice }) {
                         color: "#808089",
                     }}
                 >
-                    0đ
+                    {fee && Number(fee).toLocaleString()}đ
                 </p>
             </div>
             <div className="jc-sb mt-6">

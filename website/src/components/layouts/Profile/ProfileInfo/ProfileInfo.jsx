@@ -1,12 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import PersonIcon from "@mui/icons-material/Person";
-import IconField from "@/components/common/TextField/IconField/IconField";
-import BasicDatePicker from "@/components/common/TextField/DatePicker/DatePicker";
 import GenderRadio from "@/components/common/Radio/Gender/GenderRadio";
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import BadgeIcon from "@mui/icons-material/Badge";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import Link from "next/link";
@@ -16,10 +11,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TextField } from "@mui/material";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import { updateCurrentUser } from "@/redux/slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const StyledProfileInfo = styled("div")(() => ({
     borderRadius: "5px",
@@ -73,6 +66,26 @@ const StyledProfileInfo = styled("div")(() => ({
             cursor: "pointer",
             "&:hover": {
                 opacity: "0.8",
+            },
+        },
+        "& .birthdate": {
+            marginTop: "12px",
+            input: {
+                width: "100%",
+                height: "40px",
+                borderRadius: "3px",
+                border: "1px solid #0000003b",
+                paddingLeft: "12px",
+                fontSize: "15px",
+                fontFamily: "var(--font-family)",
+                cursor: "text",
+                outline: "none",
+                "&:hover": {
+                    borderColor: "#333",
+                },
+                "&:focus": {
+                    border: "2px solid #2184ff",
+                },
             },
         },
     },
@@ -130,28 +143,33 @@ const updateUserSchema = Yup.object().shape({
 });
 
 export default function ProfileInfo({ user }) {
-    function formatDate(date) {
-        const d = new Date(date);
-        let month = "" + (d.getMonth() + 1);
-        let day = "" + d.getDate();
-        const year = d.getFullYear();
-
-        if (month.length < 2) month = "0" + month;
-        if (day.length < 2) day = "0" + day;
-
-        return [month, day, year].join("/");
-    }
+    const dispatch = useDispatch();
 
     const formik = useFormik({
         initialValues: {
             name: "",
             phone: "",
-            birth_date: formatDate(new Date()),
+            birth_date: "",
             gender: null,
         },
         validationSchema: updateUserSchema,
         onSubmit: (value) => {
-            console.log(value);
+            const data = {
+                name: value.name,
+                phone_number: value.phone || null,
+                birth_date: value.birth_date,
+                gender: value.gender || null,
+            };
+            console.log(data);
+            dispatch(updateCurrentUser(data))
+                .then(() => {
+                    toast.success("Cập nhật thông tin thành công", {
+                        autoClose: 2000,
+                    });
+                })
+                .catch((error) => {
+                    toast.error(error);
+                });
         },
     });
 
@@ -160,9 +178,7 @@ export default function ProfileInfo({ user }) {
             formik.setValues({
                 name: user.name || "",
                 phone: user.phone_number || "",
-                birth_date: user?.birth_date
-                    ? formatDate(user.birth_date)
-                    : formatDate(new Date()),
+                birth_date: user.birth_date || new Date(),
                 gender: user.gender || "",
             });
         }
@@ -235,25 +251,26 @@ export default function ProfileInfo({ user }) {
                         </div>
                     </div>
                     <div className="birthdate">
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DemoContainer
-                                components={["DatePicker"]}
-                                sx={{
-                                    width: "100%",
-                                    "& .MuiFormControl-root": {
-                                        width: "100%",
-                                        marginTop: "20px",
-                                    },
-                                }}
-                            >
-                                <DatePicker
-                                    value={dayjs(formik.values.birth_date)}
-                                    onChange={formik.handleChange}
-                                    label={"Ngày sinh"}
-                                    name={"birth_date"}
-                                />
-                            </DemoContainer>
-                        </LocalizationProvider>
+                        <label for="birthdate">Ngày sinh</label>
+                        <input
+                            name="birth_date"
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.birth_date}
+                            className="mt-12"
+                            type="date"
+                            id="birthdate"
+                            error={
+                                formik.touched.birth_date &&
+                                Boolean(formik.errors.birth_date)
+                            }
+                        />
+                        {formik.touched.birth_date &&
+                            formik.errors.birth_date && (
+                                <div className="error-message">
+                                    {formik.errors.birth_date}
+                                </div>
+                            )}
                     </div>
                     <div className="gender">
                         <GenderRadio

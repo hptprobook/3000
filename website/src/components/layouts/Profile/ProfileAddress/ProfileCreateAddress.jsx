@@ -169,7 +169,7 @@ export default function ProfileCreateAddress({ provinces }) {
                 ? values.district.DistrictName
                 : "";
             const ward_name = values.ward ? values.ward.WardName : "";
-            const fullAddress = `${province_name}, ${district_name}, ${ward_name}, ${values.address}`;
+            const fullAddress = `${values.address}, ${ward_name}, ${district_name}, ${province_name}`;
 
             const payload = {
                 name: values.name,
