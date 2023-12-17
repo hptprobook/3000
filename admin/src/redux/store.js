@@ -8,6 +8,8 @@ import ordersReducer from "./slices/ordersSlice";
 import addressSlice from "./slices/addressSlice";
 import uploadReducer from "./slices/uploadSlice";
 import productsReducer from "./slices/productSlice";
+import variantReducer from "./slices/variantSlice";
+
 
 export const store = configureStore({
     reducer: {
@@ -20,5 +22,6 @@ export const store = configureStore({
         brands: brandsReducer,
         orders: ordersReducer,
         tags: tagsReducer,
+        variant: variantReducer,
     },
 });

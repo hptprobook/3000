@@ -10,7 +10,7 @@ import InputEdit from "../../../components/common/TextField/InputEdit";
 import InfoBox from "../../../components/common/Box/InforBox";
 import SelectEdit from "../../../components/common/Select/SelectEdit";
 import { v4 } from 'uuid';
-import { ref, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
@@ -21,6 +21,8 @@ import AutoFillTag from "../../../components/common/AutoCompelete/AutoFillTag";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import AutoVariant from "../../../components/common/AutoCompelete/AutoVariant";
+import { fetchVariant } from "../../../redux/slices/variantSlice";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -40,38 +42,31 @@ const productSchema = Yup.object().shape({
     discount: Yup.number()
         .nullable()
         .max(100, "Giảm giá không thể lớn hơn 100")
-        .positive("Giảm giá phải là số dương"),
+        .min(0, "Giảm giá không thể nhỏ hơn 0"),
+    // .positive("Giảm giá phải là số dương"),
+    brand_id: Yup.number()
+        .required("Nhãn hàng không được để trống!"),
     height: Yup.number()
-        .nullable()
         .required("Chiều cao không được để trống")
         .positive("Chiều cao phải là số dương"),
     weight: Yup.number()
-        .nullable()
         .required("Cân nặng không được để trống")
         .positive("Cân nặng phải là số dương"),
     width: Yup.number()
-        .nullable()
         .required("Chiều rộng không được để trống")
         .positive("Chiều rộng phải là số dương"),
     length: Yup.number()
-        .nullable()
         .required("Chiều dài không được để trống")
         .positive("Chiều dài phải là số dương"),
-    short_desc: Yup.string()
-        .nullable()
-        .required("Mô tả ngắn không được để trống")
-        .max(1000, "Mô tả ngắn không được quá 1000 kí tự"),
-    detail: Yup.string()
-        .nullable()
-        .required("Chi tiết sản phẩm không được để trống")
 });
 export default function CreateProductPage() {
-
     // khai báo các hàm liên quan đến fecth data 
     const dispatch = useDispatch();
     const categories = useSelector((state) => state.categories.data);
     const brands = useSelector((state) => state.brands.data);
     const tags = useSelector((state) => state.tags.tags);
+    const variant = useSelector((state) => state.variant.data);
+    const statusLoadVariant = useSelector((state) => state.variant.status);
     const statusLoad = useSelector((state) => state.categories.status);
     const statusLoadBrands = useSelector((state) => state.brands.status);
     const statusLoadTags = useSelector((state) => state.tags.status);
@@ -81,52 +76,60 @@ export default function CreateProductPage() {
     // khai báo các hàm liên quan đế dữ liệu lấy về 
     const [parentCategories, setParentCategories] = useState([]);
     const [childCategories, setChildCategories] = useState([]);
-    const [selectBrands, setSelectBrands] = useState([]);
+
+    // khai báo các hàm liên quan đến variant type
+
+    const [variantName, setVariantName] = useState('');
+    const [variantNameError, setVariantNameError] = useState('');
+    const [variantValue, setVariantValue] = useState('');
+    const [variantValueError, setVariantValueError] = useState('');
+    const [variantPrice, setVariantPrice] = useState('');
+    const [variantPriceError, setVariantPriceError] = useState('');
 
 
     // khai báo các hàm liên quan đến dữ liệu
     const [thumbnail, setThumbnail] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState('');
-    const [creatError, setCreateError] = useState(true);
+    const [createError, setCreateError] = useState(true);
+
+    const [short_desc, setShort_desc] = useState('');
+    const [detail, setDetail] = useState('');
+
 
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedErrorCategory, setSelectedErrorCategory] = useState('');
 
     const [selectedCategoryChild, setSelectedCategoryChild] = useState('');
     const [selectedErrorCategoryChild, setSelectedErrorCategoryChild] = useState('');
+    const formik = useFormik({
+        initialValues: {
+            name: "",
+            price: "",
+            discount: null,
+            quantity: 1,
+            height: 1,
+            width: 1,
+            length: 1,
+            weight: 1,
+            brand_id: "",
+        },
+        // validationSchema: productSchema,
+        onSubmit: (values) => {
+            console.log(detail);
+            // const payload = {
+            //     name: values.name,
+            //     phone: values.phone,
+            //     province_id,
+            //     district_id,
+            //     street: values.address,
+            //     ward_id: ward_code,
+            //     address_info: fullAddress,
+            //     default: values.isDefault,
+            // };
 
-    const [form, setForm] = useState({
-        name: { value: '', error: '' },
-        quantity: { value: '', error: '' },
-        price: { value: '', error: '' },
-        discount: { value: '', error: '' },
-        weight: { value: '', error: '' },
-        length: { value: '', error: '' },
-        width: { value: '', error: '' },
-        height: { value: '', error: '' },
-        // Thêm các trường khác vào đây nếu cần
+        },
     });
 
-    // Các hàm xử lý lỗi và thay đổi giá trị của trường
-    const handleInputChange = (field, data) => {
-        setForm({
-            ...form,
-            [field]: {
-                ...form[field],
-                value: data,
-            },
-        });
-    };
-    useEffect(() => {
-        handleCheckError('name', form.name.value);
-    }, [form.name.value]);
-    // useEffect(() => {
-    //     Object.entries(form).forEach(([field, { value }]) => {
-    //         handleCheckError(field, value);
-    //     });
-    // }, Object.values(form));
-
-    // lấy dữ liệu về category và tag
     useEffect(() => {
         dispatch(fetchCategoriesAsync());
     }, [dispatch]);
@@ -140,7 +143,11 @@ export default function CreateProductPage() {
             dispatch(fetchAllTags());
         }
     }, [statusLoadBrands]);
-
+    useEffect(() => {
+        if (statusLoadTags == 'succeeded tags') {
+            dispatch(fetchVariant());
+        }
+    }, [statusLoadTags]);
     useEffect(() => {
         const parent = categories.filter(item => item.parent_id == 0);
         setParentCategories(parent);
@@ -151,52 +158,9 @@ export default function CreateProductPage() {
         setChildCategories(child);
     }, [selectedCategory]);
 
-    // hande check error input
-    const validateField = (field, value) => {
-        switch (field) {
-            case 'name':
-                return value === '' ? 'Tên sản phẩm không được để trống!' : value.length > 254 ? 'Tên sản phẩm không được quá 255 kí tự!' : '';
-
-            case 'quantity':
-                return value === '' ? 'Số lượng không được để trống!' : value < 0 ? 'Số lượng không được nhỏ hơn 0!' : isNaN(value) ? 'Số lượng không hợp lệ!' : '';
-
-            case 'price':
-                return value === '' ? 'Giá không được để trống!' : value < 1 ? 'Giá không được nhỏ hơn 1!' : isNaN(value) ? 'Giá không hợp lệ!' : '';
-
-            case 'discount':
-                return value === '' ? 'Giảm giá không được để trống!' : value < 0 ? 'Giảm giá không được nhỏ hơn 1!' : value > 100 ? 'Giảm giá không được lớn hơn 100!' : isNaN(value) ? 'Giảm giá không hợp lệ!' : '';
-
-            case 'width':
-                return value === '' ? 'Chiều rộng không được để trống!' : value < 0 ? 'Chiều rộng không được nhỏ hơn 1!' : isNaN(value) ? 'Chiều rộng không hợp lệ!' : '';
-
-            case 'height':
-                return value === '' ? 'Chiều cao không được để trống!' : value < 0 ? 'Chiều cao không được nhỏ hơn 1!' : isNaN(value) ? 'Chiều cao không hợp lệ!' : '';
-
-            case 'length':
-                return value === '' ? 'Chiều dài không được để trống!' : value < 0 ? 'Chiều dài không được nhỏ hơn 1!' : isNaN(value) ? 'Chiều dài không hợp lệ!' : '';
-
-            case 'weight':
-                return value === '' ? 'Cân nặng không được để trống!' : value < 0 ? 'Cân nặng không được nhỏ hơn 1!' : isNaN(value) ? 'Cân nặng không hợp lệ!' : '';
-
-            default:
-                return ''; // Default to no error
-        }
-    };
-
-    const handleCheckError = (field, value) => {
-        const error = validateField(field, value);
-        setForm({
-            ...form,
-            [field]: {
-                ...form[field],
-                error: error,
-            },
-        });
-    };
-
-    // if (selectedCategory == '') {
-    //     setSelectedErrorCategory('Bắt buộc')
-    // }
+    const handleDetail = (value) => {
+        setDetail(value);
+    }
     // upload ảnh
     const handleUploadThumnail = () => {
         const thumbnailRef = ref(storageFirebase, `product_image/${v4()}`);
@@ -225,36 +189,19 @@ export default function CreateProductPage() {
             }
         );
     };
-    const handleSubmit = (event) => {
-        event.preventDefault(); // Ngăn chặn hành động mặc định của form
-        console.log(form); // Xử lý logic khi form được gửi
-    };
-    const handleCreateProduct = () => {
-        // Kiểm tra lỗi cho tất cả các trường
-        const isFormEmpty = Object.values(form).some((field) => field.value === '');
-        if (isFormEmpty) {
-            console.log('Rooxng')
-        }
-        else {
-            console.log('Không rỗng')
-        }
-        console.log(form)
-
-    };
-
-    const handleChangeBrand = (value) => {
-        console.log(value);
-    };
+    const handleChangeVariant = (variant) => {
+        console.log(variant)
+    }
 
     const handleAddTag = (value) => {
-        console.log(value);
+        // console.log(value);
     }
     // debug
 
     if (statusLoad === "loading") {
         return <div><Loading /></div>;
     }
-    if (statusLoadTags === "succeeded tags") {
+    if (statusLoadVariant === "success") {
         return (
             <Box>
                 <HeaderPage
@@ -264,180 +211,292 @@ export default function CreateProductPage() {
                 <Box sx={{
                     marginTop: '32px'
                 }}>
-                    <InfoBox title="Thông tin cơ bản">
-                        <form action="#" onSubmit={handleSubmit}>
+                    <form onSubmit={formik.handleSubmit}>
+                        <InfoBox title="Thông tin cơ bản">
                             <DivMargin>
                                 <InputEdit
                                     id={'name'}
-                                    onBlur={(event) => handleInputChange('name', event.target.value)}
                                     label={'Tên sản phẩm'}
-                                    error={form.name.error ? true : false}
-                                    helperText={form.name.error}
+                                    value={formik.values.name}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    name={'name'}
+                                    error={
+                                        formik.touched.name &&
+                                        Boolean(formik.errors.name)
+                                    }
+                                    helperText={
+                                        formik.touched.name && formik.errors.name
+                                    }
                                 />
                             </DivMargin>
-                            <button type="submit">Heel</button>
-                        </form>
+                            <DivMargin>
+                                <InputEdit
+                                    id={'quantity'}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    label={'Số lượng'}
+                                    name={'quantity'}
+                                    error={
+                                        formik.touched.quantity &&
+                                        Boolean(formik.errors.quantity)
+                                    }
+                                    helperText={
+                                        formik.touched.quantity && formik.errors.quantity
+                                    }
+                                />
+                            </DivMargin>
+                            <DivMargin>
+                                <InputEdit
+                                    id={'price'}
+                                    label={'Giá'}
+                                    value={formik.values.price}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    name={'price'}
+                                    error={
+                                        formik.touched.price &&
+                                        Boolean(formik.errors.price)
+                                    }
+                                    helperText={
+                                        formik.touched.price && formik.errors.price
+                                    }
+                                />
+                            </DivMargin>
+                            <DivMargin>
+                                <InputEdit
+                                    id={'discount'}
+                                    label={'Giảm giá'}
+                                    value={formik.values.discount}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    name={'discount'}
+                                    error={
+                                        formik.touched.discount &&
+                                        Boolean(formik.errors.discount)
+                                    }
+                                    helperText={
+                                        formik.touched.discount && formik.errors.discount
+                                    }
+                                />
+                            </DivMargin>
+                        </InfoBox>
+                        <InfoBox title="Phân loại">
+                            <DivMargin>
+                                <SelectEdit
+                                    label={'Phân loại cha'}
+                                    data={parentCategories}
+                                    value={''}
+                                    onChange={(e) => {
+                                        setSelectedCategory(e.target.value)
+                                    }}
+                                    error={selectedErrorCategory}
+                                />
+                            </DivMargin>
+                            <DivMargin>
+                                <SelectEdit
+                                    label={'Phân loại con'}
+                                    data={childCategories}
+                                    value={''}
+                                    disable={selectedCategory ? false : true}
+                                    onChange={(e) => {
+                                        setSelectedCategoryChild(e.target.value)
+                                    }}
+                                    error={selectedErrorCategory}
+                                />
+                            </DivMargin>
+                            <DivMargin>
+                                <SelectEdit
+                                    label={'Nhãn hàng'}
+                                    data={brands}
+                                    id={'brand'}
+                                    value={formik.values.brand_id}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    name={'brand_id'}
+                                    error={
+                                        formik.touched.brand_id &&
+                                        Boolean(formik.errors.brand_id)
+                                    }
+                                    helperText={
+                                        formik.touched.brand_id && formik.errors.brand_id
+                                    }
+                                />
+                            </DivMargin>
 
-                        <DivMargin>
-                            <InputEdit
-                                id={'quantity'}
-                                onBlur={(event) => handleInputChange('quantity', event.target.value)}
-                                label={'Số lượng'}
-                                error={form.quantity.error ? true : false}
-                                helperText={form.quantity.error}
-                            />
-                        </DivMargin>
-                        <DivMargin>
-                            <InputEdit
-                                id={'price'}
-                                onBlur={(event) => handleInputChange('price', event.target.value)}
-                                label={'Giá'}
-                                error={form.price.error ? true : false}
-                                helperText={form.price.error}
-                            />
-                        </DivMargin>
-                        <DivMargin>
-                            <InputEdit
-                                id={'discount'}
-                                onBlur={(event) => handleInputChange('discount', event.target.value)}
-                                label={'Giảm giá'}
-                                error={form.discount.error ? true : false}
-                                helperText={form.discount.error}
-                            />
-                        </DivMargin>
-                    </InfoBox>
-                    <InfoBox title="Phân loại">
-                        <DivMargin>
-                            <SelectEdit
-                                label={'Phân loại cha'}
-                                data={parentCategories}
-                                value={''}
-                                onChange={(e) => {
-                                    setSelectedCategory(e.target.value)
+                        </InfoBox>
+                        <InfoBox title="Thuộc tính">
+                            <DivMargin>
+                                <AutoFillTag data={tags} handleFill={handleAddTag} />
+                            </DivMargin>
+                            <DivMargin>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={6}>
+                                        <InputEdit
+                                            id={'height'}
+                                            label={'Chiều cao'}
+                                            value={formik.values.height}
+                                            onBlur={formik.handleBlur}
+                                            onChange={formik.handleChange}
+                                            name={'height'}
+                                            error={
+                                                formik.touched.height &&
+                                                Boolean(formik.errors.height)
+                                            }
+                                            helperText={
+                                                formik.touched.height && formik.errors.height
+                                            }
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <InputEdit
+                                            id={'width'}
+                                            label={'Chiều rộng'}
+                                            value={formik.values.width}
+                                            onBlur={formik.handleBlur}
+                                            onChange={formik.handleChange}
+                                            name={'width'}
+                                            error={
+                                                formik.touched.width &&
+                                                Boolean(formik.errors.width)
+                                            }
+                                            helperText={
+                                                formik.touched.width && formik.errors.width
+                                            }
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <InputEdit
+                                            id={'length'}
+                                            label={'Chiều dài'}
+                                            value={formik.values.length}
+                                            onBlur={formik.handleBlur}
+                                            onChange={formik.handleChange}
+                                            name={'length'}
+                                            error={
+                                                formik.touched.length &&
+                                                Boolean(formik.errors.length)
+                                            }
+                                            helperText={
+                                                formik.touched.length && formik.errors.length
+                                            }
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <InputEdit
+                                            id={'weight'}
+                                            label={'Cân nặng'}
+                                            value={formik.values.weight}
+                                            onBlur={formik.handleBlur}
+                                            onChange={formik.handleChange}
+                                            name={'weight'}
+                                            error={
+                                                formik.touched.weight &&
+                                                Boolean(formik.errors.weight)
+                                            }
+                                            helperText={
+                                                formik.touched.weight && formik.errors.weight
+                                            }
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </DivMargin>
+                        </InfoBox>
+                        <InfoBox title="Biến thể">
+                            <DivMargin>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={3}>
+                                        <AutoVariant label={'Tên biến thể'} data={variant} handleChange={handleChangeVariant} />
+                                    </Grid>
+                                    <Grid item xs={12} md={3}>
+                                        <InputEdit
+                                            id={'variant-value'}
+                                            label={'Giá trị'}
+                                            name={'variant-value'}
+                                        // error={
+                                        //     formik.touched.width &&
+                                        //     Boolean(formik.errors.width)
+                                        // }
+                                        // helperText={
+                                        //     formik.touched.width && formik.errors.width
+                                        // }
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={3}>
+                                        <InputEdit
+                                            id={'variant-price'}
+                                            label={'Giá tiền'}
+                                            name={'variant-price'}
+                                        // error={
+                                        //     formik.touched.variant-price &&
+                                        //     Boolean(formik.errors.length)
+                                        // }
+                                        // helperText={
+                                        //     formik.touched.length && formik.errors.length
+                                        // }
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} md={3}>
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
+                                            <ButtonNormal label='Thêm' bg='true' />
+                                        </div>
+                                    </Grid>
+                                </Grid>
+                            </DivMargin>
+                        </InfoBox>
+                        <InfoBox title="Hình ảnh">
+                            <DivMargin>
+                                <ImageDropZone />
+                            </DivMargin>
+                        </InfoBox>
+                        <InfoBox title="Mô tả">
+                            <DivMargin
+                                style={{
+                                    marginTop: '12px'
                                 }}
-                                error={selectedErrorCategory}
-                            />
-                        </DivMargin>
-                        <DivMargin>
-                            <SelectEdit
-                                label={'Phân loại con'}
-                                data={childCategories}
-                                value={''}
-                                disable={selectedCategory ? false : true}
-                                onChange={(e) => {
-                                    setSelectedCategoryChild(e.target.value)
+                            >
+                                <Typography
+                                    variant="p"
+                                    component="p"
+                                    sx={{
+                                        marginBottom: '12px',
+                                        color: color.textGray
+                                    }}
+                                >
+                                    Mô tả ngắn
+                                </Typography>
+                                <TinyEditorMini />
+                            </DivMargin>
+                            <div
+                                style={{
+                                    marginTop: '12px'
                                 }}
-                                error={selectedErrorCategory}
-                            />
-                        </DivMargin>
-                        <DivMargin>
-                            <SelectEdit
-                                label={'Nhãn hàng'}
-                                data={brands}
-                                value={''}
-                                onChange={(e) => handleChangeBrand(e.target.value)}
-                            />
-                        </DivMargin>
-
-                    </InfoBox>
-                    <InfoBox title="Thuộc tính">
-                        <DivMargin>
-                            <AutoFillTag data={tags} handleFill={handleAddTag} />
-                        </DivMargin>
-                        <DivMargin>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                    <InputEdit
-                                        id={'height'}
-                                        onBlur={(event) => handleInputChange('height', event.target.value)}
-                                        label={'Chiều cao'}
-                                        error={form.height.error ? true : false}
-                                        helperText={form.height.error}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <InputEdit
-                                        id={'width'}
-                                        onBlur={(event) => handleInputChange('width', event.target.value)}
-                                        label={'Chiều rộng'}
-                                        error={form.width.error ? true : false}
-                                        helperText={form.width.error}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <InputEdit
-                                        id={'length'}
-                                        onBlur={(event) => handleInputChange('length', event.target.value)}
-                                        label={'Chiều dài'}
-                                        error={form.length.error ? true : false}
-                                        helperText={form.length.error}
-                                    />
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <InputEdit
-                                        id={'weight'}
-                                        onBlur={(event) => handleInputChange('weight', event.target.value)}
-                                        label={'Cân nặng'}
-                                        error={form.weight.error ? true : false}
-                                        helperText={form.weight.error}
-                                    />
-                                </Grid>
-                            </Grid>
-                        </DivMargin>
-                    </InfoBox>
-                    <InfoBox title="Hình ảnh">
-                        <DivMargin>
-                            {thumbnail ? <img src={thumbnailUrl} alt="Thumbnail" /> : <p>No thumbnail available</p>}
-                            <input type="file" onChange={(e) => setThumbnail(e.target.files[0])} />
-                            <button onClick={(e) => handleUploadThumnail()}>upload</button>
-                            <ImageDropZone />
-                        </DivMargin>
-                    </InfoBox>
-                    <InfoBox title="Mô tả">
+                            >
+                                <Typography
+                                    variant="p"
+                                    component="p"
+                                    sx={{
+                                        marginBottom: '12px',
+                                        color: color.textGray
+                                    }}
+                                >
+                                    Chi tiết
+                                </Typography>
+                                <TinyEditor
+                                    handleChange={handleDetail} />
+                            </div>
+                        </InfoBox>
                         <DivMargin
                             style={{
-                                marginTop: '12px'
+                                marginTop: '12px',
+                                float: 'right'
                             }}
                         >
-                            <Typography
-                                variant="p"
-                                component="p"
-                                sx={{
-                                    marginBottom: '12px',
-                                    color: color.textGray
-                                }}
-                            >
-                                Mô tả ngắn
-                            </Typography>
-                            <TinyEditorMini />
+                            <button type="submit">dasd</button>
+                            <ButtonNormal label={'Hủy'} />
+                            <ButtonNormal label={'Tạo'} type={'submit'} bg={'true'} />
                         </DivMargin>
-                        <div
-                            style={{
-                                marginTop: '12px'
-                            }}
-                        >
-                            <Typography
-                                variant="p"
-                                component="p"
-                                sx={{
-                                    marginBottom: '12px',
-                                    color: color.textGray
-                                }}
-                            >
-                                Chi tiết
-                            </Typography>
-                            <TinyEditor />
-                        </div>
-                    </InfoBox>
-                    <DivMargin
-                        style={{
-                            marginTop: '12px',
-                            float: 'right'
-                        }}
-                    >
-                        <ButtonNormal label={'Hủy'} />
-                        <ButtonNormal label={'Tạo'} bg={'true'} onClick={handleCreateProduct} />
-                    </DivMargin>
+                    </form>
 
                 </Box>
             </Box>
