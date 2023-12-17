@@ -41,7 +41,7 @@ const FormSelectEdit = styled(FormControl)(({ theme }) => ({
         color: color.textColor.dark
     }
 }))
-export default function SelectEdit({ label, data, value, onChange, error, nullData, disable }) {
+export default function SelectEdit({ label, data, value, onChange, error, nullData, disable, id, name }) {
     const [select, setSelect] = React.useState(value == null ? '' : value);
 
     const handleChange = (event) => {
@@ -49,11 +49,12 @@ export default function SelectEdit({ label, data, value, onChange, error, nullDa
     };
     return (
         <FormSelectEdit variant="filled" fullWidth sx={{ m: 1, minWidth: 120 }}>
-            <InputLabel id="demo-simple-select-filled-label">{label}</InputLabel>
+            <InputLabel id={id ? id : "label-select-id"}>{label}</InputLabel>
             <Select
-                labelId="demo-simple-select-filled-label"
+                labelId={id ? id : "label-select-id"}
                 id="demo-simple-select-filled"
                 value={select}
+                name={name}
                 disabled={disable ? true : false}
                 onChange={(event) => {
                     handleChange(event);

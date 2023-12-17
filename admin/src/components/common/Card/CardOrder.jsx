@@ -6,7 +6,7 @@ import { ListCardOrder } from './ListCardOrder';
 import FormatVND from '../Function/FormatVND';
 import FormatDate from '../Function/FormatDate';
 
-export default function CardOrder({ data }) {
+export default function CardOrder({ data, status }) {
     return (
         <div className='OrderPaper' style={{ backgroundColor: color.backgroundColorSub.dark }}>
             <div
@@ -37,7 +37,7 @@ export default function CardOrder({ data }) {
                         <ListCardOrder title={'Ngày tạo'} content={FormatDate(data.created_at)} />
                     </li>
                     <li>
-                        <ListCardOrder title={'Trạng thái'} status={data.status} />
+                        <ListCardOrder title={'Trạng thái'} status={status} />
                     </li>
                 </ul>
             </div>
