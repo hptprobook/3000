@@ -50,23 +50,24 @@ class OrderController extends Controller
         DB::beginTransaction();
         try {
             $user = Auth::user();
-            $total_amount = 0;
 
             $validatedData = $request->validate([
                 'cart_item_ids' => 'required|array',
                 'address_id' => 'required',
-                'note' => 'string'
+                'note' => 'string',
+                'total_amount' => 'required|numeric',
+                'ship_fee' => 'required|numeric'
             ]);
 
             $cartItems = CartItem::whereIn('id', $validatedData['cart_item_ids'])->get();
-            $total_amount = $cartItems->sum('price');
 
             $order = Order::create([
                 'user_id' => $user->id,
-                'total_amount' => $total_amount,
+                'total_amount' => $request->total_amount,
                 'status' => 'pending',
                 'address_id' => $request->address_id,
-                'note' => $request->note
+                'note' => $request->note,
+                'ship_fee' => $request->ship_fee
             ]);
 
             foreach ($cartItems as $cartItem) {
@@ -77,12 +78,6 @@ class OrderController extends Controller
                 ]);
 
                 $cartItem->delete();
-
-                $product = Product::find($cartItem->product_id);
-                if ($product->quantity <= 0) {
-                    throw new Exception("Product is out of stock.");
-                }
-                $product->decrement('quantity', $cartItem->quantity);
             }
 
             DB::commit();

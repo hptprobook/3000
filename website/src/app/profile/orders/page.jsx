@@ -8,12 +8,11 @@ export default function ProfileOrderPage() {
     const dispatch = useDispatch();
     const orders = useSelector((state) => state.orders.orders);
     const status = useSelector((state) => state.orders.status);
+    const putOrder = useSelector((state) => state.orders.putOrder);
 
     useEffect(() => {
-        if (status == "idle") {
-            dispatch(getAllOrder());
-        }
-    }, [status]);
+        dispatch(getAllOrder());
+    }, [dispatch, putOrder]);
 
     return <ProfileOrder data={orders} />;
 }

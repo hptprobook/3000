@@ -40,3 +40,44 @@
 .appContainer__content {
     margin-top: 16px;
 }
+
+@media only screen and (max-width: 1280px) and (min-width: 768px) {
+    .appContainer,
+    .appContainer__cart,
+    .appContainer__checkout,
+    .appContainer__searchPage {
+        width: 1200px;
+        display: flex;
+        margin: 0 auto;
+        border-radius: 8px;
+    }
+
+    .appContainer__profile,
+    .appContainer__orderAddress {
+        width: 1080px;
+        display: flex;
+        margin: 0 auto;
+        border-radius: 8px;
+    }
+
+    .appContainer__category {
+        width: 1080px;
+        display: flex;
+        margin: 0 auto;
+        border-radius: 8px;
+    }
+
+    .appContainer__detail {
+        width: 1200px;
+        display: flex;
+        margin: 0 auto;
+        border-radius: 8px;
+    }
+
+    .appContainer__detail--review {
+        width: 1200px;
+        display: flex;
+        margin: 0 auto;
+        border-radius: 8px;
+    }
+}
