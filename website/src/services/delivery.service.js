@@ -29,18 +29,8 @@ const DeliveryService = {
         }
     },
     getFee: async (data) => {
-        const defaultData = {
-            service_id: 53321,
-            from_district_id: 1552,
-            coupon: null,
-            height: 5,
-            length: 5,
-            weight: 500,
-            width: 5,
-        };
         try {
-            const payload = { ...defaultData, ...data };
-            const res = await requestGHN.post("master-data/fee", payload);
+            const res = await requestGHN.post("v2/shipping-order/fee", data);
             return res.data;
         } catch (err) {
             return err.response;

@@ -5,11 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductBrand extends Model
+class AddressGhn extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['product_id', 'brand_id'];
+    protected $table = 'provinceghn';
+
+    protected $fillable = ['province_name'];
 
     public $timestamps = false;
 }

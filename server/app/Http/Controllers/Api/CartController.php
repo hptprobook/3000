@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
@@ -138,6 +139,42 @@ class CartController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function updateCart(Request $request)
+    {
+        $items = $request->cartItems;
+        $updatedItems = [];
+        $errors = [];
+
+        if ($items) {
+            foreach ($items as $item) {
+                try {
+
+                    $cartItem = CartItem::findOrFail($item['id']);
+
+                    if ($cartItem->cart->user_id !== Auth::id()) {
+                        throw new Exception('Not authorized to update this item.');
+                    }
+
+                    $cartItem->update(['quantity' => $item['quantity']]);
+                    $updatedItems[] = $cartItem;
+                } catch (ValidationException $e) {
+                    $errors[] = ['id' => $item['id'], 'error' => 'Validation error', 'message' => $e->getMessage()];
+                } catch (ModelNotFoundException $e) {
+                    $errors[] = ['id' => $item['id'], 'error' => 'Not found', 'message' => $e->getMessage()];
+                } catch (Exception $e) {
+                    $errors[] = ['id' => $item['id'], 'error' => 'Error', 'message' => $e->getMessage()];
+                }
+            }
+
+            return response()->json([
+                'updated' => $updatedItems,
+                'errors' => $errors
+            ], Response::HTTP_OK);
+        } else {
+            return response()->json(['errors' => "Dữ liệu không hợp lệ"], Response::HTTP_BAD_REQUEST);
         }
     }
 

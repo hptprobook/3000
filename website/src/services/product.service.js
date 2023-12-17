@@ -4,26 +4,21 @@ const ProductService = {
     getAllProducts: async () => {
         return handleRequest("products");
     },
-
     getProductById: async (productId) => {
         return handleRequest(`products/${productId}`);
     },
-
     createProduct: async (productData) => {
         return handleRequest("products", { method: "post", data: productData });
     },
-
     getRecommendedProduct: async () => {
         return handleRequest("products/recommended");
     },
-
     updateProduct: async (productId, productData) => {
         return handleRequest(`products/${productId}`, {
             method: "put",
             data: productData,
         });
     },
-
     deleteProduct: async (productId) => {
         return handleRequest(`products/${productId}`, { method: "delete" });
     },

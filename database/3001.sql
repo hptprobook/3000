@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 01, 2023 lúc 07:09 AM
+-- Thời gian đã tạo: Th12 13, 2023 lúc 09:51 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.2.4
 
@@ -31,18 +31,21 @@ CREATE TABLE `addresses` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
-  `phone` varchar(10) NOT NULL,
+  `phone` varchar(11) NOT NULL,
+  `district_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `province_id` bigint(20) UNSIGNED DEFAULT NULL,
   `ward_id` bigint(20) UNSIGNED NOT NULL,
-  `address_info` varchar(255) NOT NULL
+  `street` varchar(128) NOT NULL,
+  `address_info` varchar(255) NOT NULL,
+  `default` tinyint(1) UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `addresses`
 --
 
-INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `ward_id`, `address_info`) VALUES
-(2, 13, 'Công ty TNHH MTV Hoàn Vũ', '1900.3842', 133, '45/19 Nguyễn Viết Xuân'),
-(4, 13, 'PHT', '0833129021', 25, 'Nguyễn Viết Xuân');
+INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `district_id`, `province_id`, `ward_id`, `street`, `address_info`, `default`) VALUES
+(45, 14, 'Phan Long', '0332741249', 1700, 204, 480413, '45 Nguyễn Viết Xuân', 'Đồng Nai, Huyện Định Quán, Xã Thanh Sơn, 45 Nguyễn Viết Xuân', 1);
 
 -- --------------------------------------------------------
 
@@ -53,7 +56,6 @@ INSERT INTO `addresses` (`id`, `user_id`, `name`, `phone`, `ward_id`, `address_i
 CREATE TABLE `brands` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(128) NOT NULL,
-  `parent_id` tinyint(3) UNSIGNED DEFAULT NULL,
   `icon_url` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -61,11 +63,15 @@ CREATE TABLE `brands` (
 -- Đang đổ dữ liệu cho bảng `brands`
 --
 
-INSERT INTO `brands` (`id`, `name`, `parent_id`, `icon_url`) VALUES
-(1, 'OPPO', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
-(2, 'ACER', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
-(3, 'DELL', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
-(4, 'ihpone', NULL, 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp');
+INSERT INTO `brands` (`id`, `name`, `icon_url`) VALUES
+(1, 'OPPO', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(2, 'ACER', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(3, 'DELL', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(4, 'ihpone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(5, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(6, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(7, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp'),
+(8, 'Phone', 'https://salt.tikicdn.com/cache/100x100/ts/category/54/c0/ff/fe98a4afa2d3e5142dc8096addc4e40b.png.webp');
 
 -- --------------------------------------------------------
 
@@ -85,7 +91,8 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`id`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 13, '2023-11-06 01:19:44', '2023-11-06 01:19:44');
+(1, 13, '2023-11-06 01:19:44', '2023-11-06 01:19:44'),
+(2, 14, '2023-12-03 04:53:18', '2023-12-03 04:53:18');
 
 -- --------------------------------------------------------
 
@@ -98,9 +105,21 @@ CREATE TABLE `cart_items` (
   `cart_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `quantity` bigint(20) UNSIGNED NOT NULL,
-  `status` varchar(50) NOT NULL DEFAULT 'not_ordered',
-  `price` bigint(20) UNSIGNED NOT NULL
+  `variants` varchar(128) NOT NULL,
+  `price` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `cart_items`
+--
+
+INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `quantity`, `variants`, `price`) VALUES
+(4, 1, 20, 1, '', 21000000),
+(5, 1, 19, 1, '', 21000000),
+(6, 2, 21, 4, '', 20076000),
+(7, 2, 22, 2, 'Cam, 4 inch', 1128000),
+(13, 1, 15, 1, '[]', 20000000),
+(14, 1, 11, 7, '[]', 20000000);
 
 -- --------------------------------------------------------
 
@@ -154,19 +173,20 @@ INSERT INTO `categories` (`id`, `name`, `parent_id`, `icon_url`) VALUES
 CREATE TABLE `coupons` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `code` varchar(20) NOT NULL,
-  `description` varchar(255) NOT NULL,
+  `description` varchar(128) NOT NULL,
   `start_date` date NOT NULL DEFAULT '2023-11-05',
   `end_date` date NOT NULL,
-  `amount` varchar(48) NOT NULL,
-  `quantity` bigint(20) UNSIGNED NOT NULL
+  `amount` tinyint(10) NOT NULL,
+  `quantity` bigint(20) UNSIGNED NOT NULL,
+  `type` enum('percent','direct') NOT NULL DEFAULT 'direct'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `coupons`
 --
 
-INSERT INTO `coupons` (`id`, `code`, `description`, `start_date`, `end_date`, `amount`, `quantity`) VALUES
-(1, 'JD3T2', 'Giảm giá 100% phí giao hàng', '2023-11-08', '2023-12-22', '100%', 99);
+INSERT INTO `coupons` (`id`, `code`, `description`, `start_date`, `end_date`, `amount`, `quantity`, `type`) VALUES
+(1, 'JD3T2', 'Giảm giá 100% phí giao hàng', '2023-11-08', '2023-12-22', 100, 99, 'direct');
 
 -- --------------------------------------------------------
 
@@ -181,13 +201,6 @@ CREATE TABLE `coupon_usages` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `coupon_usages`
---
-
-INSERT INTO `coupon_usages` (`order_id`, `coupon_id`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 1, 13, '2023-11-08 00:58:22', '2023-11-08 00:58:22');
 
 -- --------------------------------------------------------
 
@@ -943,8 +956,8 @@ CREATE TABLE `failed_jobs` (
 
 CREATE TABLE `hot_searches` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `keywords` varchar(255) NOT NULL,
-  `count` varchar(255) NOT NULL,
+  `keywords` varchar(50) NOT NULL,
+  `count` tinyint(10) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1010,31 +1023,12 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (55, '2023_11_10_093059_create_settings_table', 23),
 (56, '2023_11_13_081451_create_hot_searches_table', 24),
 (57, '2023_11_24_033510_add_sold_to_product', 25),
-(60, '2023_11_30_142048_create_product_variants_table', 26);
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `model_has_permissions`
---
-
-CREATE TABLE `model_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `model_has_roles`
---
-
-CREATE TABLE `model_has_roles` (
-  `role_id` bigint(20) UNSIGNED NOT NULL,
-  `model_type` varchar(255) NOT NULL,
-  `model_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+(60, '2023_11_30_142048_create_product_variants_table', 26),
+(61, '2023_12_03_133828_add_variants_and_delete_status_carts', 27),
+(63, '2023_12_06_153120_add_province_to_address', 28),
+(64, '2023_12_10_085724_add_brand_id_to_products', 29),
+(65, '2023_12_11_125953_add_to_products', 30),
+(66, '2023_12_12_150844_add_street_to_address', 31);
 
 -- --------------------------------------------------------
 
@@ -1047,20 +1041,11 @@ CREATE TABLE `orders` (
   `user_id` bigint(20) UNSIGNED NOT NULL,
   `total_amount` bigint(20) UNSIGNED NOT NULL,
   `address_id` bigint(20) UNSIGNED NOT NULL,
-  `status` varchar(255) NOT NULL,
-  `note` varchar(1000) DEFAULT NULL,
+  `status` varchar(50) NOT NULL,
+  `note` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `orders`
---
-
-INSERT INTO `orders` (`id`, `user_id`, `total_amount`, `address_id`, `status`, `note`, `created_at`, `updated_at`) VALUES
-(1, 13, 0, 2, 'pending', NULL, '2023-11-07 02:07:43', '2023-11-07 02:07:43'),
-(2, 13, 0, 2, 'processing', NULL, '2023-11-07 02:39:59', '2023-11-07 07:57:22'),
-(3, 13, 0, 2, 'pending', NULL, '2023-11-07 02:40:12', '2023-11-07 02:40:12');
 
 -- --------------------------------------------------------
 
@@ -1072,8 +1057,8 @@ CREATE TABLE `order_details` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `order_id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
-  `quantity` bigint(20) UNSIGNED NOT NULL,
-  `discount` varchar(50) NOT NULL
+  `quantity` tinyint(20) UNSIGNED NOT NULL,
+  `discount` tinyint(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1103,30 +1088,6 @@ CREATE TABLE `payments` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `permissions`
---
-
-CREATE TABLE `permissions` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `permissions`
---
-
-INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'view products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(2, 'create products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(3, 'update products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(4, 'delete products', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59');
 
 -- --------------------------------------------------------
 
@@ -1244,7 +1205,17 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (90, 'App\\Models\\User', 13, 'access_token', '50d87fc6c1b9f5da84420b9da397cda2b93816e65828651f5315a5626c49f9c0', '[\"*\"]', NULL, NULL, '2023-11-25 01:19:46', '2023-11-25 01:19:46'),
 (91, 'App\\Models\\User', 13, 'access_token', 'ac81ab68ae716e940ef0c267d21a244e6a909e403ae4ca9e6f7527f1579de943', '[\"*\"]', NULL, NULL, '2023-11-25 02:07:05', '2023-11-25 02:07:05'),
 (92, 'App\\Models\\User', 13, 'access_token', 'fbf3b84f908015825d7588dfe2f7f7e9258035ce311d9d1763824a03f616ec91', '[\"*\"]', '2023-11-28 08:15:36', NULL, '2023-11-25 19:33:55', '2023-11-28 08:15:36'),
-(93, 'App\\Models\\User', 13, 'access_token', 'cc8e9580a2678ac6c49c156f21e24422a2560d9e380053db9bc3beebb1865bd0', '[\"*\"]', '2023-11-30 22:50:38', NULL, '2023-11-30 19:17:24', '2023-11-30 22:50:38');
+(93, 'App\\Models\\User', 13, 'access_token', 'cc8e9580a2678ac6c49c156f21e24422a2560d9e380053db9bc3beebb1865bd0', '[\"*\"]', '2023-12-03 18:55:59', NULL, '2023-11-30 19:17:24', '2023-12-03 18:55:59'),
+(94, 'App\\Models\\User', 14, 'access_token', '35a53563423cc6da04d9d5679ba2776536a3fb1d5ded27c65832c3b2064e6867', '[\"*\"]', '2023-12-03 04:53:18', NULL, '2023-12-03 04:44:56', '2023-12-03 04:53:18'),
+(95, 'App\\Models\\User', 14, 'access_token', 'ae464c1aa2045fea4f6c016ec025b0769ce3a008082e0ed3abf1826c70bd098a', '[\"*\"]', '2023-12-03 04:54:04', NULL, '2023-12-03 04:54:01', '2023-12-03 04:54:04'),
+(96, 'App\\Models\\User', 14, 'access_token', 'eb593c7e94029cb825d98b6974c97ac9d53c4026490a9d1c0b1f62ab34b6484f', '[\"*\"]', '2023-12-03 05:27:10', NULL, '2023-12-03 05:26:48', '2023-12-03 05:27:10'),
+(97, 'App\\Models\\User', 14, 'access_token', 'c2dfe512ee7981e3cc6eb178f9ac65d04e7b9ff9b6b5b31aaeff8f86ee1553f5', '[\"*\"]', '2023-12-03 06:54:13', NULL, '2023-12-03 05:28:52', '2023-12-03 06:54:13'),
+(98, 'App\\Models\\User', 13, 'access_token', '97e9e9be3dffc9a363b04eed58f0c5cbda731cb52956d6f399f7b5eb1126dd2f', '[\"*\"]', '2023-12-06 00:36:17', NULL, '2023-12-03 06:54:45', '2023-12-06 00:36:17'),
+(99, 'App\\Models\\User', 14, 'access_token', 'afa8bf7c57396b0b2ddcca2cf3686c13f8f27c54883ddd7fc5b6c09fbc1bfae7', '[\"*\"]', '2023-12-06 08:50:07', NULL, '2023-12-04 00:58:16', '2023-12-06 08:50:07'),
+(100, 'App\\Models\\User', 13, 'access_token', '2b9963ee85d8b2804895ee02bd6960bc06ad634da93b2c6bf53b402d102ebb01', '[\"*\"]', '2023-12-12 20:40:23', NULL, '2023-12-06 07:43:56', '2023-12-12 20:40:23'),
+(101, 'App\\Models\\User', 14, 'access_token', '0d448f5d4d5efb246ee9006aa4e9d4e0d2e6e1c2a6611d5df3e942d28c6f7498', '[\"*\"]', NULL, NULL, '2023-12-07 00:22:43', '2023-12-07 00:22:43'),
+(102, 'App\\Models\\User', 14, 'access_token', '9f3b7e345d4143e13980b5dfb5fef1cb5cf3b6fef66dad5c7d36402ef245f97b', '[\"*\"]', '2023-12-12 20:39:39', NULL, '2023-12-07 00:23:56', '2023-12-12 20:39:39'),
+(103, 'App\\Models\\User', 14, 'access_token', '5cfa1ec9da5b5f6d04086ba9333964958d266f57fb7014e5f0baf3f04f910d25', '[\"*\"]', '2023-12-13 00:52:01', NULL, '2023-12-12 20:41:54', '2023-12-13 00:52:01');
 
 -- --------------------------------------------------------
 
@@ -1269,7 +1240,7 @@ CREATE TABLE `posts` (
 CREATE TABLE `products` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) NOT NULL,
-  `price` bigint(20) UNSIGNED NOT NULL,
+  `price` float UNSIGNED NOT NULL,
   `discount` tinyint(3) UNSIGNED NOT NULL,
   `short_desc` varchar(1000) NOT NULL,
   `detail` text NOT NULL,
@@ -1278,7 +1249,12 @@ CREATE TABLE `products` (
   `sold` bigint(20) UNSIGNED NOT NULL DEFAULT 0,
   `status` varchar(50) DEFAULT 'in_stock',
   `category_id` bigint(20) UNSIGNED NOT NULL DEFAULT 100,
+  `brand_id` bigint(20) UNSIGNED DEFAULT NULL,
   `seller_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `weight` tinyint(3) UNSIGNED NOT NULL,
+  `length` tinyint(3) UNSIGNED NOT NULL,
+  `width` tinyint(3) UNSIGNED NOT NULL,
+  `height` tinyint(3) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1287,19 +1263,20 @@ CREATE TABLE `products` (
 -- Đang đổ dữ liệu cho bảng `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `price`, `discount`, `short_desc`, `detail`, `thumbnail`, `quantity`, `sold`, `status`, `category_id`, `seller_id`, `created_at`, `updated_at`) VALUES
-(10, 'Máy tính cầm tay', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp', 100, 0, 'in_stock', 3, NULL, '2023-11-25 20:45:35', '2023-11-25 20:45:35'),
-(11, 'Điện thoại VSmart Bee Line', 20000000, 20, 'Điện thoại VSmart Bee Line', 'Điện thoại VSmart Bee Line', 'https://salt.tikicdn.com/cache/750x750/ts/product/a7/aa/10/a854de1119e37e29c90de817e10b4635.jpg.webp', 100, 0, 'in_stock', 3, NULL, '2023-11-26 01:28:09', '2023-11-26 01:28:09'),
-(12, 'Samsung Galaxy Y', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/5e/8e/5a/ffd57c334ad997d311d311be41ef6aa8.png.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:28:43', '2023-11-26 01:28:43'),
-(13, 'Redmi Note 10T 5G', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/bf/75/49/c8aa5e2218348a6b422259d67bd516dc.jpg.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:29:13', '2023-11-26 01:29:13'),
-(14, 'Vaseline Gluta-Hya Dưỡng Thể Nâng Tông Tức Thì Gấp 4 Lần 300ML', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/2f/50/38/784cf906175139d81a4919ed523806f7.png.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:29:53', '2023-11-26 01:29:53'),
-(15, 'Combo 2 Sữa dưỡng thể dưỡng sáng da tức thì VASELINE Healthy Bright Instant Radiance 350ML/chai', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/8c/93/d5/50e72d58a2580bb4fdaf30c06dcdbda6.png.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:30:16', '2023-11-26 01:30:16'),
-(16, 'Kem rửa mặt Vitamin Acnes Vitamin Cleanser 100g', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/a6/b4/fe8b437588e231367a8275d0b077b027.jpg.webp', 100, 0, 'in_stock', 4, NULL, '2023-11-26 01:30:46', '2023-11-26 01:30:46'),
-(17, 'Dầu Gội Chống Gàu Selsun (100ml)', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/9c/a5/4bd1312c3bcdbe0475df20cffee3c5a6.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-26 01:32:00', '2023-11-26 01:32:00'),
-(18, '[Coupon 20K đơn 299K] Bộ Nồi Inox 3 Đáy Sunhouse SH335(16cm, 20cm, 24cm ) - Dùng trên mọi loại bếp - Hàng chính hãng', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/72/05/67/a69641d3492b5f69e447b8d05da9257c.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-26 01:32:38', '2023-11-26 01:32:38'),
-(19, '[ TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-26 01:33:02', '2023-11-26 01:33:02'),
-(20, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-30 22:45:25', '2023-11-30 22:45:25'),
-(21, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, '2023-11-30 22:50:38', '2023-11-30 22:50:38');
+INSERT INTO `products` (`id`, `name`, `price`, `discount`, `short_desc`, `detail`, `thumbnail`, `quantity`, `sold`, `status`, `category_id`, `brand_id`, `seller_id`, `weight`, `length`, `width`, `height`, `created_at`, `updated_at`) VALUES
+(10, 'Máy tính cầm tay', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/68/54/9d/0be45a6ee47f6dd8ae8d55222378541d.jpg.webp', 100, 0, 'in_stock', 3, NULL, NULL, 0, 0, 0, 0, '2023-11-25 20:45:35', '2023-11-25 20:45:35'),
+(11, 'Điện thoại VSmart Bee Line', 20000000, 20, 'Điện thoại VSmart Bee Line', 'Điện thoại VSmart Bee Line', 'https://salt.tikicdn.com/cache/750x750/ts/product/a7/aa/10/a854de1119e37e29c90de817e10b4635.jpg.webp', 100, 0, 'in_stock', 3, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:28:09', '2023-11-26 01:28:09'),
+(12, 'Samsung Galaxy Y', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/5e/8e/5a/ffd57c334ad997d311d311be41ef6aa8.png.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:28:43', '2023-11-26 01:28:43'),
+(13, 'Redmi Note 10T 5G', 20000000, 0, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/bf/75/49/c8aa5e2218348a6b422259d67bd516dc.jpg.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:29:13', '2023-11-26 01:29:13'),
+(14, 'Vaseline Gluta-Hya Dưỡng Thể Nâng Tông Tức Thì Gấp 4 Lần 300ML', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/2f/50/38/784cf906175139d81a4919ed523806f7.png.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:29:53', '2023-11-26 01:29:53'),
+(15, 'Combo 2 Sữa dưỡng thể dưỡng sáng da tức thì VASELINE Healthy Bright Instant Radiance 350ML/chai', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/8c/93/d5/50e72d58a2580bb4fdaf30c06dcdbda6.png.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:30:16', '2023-11-26 01:30:16'),
+(16, 'Kem rửa mặt Vitamin Acnes Vitamin Cleanser 100g', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/a6/b4/fe8b437588e231367a8275d0b077b027.jpg.webp', 100, 0, 'in_stock', 4, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:30:46', '2023-11-26 01:30:46'),
+(17, 'Dầu Gội Chống Gàu Selsun (100ml)', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/7c/9c/a5/4bd1312c3bcdbe0475df20cffee3c5a6.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:32:00', '2023-11-26 01:32:00'),
+(18, '[Coupon 20K đơn 299K] Bộ Nồi Inox 3 Đáy Sunhouse SH335(16cm, 20cm, 24cm ) - Dùng trên mọi loại bếp - Hàng chính hãng', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/72/05/67/a69641d3492b5f69e447b8d05da9257c.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:32:38', '2023-11-26 01:32:38'),
+(19, '[ TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-26 01:33:02', '2023-11-26 01:33:02'),
+(20, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 100, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-30 22:45:25', '2023-11-30 22:45:25'),
+(21, '[ TIKI TRỢ GIÁ ]Vali kéo Kiza KAMILIANT BY AMERICAN TOURISTER - MỸ : Thương hiệu Chính Hãng , bảo hành quốc tế trên 118 quốc gia', 20000000, 30, 'Đây là chiếc điện thoại Iphone 14', 'Đây cũng là chiếc điện thoại Iphone 14', 'https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp', 85, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-11-30 22:50:38', '2023-12-04 00:59:38'),
+(22, 'Ốp lưng kèm bàn phím ZAGG Messenger Folio 2 iPad 10.2/10.5', 988000, 34, 'Đây là chiếc điện thoại Iphone 14', 'Tính năng: Thuộc thương hiệu ốp lưng bảo vệ cao cấp dành cho iPad đến từ Mỹ Thiết kế gọn nhẹ, linh hoạt, dễ dàng mang theo, hỗ trợ tối đa các chức năng khi sử dụng Sử dụng cho các dòng: iPad 10.2’’ (iPad gen 7th & 8th), iPad 10.5’’ (iPad Air 3rd gen) Chất liệu vải Fabric cao cấp tạo sự sang trọng, bảo vệ iPad khỏi các vết bẩn, vết trầy xước khi để thiết bị cùng với các vật dụng trong túi xách của bạn. Bàn phím có độ nảy tốt, êm ái, tốc độ ghi nhận nhanh giúp dễ dàng thao tác, sử dụng Thời lượng sử dụng pin lên tới 1 năm giữa các lần sạc Tích hợp cổng sạc Type C nạp nhanh năng lượng cho thiết bị Kết nối dễ dàng, nhanh chóng thông qua bluetooth Đế gập dựng linh hoạt giúp thay đổi ở nhiều góc nhìn, thoải mái khi đánh máy hay xem phim.', 'https://salt.tikicdn.com/cache/750x750/ts/product/45/e4/50/49b0abca428616dbd94a67dab20590cb.png.webp', 31, 0, 'in_stock', 5, NULL, NULL, 0, 0, 0, 0, '2023-12-03 05:43:56', '2023-12-06 08:04:32');
 
 -- --------------------------------------------------------
 
@@ -1350,7 +1327,10 @@ INSERT INTO `product_brands` (`product_id`, `brand_id`) VALUES
 (20, 3),
 (21, 1),
 (21, 2),
-(21, 3);
+(21, 3),
+(22, 1),
+(22, 2),
+(22, 3);
 
 -- --------------------------------------------------------
 
@@ -1405,7 +1385,12 @@ INSERT INTO `product_images` (`id`, `product_id`, `image_url`, `image_alt`) VALU
 (48, 20, 'public/img3.png', NULL),
 (49, 21, 'public/img1.png', NULL),
 (50, 21, 'public/img2.png', NULL),
-(51, 21, 'public/img3.png', NULL);
+(51, 21, 'public/img3.png', NULL),
+(52, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/58/3e/2c/68bb1f5e80be0e402e2736300d069547.png.webp', NULL),
+(53, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/82/f5/e2/5b3d086ce512f6d267045b208be5ee55.png.webp', NULL),
+(54, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/9c/ab/0b/b48008f2968911f54607676b5514e83f.png.webp', NULL),
+(55, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/82/8e/f2/dc23d6860005c902e6e44860bbc7e967.png.webp', NULL),
+(56, 22, 'https://salt.tikicdn.com/cache/750x750/ts/product/cf/13/c2/60356f750bc1636c04c8a0aa3d023be8.png.webp', NULL);
 
 -- --------------------------------------------------------
 
@@ -1470,7 +1455,9 @@ INSERT INTO `product_tags` (`product_id`, `tag_id`) VALUES
 (21, 1),
 (21, 2),
 (21, 3),
-(21, 4);
+(21, 4),
+(22, 1),
+(22, 2);
 
 -- --------------------------------------------------------
 
@@ -1482,8 +1469,8 @@ CREATE TABLE `product_variants` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `variant_type_id` bigint(20) UNSIGNED NOT NULL,
-  `value` varchar(255) NOT NULL,
-  `price` varchar(255) NOT NULL
+  `value` varchar(128) NOT NULL,
+  `price` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1491,12 +1478,97 @@ CREATE TABLE `product_variants` (
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `variant_type_id`, `value`, `price`) VALUES
-(1, 21, 1, 'Đỏ', '26000'),
-(2, 21, 1, 'Vàng', '26000'),
-(3, 21, 1, 'Cam', '26000'),
-(4, 21, 5, '12', '25000'),
-(5, 21, 2, '4', '25000'),
-(6, 21, 2, '5', '25000');
+(1, 21, 1, 'Đỏ', 26000),
+(2, 21, 1, 'Vàng', 26000),
+(3, 21, 1, 'Cam', 26000),
+(4, 21, 5, '12', 25000),
+(5, 21, 2, '4', 25000),
+(6, 21, 2, '5', 25000),
+(7, 22, 1, 'Đỏ', 30000),
+(8, 22, 1, 'Vàng', 25000),
+(9, 22, 1, 'Cam', 40000),
+(10, 22, 2, '4 inch', 100000),
+(11, 22, 2, '5 inch', 125000);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `provinceghn`
+--
+
+CREATE TABLE `provinceghn` (
+  `id` int(11) NOT NULL,
+  `province_name` varchar(128) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `provinceghn`
+--
+
+INSERT INTO `provinceghn` (`id`, `province_name`) VALUES
+(201, 'Hà Nội'),
+(202, 'Hồ Chí Minh'),
+(203, 'Đà Nẵng'),
+(204, 'Đồng Nai'),
+(205, 'Bình Dương'),
+(206, 'Bà Rịa - Vũng Tàu'),
+(207, 'Gia Lai'),
+(208, 'Khánh Hòa'),
+(209, 'Lâm Đồng'),
+(210, 'Đắk Lắk'),
+(211, 'Long An'),
+(212, 'Tiền Giang'),
+(213, 'Bến Tre'),
+(214, 'Trà Vinh'),
+(215, 'Vĩnh Long'),
+(216, 'Đồng Tháp'),
+(217, 'An Giang'),
+(218, 'Sóc Trăng'),
+(219, 'Kiên Giang'),
+(220, 'Cần Thơ'),
+(221, 'Vĩnh Phúc'),
+(223, 'Thừa Thiên - Huế'),
+(224, 'Hải Phòng'),
+(225, 'Hải Dương'),
+(226, 'Thái Bình'),
+(227, 'Hà Giang'),
+(228, 'Tuyên Quang'),
+(229, 'Phú Thọ'),
+(230, 'Quảng Ninh'),
+(231, 'Nam Định'),
+(232, 'Hà Nam'),
+(233, 'Ninh Bình'),
+(234, 'Thanh Hóa'),
+(235, 'Nghệ An'),
+(236, 'Hà Tĩnh'),
+(237, 'Quảng Bình'),
+(238, 'Quảng Trị'),
+(239, 'Bình Phước'),
+(240, 'Tây Ninh'),
+(241, 'Đắk Nông'),
+(242, 'Quảng Ngãi'),
+(243, 'Quảng Nam'),
+(244, 'Thái Nguyên'),
+(245, 'Bắc Kạn'),
+(246, 'Cao Bằng'),
+(247, 'Lạng Sơn'),
+(248, 'Bắc Giang'),
+(249, 'Bắc Ninh'),
+(250, 'Hậu Giang'),
+(252, 'Cà Mau'),
+(253, 'Bạc Liêu'),
+(258, 'Bình Thuận'),
+(259, 'Kon Tum'),
+(260, 'Phú Yên'),
+(261, 'Ninh Thuận'),
+(262, 'Bình Định'),
+(263, 'Yên Bái'),
+(264, 'Lai Châu'),
+(265, 'Điện Biên'),
+(266, 'Sơn La'),
+(267, 'Hòa Bình'),
+(268, 'Hưng Yên'),
+(269, 'Lào Cai');
 
 -- --------------------------------------------------------
 
@@ -1611,55 +1683,13 @@ INSERT INTO `reviews` (`id`, `product_id`, `user_id`, `rating`, `comment`, `crea
 (10, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:57', '2023-11-26 07:16:57'),
 (11, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:58', '2023-11-26 07:16:58'),
 (12, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:58', '2023-11-26 07:16:58'),
-(13, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:59', '2023-11-26 07:16:59');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `roles`
---
-
-CREATE TABLE `roles` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `guard_name` varchar(255) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `roles`
---
-
-INSERT INTO `roles` (`id`, `name`, `guard_name`, `created_at`, `updated_at`) VALUES
-(1, 'ADMIN', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(2, 'USER', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59'),
-(3, 'SELLER', 'web', '2023-11-08 20:32:59', '2023-11-08 20:32:59');
-
--- --------------------------------------------------------
-
---
--- Cấu trúc bảng cho bảng `role_has_permissions`
---
-
-CREATE TABLE `role_has_permissions` (
-  `permission_id` bigint(20) UNSIGNED NOT NULL,
-  `role_id` bigint(20) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `role_has_permissions`
---
-
-INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
-(1, 1),
-(1, 3),
-(2, 1),
-(2, 3),
-(3, 1),
-(3, 3),
-(4, 1),
-(4, 3);
+(13, 15, 13, 5, 'Good job amazing', '2023-11-26 07:16:59', '2023-11-26 07:16:59'),
+(14, 11, 13, 5, 'Good job amazing', '2023-12-02 07:47:12', '2023-12-02 07:47:12'),
+(15, 11, 13, 5, 'Sản phẩm này ngon', '2023-12-02 07:47:24', '2023-12-02 07:47:24'),
+(16, 11, 13, 2, 'Không Ok lắm', '2023-12-02 07:52:07', '2023-12-02 07:52:07'),
+(17, 11, 13, 4, 'tạm tạm được', '2023-12-02 07:52:21', '2023-12-02 07:52:21'),
+(18, 11, 13, 3, 'nhìn như cc', '2023-12-02 07:52:29', '2023-12-02 07:52:29'),
+(19, 11, 13, 1, 'k bao giờ mua nữa', '2023-12-02 07:52:39', '2023-12-02 07:52:39');
 
 -- --------------------------------------------------------
 
@@ -1673,17 +1703,10 @@ CREATE TABLE `sellers` (
   `email` varchar(255) NOT NULL,
   `phone_number` varchar(11) NOT NULL,
   `address_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL DEFAULT 13,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `user_id` bigint(20) UNSIGNED NOT NULL DEFAULT 13
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `sellers`
---
-
-INSERT INTO `sellers` (`id`, `name`, `email`, `phone_number`, `address_id`, `created_at`, `updated_at`, `user_id`) VALUES
-(1, 'Công ty TNHH MTV Hoàn Vũ', 'hoanvu@gmail.com', '1900.3842', 2, '2023-11-09 02:17:46', '2023-11-09 02:17:46', 13);
 
 -- --------------------------------------------------------
 
@@ -1693,7 +1716,7 @@ INSERT INTO `sellers` (`id`, `name`, `email`, `phone_number`, `address_id`, `cre
 
 CREATE TABLE `settings` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `value` text NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1739,7 +1762,7 @@ INSERT INTO `tags` (`id`, `name`, `description`) VALUES
 
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(128) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone_number` varchar(10) DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
@@ -1750,7 +1773,6 @@ CREATE TABLE `users` (
   `role` varchar(20) NOT NULL DEFAULT 'USER',
   `remember_token` varchar(100) DEFAULT NULL,
   `address_id` bigint(20) UNSIGNED DEFAULT NULL,
-  `token` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1759,54 +1781,54 @@ CREATE TABLE `users` (
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `phone_number`, `email_verified_at`, `password`, `gender`, `birth_date`, `status`, `role`, `remember_token`, `address_id`, `token`, `created_at`, `updated_at`) VALUES
-(1, 'hpt', 'hptprobook@gmail.com', NULL, NULL, '$2y$10$ubun7sQZl0RJudTdKoU8ZO6JKliwx0D5aOH17/iOn2MiPOV6j5zy2', NULL, NULL, 'active', 'ADMIN', NULL, NULL, NULL, '2023-10-15 07:39:14', '2023-10-15 07:39:14'),
-(2, 'John Doe', 'user1@mail.com', NULL, NULL, '$2y$10$aaQleogwL7Et5LUKDCxm4O/GvXWxhNpkJNq3XjhFGOpdU/YgzSKLe', NULL, NULL, 'active', 'ADMIN', NULL, NULL, NULL, '2023-10-15 19:53:14', '2023-10-15 19:53:14'),
-(3, 'Elian Morissette', 'erich.pollich@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'm0SrQM1CmG', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(4, 'Edmond Pfeffer', 'hortense.witting@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'sa1yACtmix', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(5, 'Cecelia Koch III', 'witting.lilyan@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'pLgiVKybT9', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(6, 'Shannon Strosin', 'amber38@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9ejGixmXrY', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(7, 'Estefania Mayer', 'lavonne.hintz@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'v6xT6lg59U', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(8, 'Emely Ziemann', 'pete.murphy@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'zemFPO8cPr', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(9, 'Kaya Barrows', 'hhowe@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'hQJ7bShrbQ', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(10, 'Dr. Hadley Renner I', 'vhuels@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'df3Wh6aWQP', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(11, 'Mr. Alvis Gislason III', 'loraine97@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '0rPiNPz6yt', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(12, 'Beulah Johnson IV', 'hhilpert@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '5koMfSoKlA', NULL, NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
-(13, 'PHT', 'test@gmail.com', '0833129021', '2023-10-19 19:05:51', '$2y$10$TaqI3w5TVZipqXnqc3wFnO39uCc/0kBgSJ.5GAT5MO9bhIbzxklYC', NULL, NULL, 'active', 'SELLER', 'dq1FS0CJ9V', NULL, NULL, '2023-10-19 19:05:51', '2023-11-30 19:20:20'),
-(14, 'Phan Thanh Hoá', 'hptp@gmail.com', NULL, NULL, '$2y$10$2UdWu.Cp6mW0KWPLX5rqguhUzvDQuTwd4MJoqP1A6CDt3Kj4K0Lg.', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-10-28 20:40:41', '2023-10-28 20:40:41'),
-(15, 'John Doe', 'admin23@gmail.com', NULL, NULL, '$2y$10$vG5ejDou8wRDvv/qTpBEMOElv6h3C61xiQyFbr.deXlICp9Pzi8ke', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-10-28 20:46:38', '2023-10-28 20:46:38'),
-(16, 'Wilford Murazik', 'marta36@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'cutipOQr8d', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(17, 'Prof. Berta Denesik III', 'schmitt.keyon@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'ew3QJmEqaY', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(18, 'Jana Fay', 'gordon12@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9XGvzXpcuX', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(19, 'Casey Marks', 'rhalvorson@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'NAwOU7uRaA', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(20, 'Maryse Mante', 'florine.weimann@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'qZ1gXDjWjj', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(21, 'Skylar Howell Jr.', 'wilhelm46@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'kW30BP9kzK', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(22, 'Dorris Cormier', 'unolan@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'HQ4iebujrV', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(23, 'Melba Rutherford', 'carolyne.pfeffer@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '6bQJr3Oycb', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(24, 'Dr. Bartholome Bosco', 'kenny.koelpin@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'Xu0jyJIHwD', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(25, 'Dr. Lina Kertzmann III', 'shanelle.mclaughlin@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '4v3qW6GTOc', NULL, NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
-(27, 'Phan Thanh Hoá', 'hptp1@gmail.com', NULL, NULL, '$2y$10$LGGsXwlI7c0WDitu.KEqtO6JcsS24Q6x3luZnSqtYOBkDvH.uMEEG', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:21:47', '2023-11-24 00:21:47'),
-(28, 'Phan Thanh Hoá', 'hptp2@gmail.com', NULL, NULL, '$2y$10$ImyvZr3eOWcd6R1ua4DbwutNyXza/mcywOnueSc.c5a3JrSH39.GO', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:22:08', '2023-11-24 00:22:08'),
-(29, 'hoaphan', 'sd', NULL, NULL, '$2y$10$EHHHk2AXYTPIVXGH7IHGNeeTiAH3PcHiWlUb118CKwfCWBMDdyLja', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:26:46', '2023-11-24 00:26:46'),
-(30, 'hptprobook', '123456@gmail.com', NULL, NULL, '$2y$10$iw.eWLNHEuaG2HXOyRCMB.h0ANOZj5Weld2jPZg3FgdZm566GBdii', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-24 00:28:04', '2023-11-24 00:28:04'),
-(31, 'hoaphan', 'hot@gmail.com', NULL, NULL, '$2y$10$kQZWR9p0QgCcUgsqLPJhROBcvEDJ11zNSov5vf0fmZuOTPFvJuzra', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:09:51', '2023-11-25 01:09:51'),
-(32, 'hoaphan', 'hot1@gmail.com', NULL, NULL, '$2y$10$GHVDAGVjNrCgetDJqDZqoOeCxxrmsn4skNTYonfONW5.UfSmbWkcO', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:16:23', '2023-11-25 01:16:23'),
-(33, '12344', '1234@gmail.com', NULL, NULL, '$2y$10$cxztEa79GFg04BUKu6twkOg27hD/RK8LrPwsw.bTrW.qqsjgMWtue', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:18:11', '2023-11-25 01:18:11'),
-(34, '12344', '12345@gmail.com', NULL, NULL, '$2y$10$1UJuc2dV3pRiZv/fju7B0eqWC5KgdUfqdiYivq6KI2o0/jKIlLivy', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:19:08', '2023-11-25 01:19:08'),
-(35, '123456', '123456@gmail.com2', NULL, NULL, '$2y$10$6OW9YDV4ZPN15mzoYfg5wOTWbgN5kOu38jGuO6U1qWyJn/TjIJ.02', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:22:29', '2023-11-25 01:22:29'),
-(36, '123456', '1234562@gmail.com2', NULL, NULL, '$2y$10$yBrADBB5/DLF66kJ104Bye0YZESc/BtWmy8lufqVCPsWpp84R3fn2', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:23:42', '2023-11-25 01:23:42'),
-(37, '12345412', '12ni@gmail.com', NULL, NULL, '$2y$10$CxBjLS2YnbMETacHcUgzCeWgnNCuuBwC/lT/2Y7EQDvH5PWEXjGa2', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:33:36', '2023-11-25 01:33:36'),
-(38, '12345412', '12n23i@gmail.com', NULL, NULL, '$2y$10$gr4gdSaW73IbFbN8TEl9FOBZpWA3yxL13Ck5oBPxaDaOWMPLmqmKK', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:33:59', '2023-11-25 01:33:59'),
-(39, '12345412', '12n23wi@gmail.com', NULL, NULL, '$2y$10$9eSG41NgA1IACqD9QF.WZ.lfudpqmrmSHFyn5ip60jPWp/u6BEyLe', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:34:12', '2023-11-25 01:34:12'),
-(40, '12345623', 'admi2n@gmail.com', NULL, NULL, '$2y$10$fQG/PiN03UEiJPnKtSxcZuF1VfegRET4k4rtaPpFXaqWHQjiCg9Cm', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:35:00', '2023-11-25 01:35:00'),
-(41, '123456213', '123412@gmail.com', NULL, NULL, '$2y$10$PePC/aoZ5gSSOmqP/j9EsORdndDWnOuS6IUfOqHmbJJcgbIAwf/fS', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:35:28', '2023-11-25 01:35:28'),
-(42, 'hptprobooksd@gmail.com', 'hptprobooksd@gmail.com', NULL, NULL, '$2y$10$SFSqP8EfpgNTHymrlc2XW.o234eDUZZsUG69PjJLfF4ynSPI/G0YG', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:37:52', '2023-11-25 01:37:52'),
-(43, 'hptproboos3ek@gmail.com', 'hptproboos3ek@gmail.com', NULL, NULL, '$2y$10$hYCiB3KYGZnOQsJ0uTInDumCm0Tc2qM9ItyhwucgrwYHlHONBxXhi', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:40:12', '2023-11-25 01:40:12'),
-(44, 'hoaphan0420@gmail.com', 'hoaphan02420@gmail.com', NULL, NULL, '$2y$10$EPOOhENN461E.oMX9MwfSOvh6PKN28wxLsrChWRAOwYSEJ0pSbbJ.', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:46:46', '2023-11-25 01:46:46'),
-(45, '213412', '123421321@gmail.com', NULL, NULL, '$2y$10$8zorWeHrZyZPxzf9O/74oeUucyEGTKTjbf8tHIEbzMrVxkJVxIIk2', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 01:55:04', '2023-11-25 01:55:04'),
-(46, '1231242', 'adminqeqw@gmail.com', NULL, NULL, '$2y$10$sOl6GdC5tnR./sJI0fTH0um4vMO7qPYhPTttk24Q4XqV1om47sYtu', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 02:03:52', '2023-11-25 02:03:52'),
-(47, 'hoaphan0420@gmail.com', 'admin1232@gmail.com', NULL, NULL, '$2y$10$mVYLzZmZlPhsa5ZOnNuK9O0C8CzZlU.4Tv84Pd0Dty8LOoCOwytVC', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 19:28:56', '2023-11-25 19:28:56'),
-(48, '123213123', 'hotpr@gmail.com', NULL, NULL, '$2y$10$aLYcOItghc3u96MAQhtbJ.U/LdHhhU/eTsJpDMGjOVN9O.HBW3jTC', NULL, NULL, 'active', 'USER', NULL, NULL, NULL, '2023-11-25 19:30:02', '2023-11-25 19:30:02');
+INSERT INTO `users` (`id`, `name`, `email`, `phone_number`, `email_verified_at`, `password`, `gender`, `birth_date`, `status`, `role`, `remember_token`, `address_id`, `created_at`, `updated_at`) VALUES
+(1, 'hpt', 'hptprobook@gmail.com', NULL, NULL, '$2y$10$ubun7sQZl0RJudTdKoU8ZO6JKliwx0D5aOH17/iOn2MiPOV6j5zy2', NULL, NULL, 'active', 'ADMIN', NULL, NULL, '2023-10-15 07:39:14', '2023-10-15 07:39:14'),
+(2, 'John Doe', 'user1@mail.com', NULL, NULL, '$2y$10$aaQleogwL7Et5LUKDCxm4O/GvXWxhNpkJNq3XjhFGOpdU/YgzSKLe', NULL, NULL, 'active', 'ADMIN', NULL, NULL, '2023-10-15 19:53:14', '2023-10-15 19:53:14'),
+(3, 'Elian Morissette', 'erich.pollich@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'm0SrQM1CmG', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(4, 'Edmond Pfeffer', 'hortense.witting@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'sa1yACtmix', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(5, 'Cecelia Koch III', 'witting.lilyan@example.com', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'pLgiVKybT9', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(6, 'Shannon Strosin', 'amber38@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9ejGixmXrY', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(7, 'Estefania Mayer', 'lavonne.hintz@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'v6xT6lg59U', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(8, 'Emely Ziemann', 'pete.murphy@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'zemFPO8cPr', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(9, 'Kaya Barrows', 'hhowe@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'hQJ7bShrbQ', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(10, 'Dr. Hadley Renner I', 'vhuels@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'df3Wh6aWQP', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(11, 'Mr. Alvis Gislason III', 'loraine97@example.net', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '0rPiNPz6yt', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(12, 'Beulah Johnson IV', 'hhilpert@example.org', NULL, '2023-10-19 19:05:51', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '5koMfSoKlA', NULL, '2023-10-19 19:05:51', '2023-10-19 19:05:51'),
+(13, 'PHT', 'test@gmail.com', '0833129021', '2023-10-19 19:05:51', '$2y$10$TaqI3w5TVZipqXnqc3wFnO39uCc/0kBgSJ.5GAT5MO9bhIbzxklYC', NULL, NULL, 'active', 'SELLER', 'dq1FS0CJ9V', NULL, '2023-10-19 19:05:51', '2023-11-30 19:20:20'),
+(14, 'Phan Thanh Hoá', 'hptp@gmail.com', NULL, NULL, '$2y$10$2UdWu.Cp6mW0KWPLX5rqguhUzvDQuTwd4MJoqP1A6CDt3Kj4K0Lg.', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-10-28 20:40:41', '2023-10-28 20:40:41'),
+(15, 'John Doe', 'admin23@gmail.com', NULL, NULL, '$2y$10$vG5ejDou8wRDvv/qTpBEMOElv6h3C61xiQyFbr.deXlICp9Pzi8ke', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-10-28 20:46:38', '2023-10-28 20:46:38'),
+(16, 'Wilford Murazik', 'marta36@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'cutipOQr8d', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(17, 'Prof. Berta Denesik III', 'schmitt.keyon@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'ew3QJmEqaY', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(18, 'Jana Fay', 'gordon12@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '9XGvzXpcuX', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(19, 'Casey Marks', 'rhalvorson@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'NAwOU7uRaA', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(20, 'Maryse Mante', 'florine.weimann@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'qZ1gXDjWjj', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(21, 'Skylar Howell Jr.', 'wilhelm46@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'kW30BP9kzK', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(22, 'Dorris Cormier', 'unolan@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'HQ4iebujrV', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(23, 'Melba Rutherford', 'carolyne.pfeffer@example.com', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '6bQJr3Oycb', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(24, 'Dr. Bartholome Bosco', 'kenny.koelpin@example.org', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', 'Xu0jyJIHwD', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(25, 'Dr. Lina Kertzmann III', 'shanelle.mclaughlin@example.net', NULL, '2023-11-01 02:14:59', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', NULL, NULL, 'active', 'USER', '4v3qW6GTOc', NULL, '2023-11-01 02:14:59', '2023-11-01 02:14:59'),
+(27, 'Phan Thanh Hoá', 'hptp1@gmail.com', NULL, NULL, '$2y$10$LGGsXwlI7c0WDitu.KEqtO6JcsS24Q6x3luZnSqtYOBkDvH.uMEEG', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:21:47', '2023-11-24 00:21:47'),
+(28, 'Phan Thanh Hoá', 'hptp2@gmail.com', NULL, NULL, '$2y$10$ImyvZr3eOWcd6R1ua4DbwutNyXza/mcywOnueSc.c5a3JrSH39.GO', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:22:08', '2023-11-24 00:22:08'),
+(29, 'hoaphan', 'sd', NULL, NULL, '$2y$10$EHHHk2AXYTPIVXGH7IHGNeeTiAH3PcHiWlUb118CKwfCWBMDdyLja', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:26:46', '2023-11-24 00:26:46'),
+(30, 'hptprobook', '123456@gmail.com', NULL, NULL, '$2y$10$iw.eWLNHEuaG2HXOyRCMB.h0ANOZj5Weld2jPZg3FgdZm566GBdii', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-24 00:28:04', '2023-11-24 00:28:04'),
+(31, 'hoaphan', 'hot@gmail.com', NULL, NULL, '$2y$10$kQZWR9p0QgCcUgsqLPJhROBcvEDJ11zNSov5vf0fmZuOTPFvJuzra', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:09:51', '2023-11-25 01:09:51'),
+(32, 'hoaphan', 'hot1@gmail.com', NULL, NULL, '$2y$10$GHVDAGVjNrCgetDJqDZqoOeCxxrmsn4skNTYonfONW5.UfSmbWkcO', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:16:23', '2023-11-25 01:16:23'),
+(33, '12344', '1234@gmail.com', NULL, NULL, '$2y$10$cxztEa79GFg04BUKu6twkOg27hD/RK8LrPwsw.bTrW.qqsjgMWtue', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:18:11', '2023-11-25 01:18:11'),
+(34, '12344', '12345@gmail.com', NULL, NULL, '$2y$10$1UJuc2dV3pRiZv/fju7B0eqWC5KgdUfqdiYivq6KI2o0/jKIlLivy', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:19:08', '2023-11-25 01:19:08'),
+(35, '123456', '123456@gmail.com2', NULL, NULL, '$2y$10$6OW9YDV4ZPN15mzoYfg5wOTWbgN5kOu38jGuO6U1qWyJn/TjIJ.02', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:22:29', '2023-11-25 01:22:29'),
+(36, '123456', '1234562@gmail.com2', NULL, NULL, '$2y$10$yBrADBB5/DLF66kJ104Bye0YZESc/BtWmy8lufqVCPsWpp84R3fn2', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:23:42', '2023-11-25 01:23:42'),
+(37, '12345412', '12ni@gmail.com', NULL, NULL, '$2y$10$CxBjLS2YnbMETacHcUgzCeWgnNCuuBwC/lT/2Y7EQDvH5PWEXjGa2', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:33:36', '2023-11-25 01:33:36'),
+(38, '12345412', '12n23i@gmail.com', NULL, NULL, '$2y$10$gr4gdSaW73IbFbN8TEl9FOBZpWA3yxL13Ck5oBPxaDaOWMPLmqmKK', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:33:59', '2023-11-25 01:33:59'),
+(39, '12345412', '12n23wi@gmail.com', NULL, NULL, '$2y$10$9eSG41NgA1IACqD9QF.WZ.lfudpqmrmSHFyn5ip60jPWp/u6BEyLe', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:34:12', '2023-11-25 01:34:12'),
+(40, '12345623', 'admi2n@gmail.com', NULL, NULL, '$2y$10$fQG/PiN03UEiJPnKtSxcZuF1VfegRET4k4rtaPpFXaqWHQjiCg9Cm', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:35:00', '2023-11-25 01:35:00'),
+(41, '123456213', '123412@gmail.com', NULL, NULL, '$2y$10$PePC/aoZ5gSSOmqP/j9EsORdndDWnOuS6IUfOqHmbJJcgbIAwf/fS', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:35:28', '2023-11-25 01:35:28'),
+(42, 'hptprobooksd@gmail.com', 'hptprobooksd@gmail.com', NULL, NULL, '$2y$10$SFSqP8EfpgNTHymrlc2XW.o234eDUZZsUG69PjJLfF4ynSPI/G0YG', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:37:52', '2023-11-25 01:37:52'),
+(43, 'hptproboos3ek@gmail.com', 'hptproboos3ek@gmail.com', NULL, NULL, '$2y$10$hYCiB3KYGZnOQsJ0uTInDumCm0Tc2qM9ItyhwucgrwYHlHONBxXhi', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:40:12', '2023-11-25 01:40:12'),
+(44, 'hoaphan0420@gmail.com', 'hoaphan02420@gmail.com', NULL, NULL, '$2y$10$EPOOhENN461E.oMX9MwfSOvh6PKN28wxLsrChWRAOwYSEJ0pSbbJ.', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:46:46', '2023-11-25 01:46:46'),
+(45, '213412', '123421321@gmail.com', NULL, NULL, '$2y$10$8zorWeHrZyZPxzf9O/74oeUucyEGTKTjbf8tHIEbzMrVxkJVxIIk2', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 01:55:04', '2023-11-25 01:55:04'),
+(46, '1231242', 'adminqeqw@gmail.com', NULL, NULL, '$2y$10$sOl6GdC5tnR./sJI0fTH0um4vMO7qPYhPTttk24Q4XqV1om47sYtu', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 02:03:52', '2023-11-25 02:03:52'),
+(47, 'hoaphan0420@gmail.com', 'admin1232@gmail.com', NULL, NULL, '$2y$10$mVYLzZmZlPhsa5ZOnNuK9O0C8CzZlU.4Tv84Pd0Dty8LOoCOwytVC', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 19:28:56', '2023-11-25 19:28:56'),
+(48, '123213123', 'hotpr@gmail.com', NULL, NULL, '$2y$10$aLYcOItghc3u96MAQhtbJ.U/LdHhhU/eTsJpDMGjOVN9O.HBW3jTC', NULL, NULL, 'active', 'USER', NULL, NULL, '2023-11-25 19:30:02', '2023-11-25 19:30:02');
 
 -- --------------------------------------------------------
 
@@ -12496,9 +12518,7 @@ INSERT INTO `wards` (`id`, `name`, `type`, `slug`, `name_with_type`, `path`, `pa
 --
 ALTER TABLE `addresses`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `addresses_phone_unique` (`phone`),
-  ADD KEY `addresses_user_id_foreign` (`user_id`),
-  ADD KEY `addresses_ward_id_foreign` (`ward_id`);
+  ADD KEY `addresses_user_id_foreign` (`user_id`);
 
 --
 -- Chỉ mục cho bảng `brands`
@@ -12571,20 +12591,6 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `model_has_permissions`
---
-ALTER TABLE `model_has_permissions`
-  ADD PRIMARY KEY (`permission_id`,`model_id`,`model_type`),
-  ADD KEY `model_has_permissions_model_id_model_type_index` (`model_id`,`model_type`);
-
---
--- Chỉ mục cho bảng `model_has_roles`
---
-ALTER TABLE `model_has_roles`
-  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
-  ADD KEY `model_has_roles_model_id_model_type_index` (`model_id`,`model_type`);
-
---
 -- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
@@ -12614,13 +12620,6 @@ ALTER TABLE `payments`
   ADD KEY `payments_order_id_foreign` (`order_id`);
 
 --
--- Chỉ mục cho bảng `permissions`
---
-ALTER TABLE `permissions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `permissions_name_guard_name_unique` (`name`,`guard_name`);
-
---
 -- Chỉ mục cho bảng `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
@@ -12640,7 +12639,8 @@ ALTER TABLE `posts`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`id`),
   ADD KEY `products_seller_id_foreign` (`seller_id`),
-  ADD KEY `products_category_id_foreign` (`category_id`);
+  ADD KEY `products_category_id_foreign` (`category_id`),
+  ADD KEY `products_brand_id_foreign` (`brand_id`);
 
 --
 -- Chỉ mục cho bảng `product_brands`
@@ -12672,6 +12672,12 @@ ALTER TABLE `product_variants`
   ADD KEY `product_variants_variant_type_id_foreign` (`variant_type_id`);
 
 --
+-- Chỉ mục cho bảng `provinceghn`
+--
+ALTER TABLE `provinceghn`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Chỉ mục cho bảng `provinces`
 --
 ALTER TABLE `provinces`
@@ -12686,20 +12692,6 @@ ALTER TABLE `reviews`
   ADD PRIMARY KEY (`id`),
   ADD KEY `reviews_product_id_foreign` (`product_id`),
   ADD KEY `reviews_user_id_foreign` (`user_id`);
-
---
--- Chỉ mục cho bảng `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `roles_name_guard_name_unique` (`name`,`guard_name`);
-
---
--- Chỉ mục cho bảng `role_has_permissions`
---
-ALTER TABLE `role_has_permissions`
-  ADD PRIMARY KEY (`permission_id`,`role_id`),
-  ADD KEY `role_has_permissions_role_id_foreign` (`role_id`);
 
 --
 -- Chỉ mục cho bảng `sellers`
@@ -12753,25 +12745,25 @@ ALTER TABLE `wards`
 -- AUTO_INCREMENT cho bảng `addresses`
 --
 ALTER TABLE `addresses`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT cho bảng `brands`
 --
 ALTER TABLE `brands`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -12807,19 +12799,19 @@ ALTER TABLE `hot_searches`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=61;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
 --
 ALTER TABLE `order_details`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -12828,16 +12820,10 @@ ALTER TABLE `payments`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `permissions`
---
-ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
 -- AUTO_INCREMENT cho bảng `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=94;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT cho bảng `posts`
@@ -12849,19 +12835,19 @@ ALTER TABLE `posts`
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `product_images`
 --
 ALTER TABLE `product_images`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `provinces`
@@ -12873,13 +12859,7 @@ ALTER TABLE `provinces`
 -- AUTO_INCREMENT cho bảng `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT cho bảng `roles`
---
-ALTER TABLE `roles`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT cho bảng `sellers`
@@ -12922,13 +12902,6 @@ ALTER TABLE `wards`
 --
 
 --
--- Các ràng buộc cho bảng `addresses`
---
-ALTER TABLE `addresses`
-  ADD CONSTRAINT `addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `addresses_ward_id_foreign` FOREIGN KEY (`ward_id`) REFERENCES `wards` (`id`) ON DELETE CASCADE;
-
---
 -- Các ràng buộc cho bảng `carts`
 --
 ALTER TABLE `carts`
@@ -12948,18 +12921,6 @@ ALTER TABLE `coupon_usages`
   ADD CONSTRAINT `coupon_usages_coupon_id_foreign` FOREIGN KEY (`coupon_id`) REFERENCES `coupons` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `coupon_usages_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `coupon_usages_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `model_has_permissions`
---
-ALTER TABLE `model_has_permissions`
-  ADD CONSTRAINT `model_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `model_has_roles`
---
-ALTER TABLE `model_has_roles`
-  ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `orders`
@@ -12985,6 +12946,7 @@ ALTER TABLE `payments`
 -- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
+  ADD CONSTRAINT `products_brand_id_foreign` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `products_seller_id_foreign` FOREIGN KEY (`seller_id`) REFERENCES `sellers` (`id`) ON DELETE CASCADE;
 
@@ -13021,13 +12983,6 @@ ALTER TABLE `product_variants`
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `role_has_permissions`
---
-ALTER TABLE `role_has_permissions`
-  ADD CONSTRAINT `role_has_permissions_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `role_has_permissions_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `sellers`

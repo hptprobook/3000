@@ -21,26 +21,32 @@ const CategoryService = {
     }
   },
     // ... Các hàm khác
-    createCategory: async (categoryData) => {
+    createCategory: async (data) => {
       try {
-        const res = await request.post("categories", categoryData);
-        return res.data; // Trả về dữ liệu từ phản hồi API thay vì toàn bộ response
+          const res = await request.post(`categories`, data);
+          return res;
       } catch (err) {
-        if (err.response) {
-          // Xử lý khi nhận được phản hồi từ server với mã lỗi
-          console.error('Error creating category:', err.response.data);
-          throw new Error(err.response.data.message || 'Có lỗi xảy ra khi tạo danh mục.'); // Sử dụng thông điệp từ phản hồi hoặc một thông điệp mặc định
-        } else if (err.request) {
-          // Xử lý khi yêu cầu không nhận được phản hồi từ server
-          console.error('No response received:', err.request);
-          throw new Error('Không thể kết nối đến server.'); // Thông báo lỗi kết nối
-        } else {
-          // Xử lý lỗi không xác định
-          console.error('Error creating category:', err);
-          throw new Error('Đã xảy ra lỗi không xác định.'); // Thông báo lỗi không xác định
-        }
+          throw err;
       }
-    },
+  },
+  deleteCategoryByID: async (id) => {
+    try {
+        const res = await request.delete(`categories/${id}`);
+        return res.data;
+    } catch (err) {
+        console.log("Error: ", err);
+        throw err;
+    }
+},
+    updateCategoryByID: async (categoryId, data) => {
+      try {
+          const res = await request.put(`categories/${categoryId}`, data);
+          return res.data;
+      } catch (err) {
+          console.log("Error: ", err);
+          throw err;
+      }
+  },
 };
 
 export default CategoryService;

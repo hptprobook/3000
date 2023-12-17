@@ -7,6 +7,10 @@ import { Grid } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Link from "next/link";
 import { CartContext } from "@/provider/CartContext";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteCartById, fetchAllCart } from "@/redux/slices/cartSlice";
+import { toast } from "react-toastify";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 const StyledCartContainer = styled("div")(() => ({
     "& .cart-item__header": {
@@ -69,10 +73,27 @@ const StyledCartContainer = styled("div")(() => ({
 
 export default function CartContainer({ data }) {
     const [checkedIds, setCheckedIds] = useState([]);
+    const [cartData, setCartData] = useState([]);
+    const dispatch = useDispatch();
+    const {
+        quantity,
+        setQuantity,
+        setTotalPrice,
+        setCartItemIds,
+        updateCartItems,
+        cartItems,
+    } = useContext(CartContext);
 
     useEffect(() => {
         setCheckedIds(data?.map((item) => item.id));
-    }, [data]);
+        setCartData(data);
+
+        const initialCartItems = data?.map((item) => ({
+            id: item?.id,
+            quantity: item?.quantity,
+        }));
+        updateCartItems(initialCartItems);
+    }, []);
 
     const handleCheck = (id, isChecked) => {
         if (isChecked) {
@@ -120,6 +141,12 @@ export default function CartContainer({ data }) {
             ...prevTotalPrices,
             [id]: newQuantity * data?.find((item) => item.id === id).price,
         }));
+
+        const updatedCartItems = data.map((item) => ({
+            id: item.id,
+            quantity: item.id === id ? newQuantity : quantities[item.id],
+        }));
+        updateCartItems(updatedCartItems);
     };
 
     const incrementQuantity = (id) => {
@@ -129,9 +156,6 @@ export default function CartContainer({ data }) {
     const decrementQuantity = (id) => {
         updateQuantity(id, Math.max(quantities[id] - 1, 1));
     };
-
-    const { setQuantity, setTotalPrice, setCartItemIds } =
-        useContext(CartContext);
 
     const calculateAndUpdateTotals = () => {
         let totalQuantity = 0;
@@ -152,6 +176,31 @@ export default function CartContainer({ data }) {
     useEffect(() => {
         calculateAndUpdateTotals();
     }, [checkedIds, quantities, data]);
+
+    const handleDelete = (id) => {
+        const confirmDelete = confirm(
+            "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng không?"
+        );
+        if (!confirmDelete) return;
+
+        dispatch(deleteCartById(id)).then(() => {
+            toast.success("Xóa sản phẩm thành công", {
+                autoClose: 2000,
+            });
+
+            setCheckedIds((prev) => prev.filter((itemId) => itemId !== id));
+
+            setCartData((prevCartData) =>
+                prevCartData.filter((item) => item.id !== id)
+            );
+
+            dispatch(fetchAllCart());
+        });
+    };
+
+    if (data?.length === 0) {
+        return <h4>Không có sản phẩm nào trong giỏ hàng</h4>;
+    }
 
     return (
         <StyledCartContainer>
@@ -194,7 +243,7 @@ export default function CartContainer({ data }) {
                 </Grid>
             </Grid>
             <div className="cart-item">
-                {data?.map((item) => (
+                {cartData?.map((item) => (
                     <Grid
                         container
                         key={item.id}
@@ -316,7 +365,13 @@ export default function CartContainer({ data }) {
                             {totalPrices[item.id]?.toLocaleString()}đ
                         </Grid>
                         <Grid item xs={0.4}>
-                            <DeleteOutlineIcon sx={{ cursor: "pointer" }} />
+                            <div
+                                onClick={() => {
+                                    handleDelete(item.id);
+                                }}
+                            >
+                                <DeleteOutlineIcon sx={{ cursor: "pointer" }} />
+                            </div>
                         </Grid>
                     </Grid>
                 ))}

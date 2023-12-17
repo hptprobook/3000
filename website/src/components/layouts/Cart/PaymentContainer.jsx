@@ -4,6 +4,8 @@ import { styled } from "@mui/material/styles";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { CartContext } from "@/provider/CartContext";
 import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllCart, updateCartByIds } from "@/redux/slices/cartSlice";
 
 const StyledPaymentContainer = styled("div")(() => ({
     position: "sticky",
@@ -37,11 +39,12 @@ const StyledPaymentContainer = styled("div")(() => ({
 }));
 
 export default function PaymentContainer() {
-    const { quantity, totalPrice, cartItemIds } = useContext(CartContext);
-    const router = useRouter();
+    const { quantity, totalPrice, cartItemIds, cartItems } =
+        useContext(CartContext);
+    const dispatch = useDispatch();
 
-    const handleOrder = (e) => {
-        // e.preventDefault();
+    const handleOrder = () => {
+        dispatch(updateCartByIds({ cartItems: cartItems }));
     };
 
     const query = {
@@ -78,7 +81,9 @@ export default function PaymentContainer() {
                 </div>
             </div>
             <Link onClick={handleOrder} href={{ pathname: "/order", query }}>
-                <button>Mua hàng ({quantity})</button>
+                <button disabled={quantity == 0 ? true : false}>
+                    Mua hàng ({quantity})
+                </button>
             </Link>
         </StyledPaymentContainer>
     );

@@ -13,8 +13,6 @@ import { fetchAllOrders } from "../../../redux/slices/ordersSlice";
 
 export default function ListOrderPage() {
     const dispatch = useDispatch();
-    const categories = useSelector((state) => state.categories.data);
-    const statusCat = useSelector((state) => state.categories.status);
     const orders = useSelector((state) => state.orders.data);
     const statusOrder = useSelector((state) => state.orders.status);
     const error = useSelector((state) => state.categories.error);
@@ -22,25 +20,25 @@ export default function ListOrderPage() {
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [ordersStatusList, setOrderStatusList] = React.useState([]);
     const [orderList, setOrderList] = React.useState([]);
+
     const handleFilterReturn = (filters) => {
         setSelectedFilters(filters);
         // You can perform additional actions based on the selected filters if needed
     };
 
-
     useEffect(() => {
-        if (statusCat == 'idle') {
-            dispatch(fetchCategoriesAsync());
-        }
-    }, [statusCat]);
-    useEffect(() => {
-        if (statusOrder == 'idle') {
+        if (loadData === false) {
             dispatch(fetchAllOrders());
+        }
+    }, [loadData]);
+    useEffect(() => {
+        if (statusOrder == 'success') {
             setOrderStatusList(orders);
+            setLoadData(true);
         }
     }, [statusOrder]);
     useEffect(() => {
-        if (statusOrder == 'orders already') {
+        if (statusOrder == 'success') {
             setOrderList(orders);
 
             if (selectedFilters.length > 0) {
@@ -63,17 +61,17 @@ export default function ListOrderPage() {
         }
     };
 
-    if (statusCat === 'loading') {
+    if (statusOrder === 'loading') {
         return (
             <Loading />
         )
     }
-    if (statusCat === 'failed' || statusOrder === 'failed') {
+    if (statusOrder === 'failed') {
         return (
             <div>Error</div>
         )
     }
-    if (statusOrder === 'orders already') {
+    if (statusOrder === 'success') {
         return (
             <Box>
                 <HeaderPage
@@ -106,7 +104,6 @@ export default function ListOrderPage() {
                                 { id: 'cancelled', name: 'Hủy' },
                                 { id: 'delivered', name: 'Giao hàng thành công' },
                                 { id: 'refunded', name: 'Trả hàng' },
-                                { id: 'complete', name: 'Hoàn thành' },
                             ]}
                             filterReturn={handleFilterReturn} />
                         <TableOrder data={orderList} />

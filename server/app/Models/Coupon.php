@@ -16,6 +16,7 @@ class Coupon extends Model
         'end_date',
         'amount',
         'quantity',
+        'type'
     ];
 
     public $timestamps = false;

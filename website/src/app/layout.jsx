@@ -6,8 +6,8 @@ import "@/styles/globals.css";
 import "@/styles/app.css";
 import Header from "@/components/layouts/Header/Header";
 import { Providers } from "@/redux/provider";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { AddToCartProvider } from "@/provider/AddToCartContext";
+import { OrderAddressProvider } from "@/provider/OrderAddressContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,10 +25,12 @@ export default function RootLayout({ children }) {
                     <ToastContainer
                         style={{ zIndex: "9999999999999999999999999" }}
                     />
-                    <AddToCartProvider>
-                        <Header />
-                        {children}
-                    </AddToCartProvider>
+                    <OrderAddressProvider>
+                        <AddToCartProvider>
+                            <Header />
+                            {children}
+                        </AddToCartProvider>
+                    </OrderAddressProvider>
                 </Providers>
             </body>
         </html>
