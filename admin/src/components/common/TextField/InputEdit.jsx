@@ -5,8 +5,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
-import { FormHelperText, colors } from '@mui/material';
-
+import { FormHelperText } from '@mui/material';
 
 const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
   margin: 0,
@@ -18,7 +17,7 @@ const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
     color: color.textColor.dark
   },
   '& .MuiInputBase-root.MuiFilledInput-root.Mui-focused': {
-    border: '2px solid' + color.focusedColor.dark,
+    border: `2px solid ${color.focusedColor.dark}`,
     transition: 'border .4s linear',
   },
   '& .MuiInputBase-root.MuiFilledInput-root::before': {
@@ -42,10 +41,9 @@ const FormControlEdit = styled(FormControl)(({ theme, error }) => ({
   '& svg': {
     color: color.textColor.dark
   }
-}))
+}));
 
 export default function InputEdit({ label, icon, value, onChange, type, error, helperText, onBlur, id, note, disabled, name }) {
-
   return (
     <FormControlEdit error={error} fullWidth sx={{ m: 1 }} variant="filled">
       <InputLabel htmlFor={id}>{label}</InputLabel>
@@ -63,7 +61,6 @@ export default function InputEdit({ label, icon, value, onChange, type, error, h
       <FormHelperText sx={{
         color: color.textColor.dark
       }}>{note ? note : ''}</FormHelperText>
-
     </FormControlEdit>
   );
 }
