@@ -36,6 +36,15 @@ const UserService = {
             return err.response;
         }
     },
+
+    updateCurrentUser: async (user) => {
+        try {
+            const res = await request.put("users/updateCurrentUser", user);
+            return res;
+        } catch (err) {
+            return err.response;
+        }
+    },
 };
 
 export default UserService;

@@ -171,27 +171,27 @@ class ProductController extends Controller
             $product = Product::findOrFail($id);
 
             $request->validate([
-                'name' => 'required|min:3|max:128',
-                'price' => 'required|numeric|between:1000,1000000000',
-                'discount' => 'required|numeric|between:0,100',
-                'short_desc' => 'required|string|min:10|max:512',
-                'detail' => 'required|min:12|max:18000',
-                'thumbnail' => 'required|min:3|max:255',
-                'category_id' => 'required',
+                'name' => 'sometimes|min:3|max:128',
+                'price' => 'sometimes|numeric|between:1000,1000000000',
+                'discount' => 'sometimes|numeric|between:0,100',
+                'short_desc' => 'sometimes|string|min:10|max:512',
+                'detail' => 'sometimes|min:12|max:18000',
+                'thumbnail' => 'sometimes|min:3|max:255',
+                'category_id' => 'sometimes',
                 'images' => 'sometimes|array',
                 'images.*' => 'string|min:3|max:255',
                 'tags' => 'sometimes|string',
                 'brand_id' => 'integer',
-                'status' => 'required',
-                'quantity' => 'required|numeric|between:0,10000',
+                'status' => 'sometimes',
+                'quantity' => 'sometimes|numeric|between:0,10000',
                 'variants' => 'sometimes|array',
-                'variants.*.name' => 'required_with:variants|string',
-                'variants.*.value' => 'required_with:variants',
-                'variants.*.price' => 'required_with:variants|numeric',
+                'variants.*.name' => 'sometimes|required_with:variants|string',
+                'variants.*.value' => 'sometimes|required_with:variants',
+                'variants.*.price' => 'sometimes|required_with:variants|numeric',
             ]);
 
             $product->update($request->only([
-                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity', 'brand_id'
+                'name', 'price', 'discount', 'short_desc', 'detail', 'thumbnail', 'category_id', 'status', 'quantity', 'brand_id', 'weight', 'length', 'width', 'height'
             ]));
 
             if ($request->has('images')) {
@@ -218,20 +218,22 @@ class ProductController extends Controller
                 }
             }
 
-            foreach ($request->variants as $variant) {
-                $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
+            if ($request->has('variants')) {
+                foreach ($request->variants as $variant) {
+                    $variantType = VariantType::firstOrCreate(['name' => $variant['name']]);
 
-                $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
-                if ($existingVariant) {
-                    $product->variants()->updateExistingPivot($variantType->id, [
-                        'value' => $variant['value'],
-                        'price' => $variant['price']
-                    ]);
-                } else {
-                    $product->variants()->attach($variantType->id, [
-                        'value' => $variant['value'],
-                        'price' => $variant['price']
-                    ]);
+                    $existingVariant = $product->variants()->where('variant_type_id', $variantType->id)->first();
+                    if ($existingVariant) {
+                        $product->variants()->updateExistingPivot($variantType->id, [
+                            'value' => $variant['value'],
+                            'price' => $variant['price']
+                        ]);
+                    } else {
+                        $product->variants()->attach($variantType->id, [
+                            'value' => $variant['value'],
+                            'price' => $variant['price']
+                        ]);
+                    }
                 }
             }
 

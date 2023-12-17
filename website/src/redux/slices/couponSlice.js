@@ -6,7 +6,22 @@ export const addCoupon = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await CouponService.addCoupon(data);
+            if (response.error) {
+                return rejectWithValue(response.message);
+            }
             return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const getAllCoupons = createAsyncThunk(
+    "coupon/getAllCoupons",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await CouponService.getAllCoupons();
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -15,6 +30,7 @@ export const addCoupon = createAsyncThunk(
 
 const initialState = {
     couponUsage: null,
+    coupons: [],
     status: "idle",
     error: null,
 };
@@ -22,7 +38,11 @@ const initialState = {
 const couponSlice = createSlice({
     name: "coupons",
     initialState,
-    reducers: {},
+    reducers: {
+        clearCouponUsage: (state) => {
+            state.couponUsage = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(addCoupon.pending, (state) => {
@@ -36,8 +56,21 @@ const couponSlice = createSlice({
             .addCase(addCoupon.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
+            })
+            .addCase(getAllCoupons.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+            })
+            .addCase(getAllCoupons.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.coupons = action.payload;
+            })
+            .addCase(getAllCoupons.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
             });
     },
 });
 
+export const { clearCouponUsage } = couponSlice.actions;
 export default couponSlice.reducer;

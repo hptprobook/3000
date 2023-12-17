@@ -11,11 +11,12 @@ import {
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { getDistrictList, getWardList } from "@/redux/slices/deliverySlice";
 import { useDispatch, useSelector } from "react-redux";
-import { getAddressById } from "@/redux/slices/addressSlice";
+import { getAddressById, updateAddress } from "@/redux/slices/addressSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useRouter } from "next/navigation";
 
 const StyledProfileEditAddress = styled("div")(() => ({
     "& .form": {
@@ -84,6 +85,7 @@ export default function ProfileEditAddress({ data, provinces }) {
     const [selectedProvinceId, setSelectedProvinceId] = useState(null);
     const [selectedDistrictId, setSelectedDistrictId] = useState(null);
     const [selectedWardId, setSelectedWardId] = useState(null);
+    const router = useRouter();
 
     const [districtOptions, setDistrictOptions] = useState([]);
     const [wardOptions, setWardOptions] = useState([]);
@@ -92,10 +94,16 @@ export default function ProfileEditAddress({ data, provinces }) {
         if (value) {
             formik.setFieldValue("province", value);
             setSelectedProvinceId(value.id);
+
+            // Reset district and ward selections
             setSelectedDistrictId(null);
             setSelectedWardId(null);
+            formik.setFieldValue("district", null);
+            formik.setFieldValue("ward", null);
+
             setDistrictOptions([]);
             setWardOptions([]);
+
             dispatch(getDistrictList({ province_id: value.id }))
                 .then((response) => {
                     const districts = response.payload.data;
@@ -108,6 +116,8 @@ export default function ProfileEditAddress({ data, provinces }) {
             setSelectedProvinceId(null);
             setSelectedDistrictId(null);
             setSelectedWardId(null);
+            formik.setFieldValue("district", null);
+            formik.setFieldValue("ward", null);
             setDistrictOptions([]);
             setWardOptions([]);
         }
@@ -117,8 +127,12 @@ export default function ProfileEditAddress({ data, provinces }) {
         if (value) {
             setSelectedDistrictId(value.DistrictID);
             formik.setFieldValue("district", value);
+
+            // Reset ward selection
             setSelectedWardId(null);
+            formik.setFieldValue("ward", null);
             setWardOptions([]);
+
             dispatch(getWardList({ district_id: value.DistrictID }))
                 .then((response) => {
                     const wards = response.payload.data;
@@ -130,6 +144,7 @@ export default function ProfileEditAddress({ data, provinces }) {
         } else {
             setSelectedDistrictId(null);
             setSelectedWardId(null);
+            formik.setFieldValue("ward", null);
             setWardOptions([]);
         }
     };
@@ -137,11 +152,11 @@ export default function ProfileEditAddress({ data, provinces }) {
     const handleWardChange = (event, value) => {
         if (value) {
             setSelectedWardId(value.WardCode);
+            formik.setFieldValue("ward", value);
         }
     };
 
     const dispatch = useDispatch();
-    const districtList = useSelector((state) => state.deliveries);
     const addressById = useSelector(
         (state) => state.addresses.addressById.data
     );
@@ -183,7 +198,7 @@ export default function ProfileEditAddress({ data, provinces }) {
                 ? values.district.DistrictName
                 : "";
             const ward_name = values.ward ? values.ward.WardName : "";
-            const fullAddress = `${province_name}, ${district_name}, ${ward_name}, ${values.address}`;
+            const fullAddress = `${values.address}, ${ward_name}, ${district_name}, ${province_name}`;
 
             const payload = {
                 name: values.name,
@@ -196,22 +211,26 @@ export default function ProfileEditAddress({ data, provinces }) {
                 default: values.isDefault,
             };
 
-            // dispatch(addAddresses(payload))
-            //     .then(() => {
-            //         toast.success("Cập nhật địa chỉ thành công", {
-            //             autoClose: 2000,
-            //         });
-            //         setTimeout(() => {
-            //             router.push("/profile/address");
-            //         }, 1000);
-            //     })
-            //     .catch((error) => {
-            //         toast.error(error);
-            //     });
+            if (data) {
+                dispatch(updateAddress({ id: data, data: payload }))
+                    .then(() => {
+                        toast.success("Cập nhật địa chỉ thành công", {
+                            autoClose: 2000,
+                        });
+                        setTimeout(() => {
+                            router.push("/profile/address");
+                        }, 1000);
+                    })
+                    .catch((error) => {
+                        toast.error(error);
+                    });
 
-            // if (address) {
-            //     dispatch(clearAddress());
-            // }
+                if (address) {
+                    dispatch(clearAddress());
+                }
+            } else {
+                console.log("hâha");
+            }
         },
     });
 
@@ -258,15 +277,13 @@ export default function ProfileEditAddress({ data, provinces }) {
         }
     }, [addressById]);
 
-    console.log(formik.values.ward);
-
     if (!addressById) {
         return <CirLoading />;
     } else {
         return (
             <StyledProfileEditAddress>
                 <p>Sửa địa chỉ</p>
-                <form className="form" action="">
+                <form className="form" onSubmit={formik.handleSubmit}>
                     <Grid container spacing={1.5}>
                         <Grid item xs={6}>
                             <TextField
@@ -369,7 +386,7 @@ export default function ProfileEditAddress({ data, provinces }) {
                                 sx={{ width: 300 }}
                                 value={formik.values.ward}
                                 onBlur={() => {
-                                    formik.setFieldTouched("district", true);
+                                    formik.setFieldTouched("ward", true);
                                 }}
                                 onChange={handleWardChange}
                                 getOptionLabel={(option) =>

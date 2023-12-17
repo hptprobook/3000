@@ -1,12 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import PersonIcon from "@mui/icons-material/Person";
-import IconField from "@/components/common/TextField/IconField/IconField";
-import BasicDatePicker from "@/components/common/TextField/DatePicker/DatePicker";
 import GenderRadio from "@/components/common/Radio/Gender/GenderRadio";
-import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
-import BadgeIcon from "@mui/icons-material/Badge";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
 import Link from "next/link";
@@ -16,6 +11,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { TextField } from "@mui/material";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { updateCurrentUser } from "@/redux/slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const StyledProfileInfo = styled("div")(() => ({
     borderRadius: "5px",
@@ -69,6 +66,26 @@ const StyledProfileInfo = styled("div")(() => ({
             cursor: "pointer",
             "&:hover": {
                 opacity: "0.8",
+            },
+        },
+        "& .birthdate": {
+            marginTop: "12px",
+            input: {
+                width: "100%",
+                height: "40px",
+                borderRadius: "3px",
+                border: "1px solid #0000003b",
+                paddingLeft: "12px",
+                fontSize: "15px",
+                fontFamily: "var(--font-family)",
+                cursor: "text",
+                outline: "none",
+                "&:hover": {
+                    borderColor: "#333",
+                },
+                "&:focus": {
+                    border: "2px solid #2184ff",
+                },
             },
         },
     },
@@ -126,29 +143,33 @@ const updateUserSchema = Yup.object().shape({
 });
 
 export default function ProfileInfo({ user }) {
-    console.log("🚀 ~ file: ProfileInfo.jsx:104 ~ ProfileInfo ~ user:", user);
-    function formatDate(date) {
-        const d = new Date(date);
-        let month = "" + (d.getMonth() + 1);
-        let day = "" + d.getDate();
-        const year = d.getFullYear();
-
-        if (month.length < 2) month = "0" + month;
-        if (day.length < 2) day = "0" + day;
-
-        return [month, day, year].join("/");
-    }
+    const dispatch = useDispatch();
 
     const formik = useFormik({
         initialValues: {
             name: "",
             phone: "",
-            birth_date: formatDate(new Date()),
+            birth_date: "",
             gender: null,
         },
         validationSchema: updateUserSchema,
         onSubmit: (value) => {
-            console.log("submit");
+            const data = {
+                name: value.name,
+                phone_number: value.phone || null,
+                birth_date: value.birth_date,
+                gender: value.gender || null,
+            };
+            console.log(data);
+            dispatch(updateCurrentUser(data))
+                .then(() => {
+                    toast.success("Cập nhật thông tin thành công", {
+                        autoClose: 2000,
+                    });
+                })
+                .catch((error) => {
+                    toast.error(error);
+                });
         },
     });
 
@@ -157,9 +178,7 @@ export default function ProfileInfo({ user }) {
             formik.setValues({
                 name: user.name || "",
                 phone: user.phone_number || "",
-                birth_date: user?.birth_date
-                    ? formatDate(user.birth_date)
-                    : formatDate(new Date()),
+                birth_date: user.birth_date || new Date(),
                 gender: user.gender || "",
             });
         }
@@ -171,84 +190,106 @@ export default function ProfileInfo({ user }) {
 
     return (
         <StyledProfileInfo>
-            <div className="left">
-                <p>Thông tin cá nhân</p>
-                <div className="first">
-                    <div className="avatar">
-                        <img
-                            className="img-c"
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png"
-                            alt=""
-                        />
-                        <div className="change">Thay đổi</div>
-                    </div>
-                    <div className="fullname">
-                        <div>
-                            <TextField
-                                fullWidth
-                                name="name"
-                                size="small"
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={
-                                    formik.touched.name &&
-                                    Boolean(formik.errors.name)
-                                }
-                                helperText={
-                                    formik.touched.name && formik.errors.name
-                                }
-                                id="outlined-required"
-                                label="Họ và tên"
+            <form action="" onSubmit={formik.handleSubmit}>
+                <div className="left">
+                    <p>Thông tin cá nhân</p>
+                    <div className="first">
+                        <div className="avatar">
+                            <img
+                                className="img-c"
+                                src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/User_icon_2.svg/1200px-User_icon_2.svg.png"
+                                alt=""
                             />
+                            <div className="change">Thay đổi</div>
                         </div>
-                        <div
-                            style={{
-                                marginTop: "12px",
-                            }}
-                        >
-                            <TextField
-                                sx={{
-                                    width: "300px",
+                        <div className="fullname">
+                            <div>
+                                <TextField
+                                    fullWidth
+                                    name="name"
+                                    size="small"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={
+                                        formik.touched.name &&
+                                        Boolean(formik.errors.name)
+                                    }
+                                    helperText={
+                                        formik.touched.name &&
+                                        formik.errors.name
+                                    }
+                                    id="outlined-required"
+                                    label="Họ và tên"
+                                />
+                            </div>
+                            <div
+                                style={{
+                                    marginTop: "12px",
                                 }}
-                                size="small"
-                                name="phone"
-                                label="Số điện thoại"
-                                value={formik.values.phone}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={
-                                    formik.touched.phone &&
-                                    Boolean(formik.errors.phone)
-                                }
-                                helperText={
-                                    formik.touched.phone && formik.errors.phone
-                                }
-                            />
+                            >
+                                <TextField
+                                    sx={{
+                                        width: "300px",
+                                    }}
+                                    size="small"
+                                    name="phone"
+                                    label="Số điện thoại"
+                                    value={formik.values.phone}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={
+                                        formik.touched.phone &&
+                                        Boolean(formik.errors.phone)
+                                    }
+                                    helperText={
+                                        formik.touched.phone &&
+                                        formik.errors.phone
+                                    }
+                                />
+                            </div>
                         </div>
                     </div>
+                    <div className="birthdate">
+                        <label for="birthdate">Ngày sinh</label>
+                        <input
+                            name="birth_date"
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.birth_date}
+                            className="mt-12"
+                            type="date"
+                            id="birthdate"
+                            error={
+                                formik.touched.birth_date &&
+                                Boolean(formik.errors.birth_date)
+                            }
+                        />
+                        {formik.touched.birth_date &&
+                            formik.errors.birth_date && (
+                                <div className="error-message">
+                                    {formik.errors.birth_date}
+                                </div>
+                            )}
+                    </div>
+                    <div className="gender">
+                        <GenderRadio
+                            onBlur={formik.handleBlur}
+                            onChange={formik.handleChange}
+                            value={formik.values.gender}
+                            name={"gender"}
+                            error={
+                                formik.touched.gender &&
+                                Boolean(formik.errors.gender)
+                            }
+                            helperText={
+                                formik.touched.gender && formik.errors.gender
+                            }
+                        />
+                    </div>
+                    <button className="save-info">Lưu thay đổi</button>
                 </div>
-                <div className="birthdate">
-                    <BasicDatePicker
-                        label={"Ngày sinh"}
-                        date={formik.values.birth_date}
-                        onBlur={formik.handleBlur}
-                        onChange={formik.handleChange}
-                        error={
-                            formik.touched.birth_date &&
-                            Boolean(formik.errors.birth_date)
-                        }
-                        helperText={
-                            formik.touched.birth_date &&
-                            formik.errors.birth_date
-                        }
-                    />
-                </div>
-                <div className="gender">
-                    <GenderRadio />
-                </div>
-                <button className="save-info">Lưu thay đổi</button>
-            </div>
+            </form>
             <div className="right">
                 <p>Bảo mật</p>
                 <div className="email item">

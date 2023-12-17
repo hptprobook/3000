@@ -30,6 +30,7 @@ export default function CreateCategoryPage() {
   const categories = useSelector((state) => state.categories.data);
   const error = useSelector((state) => state.categories.error);
   const status = useSelector((state) => state.categories.status);
+  const statusCreate = useSelector((state) => state.categories.statusCreate);
   // Access categories from Redux store
   const [name, setName] = useState('');
   const [errorName, setErrorName] = useState('');
@@ -43,14 +44,14 @@ export default function CreateCategoryPage() {
 
   }, [status])
   useEffect(() => {
-    if (status == 'loading') {
-      setLoadingUpload(true);
+    if (statusCreate == 'loading') {
+        setLoadingUpload(true);
     }
-    if (status == 'success') {
-      setLoadingUpload(false);
+    if (statusCreate == 'created successfully') {
+        setLoadingUpload(false);
     }
 
-  }, [status])
+}, [statusCreate])
   useEffect(() => {
     if (error === 'The name has already been taken.' && status === 'failed') {
       setErrorName('Tên phân loại đã tồn tại');
@@ -135,15 +136,15 @@ export default function CreateCategoryPage() {
     switch (field) {
       case 'name': {
         if (value === '') {
-            setErrorName('Thương hiệu không được để trống!');
+            setErrorName('Phân loại không được để trống!');
             return false;
         }
         else if (value.length > 128) {
-            setErrorName('Thương hiệu không được quá 128 kí tự!');
+            setErrorName('Phân loại không được quá 128 kí tự!');
             return false;
         }
         else if (categories.find((category) => category.name.toLowerCase() === value.trim().toLowerCase())) {
-            setErrorName('Thương hiệu không được trùng!');
+            setErrorName('Phân loại không được trùng!');
             return false;
         }
         else {
@@ -157,64 +158,67 @@ export default function CreateCategoryPage() {
         return false; // Default to no error
     }
   };
-  return (
-    <Box>
-      {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
-      {status == 'success' ? <BasicAlertl label={'Tạo phân loại thành công'} severity={'success'} /> : null}
-      {loadingUpload ? <LinearIndeterminate /> : null}
-      <HeaderPage
-        namePage={"Tạo mới"}
-        Breadcrumb={["Phân loại", "Tạo"]}
-      />
-      <Box sx={{
-        marginTop: '32px'
-      }}>
-        <InfoBox title="Thông tin">
-          <DivMargin>
-            <InputEdit
-              id={'name'}
-              onBlur={(event) => {
-                setName(event.target.value);
-                handleCheckError('name', event.target.value)
-              }}
-              label={'Phân loại'}
-              error={errorName ? true : false}
-              helperText={errorName}
-            />
-
-          </DivMargin>
-          <DivMargin>
-            <SelectEdit
-              label={'Phân loại cha'}
-              data={categories}
-              value={''}
-              onChange={(e) => {
-                setParentId(e.target.value)
-              }}
-              nullData={true}
-            />
-          </DivMargin>
-          <DivMargin>
+  if (status === 'succeeded') {
+    return (
+      <Box>
+        {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
+        {statusCreate == 'created successfully' ? <BasicAlertl label={'Tạo phân loại thành công'} severity={'success'} /> : null}
+        {loadingUpload ? <LinearIndeterminate /> : null}
+        <HeaderPage
+          namePage={"Tạo mới"}
+          Breadcrumb={["Phân loại", "Tạo"]}
+        />
+        <Box sx={{
+          marginTop: '32px'
+        }}>
+          <InfoBox title="Thông tin">
             <DivMargin>
-              <Grid container>
-                <Grid item xs={3}>
-                  <ButtonUploadImg handleOnChange={handleUploadFile} />
-                </Grid>
-                <Grid item xs={9}>
-                  {thumbnailPreview ? <img src={thumbnailPreview} alt="Selected" style={{ maxWidth: '100%' }} /> : null}
-                  <FormHelperText sx={{
-                    color: color.textColor.error
-                  }}>{errorUpload ? errorUpload : null}</FormHelperText>
-                </Grid>
-              </Grid>
+              <InputEdit
+                id={'name'}
+                onBlur={(event) => {
+                  setName(event.target.value);
+                  handleCheckError('name', event.target.value)
+                }}
+                label={'Phân loại'}
+                error={errorName ? true : false}
+                helperText={errorName}
+              />
+  
             </DivMargin>
-
-          </DivMargin>
-          <DivMargin>
-            <ButtonNormal bg={'true'} label={'Thêm'} onClick={handleCreateCategory} />
-          </DivMargin>
-        </InfoBox>
+            <DivMargin>
+              <SelectEdit
+                label={'Phân loại cha'}
+                data={categories}
+                value={''}
+                onChange={(e) => {
+                  setParentId(e.target.value)
+                }}
+                nullData={true}
+              />
+            </DivMargin>
+            <DivMargin>
+              <DivMargin>
+                <Grid container>
+                  <Grid item xs={3}>
+                    <ButtonUploadImg handleOnChange={handleUploadFile} />
+                  </Grid>
+                  <Grid item xs={9}>
+                    {thumbnailPreview ? <img src={thumbnailPreview} alt="Selected" style={{ maxWidth: '100%' }} /> : null}
+                    <FormHelperText sx={{
+                      color: color.textColor.error
+                    }}>{errorUpload ? errorUpload : null}</FormHelperText>
+                  </Grid>
+                </Grid>
+              </DivMargin>
+  
+            </DivMargin>
+            <DivMargin>
+              <ButtonNormal bg={'true'} label={'Thêm'} onClick={handleCreateCategory} />
+            </DivMargin>
+          </InfoBox>
+        </Box>
       </Box>
-    </Box>
-  );
+    );
+  }
+ 
 }

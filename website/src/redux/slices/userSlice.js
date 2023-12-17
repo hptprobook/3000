@@ -38,12 +38,12 @@ export const getCurrentUser = createAsyncThunk(
     }
 );
 
-const updateUser = createAsyncThunk(
-    "users/updateUser",
-    async ({ user, id }, { rejectWithValue }) => {
+export const updateCurrentUser = createAsyncThunk(
+    "users/updateCurrentUser",
+    async (user, { rejectWithValue }) => {
         try {
-            const response = await UserService.updateUser(user, id);
-            return response;
+            const response = await UserService.updateCurrentUser(user);
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -87,14 +87,14 @@ const userSlice = createSlice({
                 state.status = "failed";
                 state.error = action.payload;
             })
-            .addCase(updateUser.pending, (state) => {
+            .addCase(updateCurrentUser.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(updateUser.fulfilled, (state, action) => {
+            .addCase(updateCurrentUser.fulfilled, (state, action) => {
                 state.status = "succeeded";
                 state.updateUser = action.payload;
             })
-            .addCase(updateUser.rejected, (state, action) => {
+            .addCase(updateCurrentUser.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             })
