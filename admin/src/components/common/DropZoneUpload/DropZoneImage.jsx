@@ -33,7 +33,7 @@ const ImageDropZone = () => {
         getRootProps,
         getInputProps
     } = useDropzone({
-        accept: 'image/png',
+        accept: 'image/*',
         onDrop,
         maxFiles: 1, // Set to allow only one file
     });
