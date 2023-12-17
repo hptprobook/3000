@@ -30,7 +30,11 @@ const StyledCategoryContainer = styled("div")(() => ({
     },
 }));
 
-export default function CategoryContainer() {
+export default function CategoryContainer({ data }) {
+    console.log(
+        "🚀 ~ file: CategoryContainer.jsx:34 ~ CategoryContainer ~ data:",
+        data
+    );
     const tabs = [
         "Phổ biến",
         "Bán chạy",
@@ -60,96 +64,20 @@ export default function CategoryContainer() {
                 ))}
             </div>
             <Grid container spacing={1}>
-                <Grid item xs={2.4}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={2.4}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={2.4}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={2.4}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={2.4}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={2.4}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
+                {data &&
+                    data.map((item) => (
+                        <Grid item xs={2.4}>
+                            <ProductItem
+                                name={item?.name}
+                                imgUrl={item?.thumbnail}
+                                rate={5}
+                                sold={item?.sold}
+                                discount={item?.discount}
+                                price={item?.price}
+                                href={""}
+                            />
+                        </Grid>
+                    ))}
             </Grid>
         </StyledCategoryContainer>
     );

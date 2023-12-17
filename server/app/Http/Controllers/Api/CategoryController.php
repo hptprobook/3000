@@ -23,6 +23,27 @@ class CategoryController extends Controller
         }
     }
 
+    public function getProductByCatId(string $id)
+    {
+        try {
+            $categories = Category::where('id', $id)
+                ->orWhere('parent_id', $id)
+                ->get();
+
+            $products = collect();
+
+            foreach ($categories as $category) {
+                $products = $products->merge($category->products);
+            }
+
+            return response()->json($products, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+
     public function mainCategories()
     {
         try {
