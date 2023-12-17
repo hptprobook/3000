@@ -60,7 +60,7 @@ export const DetailOrderPage = () => {
                 {statusUpdate === 'loading' ? <LinearIndeterminate /> : null}
                 <ButtonBackFullW label={'Đơn hàng'} />
                 <HeaderOrderDetail label={'Đơn hàng'} create_at={order.created_at} handleUpdateStatus={handleUpdateStatus} status={statusOrder} />
-                <CardOrder data={order} />
+                <CardOrder data={order} status={statusOrder} />
                 <TableOrderProducts data={order.order_details} />
             </Box>
         )

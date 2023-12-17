@@ -10,14 +10,20 @@ export const ChipStatusOrder = ({ status }) => {
         switch (status) {
             case 'pending': {
                 setLabel('Chưa giải quyết');
+                setColor('rgb(6, 174, 212)');
+                setColorBg('rgba(6, 174, 212, 0.12)');
             }
                 break;
             case 'processing': {
                 setLabel('Đang xử lý');
+                setColor('rgb(6, 174, 212)');
+                setColorBg('rgba(6, 174, 212, 0.12)');
             }
                 break;
             case 'shipping': {
                 setLabel('Đang giao');
+                setColor('rgb(6, 174, 212)');
+                setColorBg('rgba(6, 174, 212, 0.12)');
             }
                 break;
             case 'delivered': {
