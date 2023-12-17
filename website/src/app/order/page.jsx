@@ -121,12 +121,23 @@ export default function OrderPage() {
                             <Checkout
                                 totalPrice={totalPrice}
                                 fee={fee?.fee?.data?.total}
+                                cartItemIds={cartItemIds}
+                                addresses={addresses.addresses}
                             />
                         </CouponProvider>
                     </Grid>
                 </Grid>
             </div>
-            <HomeFooter />
+            <div
+                style={{
+                    width: "100%",
+                    padding: "0 300px",
+                    margin: "0 auto",
+                    backgroundColor: "#fff",
+                }}
+            >
+                <HomeFooter />
+            </div>
         </>
     );
 }

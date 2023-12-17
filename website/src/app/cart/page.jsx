@@ -34,7 +34,13 @@ export default function Cart() {
             </h3>
             <div className="appContainer__cart">
                 <CartProvider>
-                    <Grid container spacing={2.5}>
+                    <Grid
+                        container
+                        spacing={2.5}
+                        style={{
+                            minHeight: "600px",
+                        }}
+                    >
                         <Grid item xs={9}>
                             <DynamicComponent data={cartList.data} />
                         </Grid>
@@ -44,7 +50,16 @@ export default function Cart() {
                     </Grid>
                 </CartProvider>
             </div>
-            <HomeFooter />
+            <div
+                style={{
+                    width: "100%",
+                    padding: "0 300px",
+                    margin: "0 auto",
+                    backgroundColor: "#fff",
+                }}
+            >
+                <HomeFooter />
+            </div>
         </>
     );
 }

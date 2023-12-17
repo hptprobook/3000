@@ -1,16 +1,23 @@
+import { Breadcrumbs, Typography } from "@mui/material";
+import Link from "next/link";
 import React from "react";
 
-export default function Breadcrumb({ productId = 0 }) {
+export default function Breadcrumb({ link = "/", text1, text2 = null }) {
     return (
         <div
+            role="presentation"
             style={{
                 width: "var(--max-width)",
                 margin: "auto",
                 padding: "15px 0",
             }}
-            className="appBreadcrumb"
         >
-            Trang chủ - Sản phẩm số {productId}
+            <Breadcrumbs aria-label="breadcrumb">
+                <Link underline="hover" color="inherit" href={link}>
+                    {text1}
+                </Link>
+                <Typography color="text.primary">{text2}</Typography>
+            </Breadcrumbs>
         </div>
     );
 }
