@@ -26,17 +26,26 @@ export const fetchCategoryById = createAsyncThunk(
 );
 export const createCategoryAsync = createAsyncThunk(
   'categories/createCategory',
-  async (categoryData, thunkAPI) => {
+  async ({ data }, thunkAPI) => {
     try {
-      const res = await CategoryService.createCategory(categoryData);
-      console.log(res); // Log the received data
-      return res.data; // Return the received data
+      const res = await CategoryService.createCategory(data);
+      return res.data; // Assuming res.data contains the categories array
     } catch (error) {
       throw error;
     }
   }
 );
-
+export const deleteCategoryByID = createAsyncThunk(
+  "categories/deleteCategoryByID",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const response = await CategoryService.deleteCategoryByID(id);
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response.data.errors);
+    }
+  }
+);
 export const updateCategoryByID = createAsyncThunk(
   "categories/updateCategoryByID",
   async ({ id, data }, { rejectWithValue }) => {
@@ -82,14 +91,25 @@ const categoriesSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(createCategoryAsync.pending, (state) => {
-        state.status = 'loading';
+        state.statusCreate = 'loading';
       })
       .addCase(createCategoryAsync.fulfilled, (state, action) => {
-        state.status = 'created successfully';
+        state.statusCreate = 'created successfully';
         state.newCategory = action.payload; // Update based on the actual structure
       })      
       .addCase(createCategoryAsync.rejected, (state, action) => {
-        state.status = 'failed';
+        state.statusCreate = 'failed';
+        state.error = action.error.message;
+      })
+      .addCase(deleteCategoryByID.pending, (state) => {
+        state.statusDelete = 'loading delete';
+      })
+      .addCase(deleteCategoryByID.fulfilled, (state, action) => {
+        state.statusDelete = 'delete success';
+        state.dataDelete = action.payload; // Storing only the categories array
+      })
+      .addCase(deleteCategoryByID.rejected, (state, action) => {
+        state.statusDelete = 'delete failed';
         state.error = action.error.message;
       })
       .addCase(updateCategoryByID.pending, (state) => {

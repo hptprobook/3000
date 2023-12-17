@@ -32,8 +32,9 @@ class CouponController extends Controller
                     'description' => 'required|min:3|max:128|string',
                     'start_date' => 'required|date_format:Y/m/d',
                     'end_date' => 'required|date_format:Y/m/d|after:start_date',
-                    'amount' => 'required|string|min:2|max:36',
-                    'quantity' => 'required|numeric|between:0,1000'
+                    'amount' => 'required|numeric',
+                    'quantity' => 'required|numeric|between:0,1000',
+                    'type' => 'required|string|in:percent,direct,ship'
                 ]
             );
 
@@ -72,7 +73,8 @@ class CouponController extends Controller
                     'start_date' => 'required|date_format:Y/m/d',
                     'end_date' => 'required|date_format:Y/m/d|after:start_date',
                     'amount' => 'required|string|min:2|max:36',
-                    'quantity' => 'required|numeric|between:0,1000'
+                    'quantity' => 'required|numeric|between:0,1000',
+                    'type' => 'required|in:percent,direct,ship'
                 ]
             );
 

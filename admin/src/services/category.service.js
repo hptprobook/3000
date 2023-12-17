@@ -29,6 +29,15 @@ const CategoryService = {
           throw err;
       }
   },
+  deleteCategoryByID: async (id) => {
+    try {
+        const res = await request.delete(`categories/${id}`);
+        return res.data;
+    } catch (err) {
+        console.log("Error: ", err);
+        throw err;
+    }
+},
     updateCategoryByID: async (categoryId, data) => {
       try {
           const res = await request.put(`categories/${categoryId}`, data);

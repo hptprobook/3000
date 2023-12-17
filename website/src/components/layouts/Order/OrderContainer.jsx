@@ -13,9 +13,14 @@ const StyledOrderContainer = styled("div")(() => ({
         padding: "20px",
         marginTop: "12px",
         "& .order-detail__item": {
-            margin: "24px 0",
+            margin: "12px 0",
+            padding: "12px 0",
             display: "flex",
             alignItems: "center",
+            borderBottom: "1px solid #dddde3",
+            "&:last-child": {
+                borderBottom: "none",
+            },
             "& .img": {
                 width: "48px",
                 height: "48px",

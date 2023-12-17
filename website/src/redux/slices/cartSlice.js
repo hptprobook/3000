@@ -5,6 +5,8 @@ const initialState = {
     carts: {},
     cartList: [],
     cartWithIds: [],
+    updateCart: [],
+    deleted: false,
     status: "idle",
     error: null,
 };
@@ -38,6 +40,30 @@ export const fetchWithIds = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const res = await CartService.fetchWithIds(data);
+            return res.data;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const deleteCartById = createAsyncThunk(
+    "carts/deleteCart",
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await CartService.deleteCart(id);
+            return res;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const updateCartByIds = createAsyncThunk(
+    "carts/updateCartByIds",
+    async (data, { rejectWithValue }) => {
+        try {
+            const res = await CartService.updateCart(data);
             return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -81,6 +107,28 @@ const cartSlice = createSlice({
                 state.cartWithIds = action.payload;
             })
             .addCase(fetchWithIds.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(deleteCartById.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(deleteCartById.fulfilled, (state) => {
+                state.status = "succeeded";
+                state.deleted = true;
+            })
+            .addCase(deleteCartById.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(updateCartByIds.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(updateCartByIds.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.updateCart = action.payload;
+            })
+            .addCase(updateCartByIds.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });

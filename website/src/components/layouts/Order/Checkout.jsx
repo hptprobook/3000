@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
+import { useCouponContext } from "@/provider/CouponContext";
+import { useOrderAddressContext } from "@/provider/OrderAddressContext";
+import { useDispatch } from "react-redux";
+import { addOrder } from "@/redux/slices/orderSlice";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const StyledCheckout = styled("div")(() => ({
     padding: "20px 16px",
@@ -13,7 +19,59 @@ const StyledCheckout = styled("div")(() => ({
     },
 }));
 
-export default function Checkout({ totalPrice }) {
+export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
+    const { clearCoupon, coupon } = useCouponContext();
+    const { selectAddress, selectedAddress } = useOrderAddressContext();
+    let defaultAddress = "";
+    const dispatch = useDispatch();
+    const router = useRouter();
+
+    if (addresses?.length > 0) {
+        defaultAddress =
+            selectedAddress ||
+            addresses?.find((address) => address.default === 1);
+    }
+    const [discount, setDiscount] = useState(0);
+    const [finalPrice, setFinalPrice] = useState(totalPrice);
+
+    useEffect(() => {
+        let newDiscount = 0;
+        if (coupon && coupon.type) {
+            if (coupon.type === "amount") {
+                newDiscount = coupon.amount;
+            } else if (coupon.type === "percent") {
+                newDiscount = totalPrice * (coupon.amount / 100);
+            } else if (coupon.type === "ship") {
+                newDiscount = fee * (coupon.amount / 100);
+            }
+        }
+        setDiscount(newDiscount);
+        setFinalPrice(Number(totalPrice) + fee - newDiscount);
+    }, [coupon, totalPrice, fee]);
+
+    const handleSubmit = () => {
+        dispatch(
+            addOrder({
+                cart_item_ids: cartItemIds,
+                address_id: defaultAddress.id,
+                total_amount: finalPrice,
+                ship_fee: fee,
+            })
+        )
+            .then(() => {
+                toast.success("Đặt hàng thành công thành công", {
+                    autoClose: 2000,
+                });
+                setTimeout(() => {
+                    router.push("/profile/orders");
+                }, 1000);
+                clearCoupon();
+            })
+            .catch((error) => {
+                toast.error(error);
+            });
+    };
+
     return (
         <StyledCheckout>
             <div className="checkout_head jc-sb">
@@ -58,7 +116,7 @@ export default function Checkout({ totalPrice }) {
                         color: "#808089",
                     }}
                 >
-                    0đ
+                    {fee && Number(fee).toLocaleString()}đ
                 </p>
             </div>
             <div className="jc-sb mt-6">
@@ -76,7 +134,7 @@ export default function Checkout({ totalPrice }) {
                         color: "#00ab56",
                     }}
                 >
-                    0đ
+                    - {discount.toLocaleString()}đ
                 </span>
             </div>
             <div
@@ -101,7 +159,7 @@ export default function Checkout({ totalPrice }) {
                         fontWeight: "500",
                     }}
                 >
-                    3.000.000đ
+                    {finalPrice.toLocaleString()}đ
                 </span>
             </div>
             <button
@@ -119,6 +177,7 @@ export default function Checkout({ totalPrice }) {
                     cursor: "pointer",
                     color: "#fff",
                 }}
+                onClick={handleSubmit}
             >
                 Đặt hàng
             </button>

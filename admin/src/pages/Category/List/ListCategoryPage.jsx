@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
+import { deleteCategoryByID, fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import Loading from "../../../components/common/Loading/Loading";
 import { Box, Divider, Grid, Tab, Tabs, Typography } from "@mui/material";
 import PropTypes from 'prop-types';
 import TableDataCategory from "../../../components/common/Table/TableDataCategory";
 import InputSearch from "../../../components/common/TextField/InputSearch";
+import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 function a11yProps(index) {
     return {
         id: `simple-tab-${index}`,
@@ -45,6 +46,7 @@ const ListCategoriesPage = () => {
     const categories = useSelector((state) => state.categories.data);
     const status = useSelector((state) => state.categories.status);
     const error = useSelector((state) => state.categories.error);
+    const statusDelete = useSelector((state) => state.categories.statusDelete);
     const [filteredCategories, setFilteredCategories] = useState(categories); // State to store filtered categories
     //Bậc cao 
     const topLevelCategories = categories.filter(category =>
@@ -64,7 +66,10 @@ const ListCategoriesPage = () => {
         dispatch(fetchCategoriesAsync());
     }, [dispatch]);
 
-
+const handleDeleteCategory = (value) =>{
+    dispatch(deleteCategoryByID({ id: value }));
+    console.log(value);
+}
     const handleChange = (event, newValue) => {
         setValue(newValue); // Update the value state when a tab is changed
     };
@@ -75,81 +80,68 @@ const ListCategoriesPage = () => {
     if (status === "failed") {
         return <div>Error: {error}</div>;
     }
-
-    // Ensure categories is an array before mapping
-    const categoriesArray = Array.isArray(categories) ? categories : [];
-
-    const rows = categoriesArray.map((category) => ({
-        id: category.id,
-        name: category.name,
-        parent_id: category.parent_id,
-        icon_url: category.icon_url,
-        // Add other fields as needed
-    }));
-
-  
-
-
-    return (
-        <div>
-            <HeaderPage
-                namePage={'Phân loại'}
-                Breadcrumb={['Phân loại', 'Danh sách']}
-                ButtonLink='/category/create' />
-            {/* Render the categories data in a table, list, or any other desired format */}
-            {/* For example, you can map through categoriesArray to display them */}
-            <Box sx={{ width: '100%', mt: '16px', backgroundColor: '#111927', borderRadius: '13px' }}>
-                <Box sx={{ padding: '0 12px' }}>
-                    <Tabs
-                        value={value}
-                        onChange={handleChange}
-                        aria-label="Bảng phân loại"
-                        textColor='inherit'
-                        variant="scrollable"
-                        scrollButtons="auto"
-                        sx={{
-                            color: '#A0AEC0 !important',
-                            fontSize: '12px !important',
-                            '& .Mui-selected': {
-                                color: 'rgb(99, 102, 241) !important',
-                            },
-                            '& .MuiButtonBase-root': {
-                                minWidth: '0px !important',
-                                fontSize: '14px',
-                                textTransform: 'none !important',
-                                margin: '0px 8px',
-                                padding: '0px 16px',
-                            },
-                            '& .MuiTouchRipple-root': {
-                                boderColor: 'rgb(99, 102, 241)'
-                            }
-                        }}
-
-                    >
-                        <Tab label="Tất cả" {...a11yProps(0)} />
-                        <Tab label="Thể loại cấp cao nhất" {...a11yProps(1)} />
-                        <Tab label="Thể loại cấp thấp hơn" {...a11yProps(2)} />
-                    </Tabs>
-                </Box>
-                <Divider sx={{ borderColor: '#fff' }} />
-                <Grid container spacing={0} sx={{ padding: '32px 0', margin: 0 }}>
-                    <Grid item xs={12} sx={{ p: '0 12px' }}>
-                        <InputSearch onChange={handleSearch} />
+    if (status === "succeeded") {
+        return (
+            <div>
+                {statusDelete === 'loading delete' ? <LinearIndeterminate /> : null}
+                <HeaderPage
+                    namePage={'Phân loại'}
+                    Breadcrumb={['Phân loại', 'Danh sách']}
+                    ButtonLink='/category/create' />
+                <Box sx={{ width: '100%', mt: '16px', backgroundColor: '#111927', borderRadius: '13px' }}>
+                    <Box sx={{ padding: '0 12px' }}>
+                        <Tabs
+                            value={value}
+                            onChange={handleChange}
+                            aria-label="Bảng phân loại"
+                            textColor='inherit'
+                            variant="scrollable"
+                            scrollButtons="auto"
+                            sx={{
+                                color: '#A0AEC0 !important',
+                                fontSize: '12px !important',
+                                '& .Mui-selected': {
+                                    color: 'rgb(99, 102, 241) !important',
+                                },
+                                '& .MuiButtonBase-root': {
+                                    minWidth: '0px !important',
+                                    fontSize: '14px',
+                                    textTransform: 'none !important',
+                                    margin: '0px 8px',
+                                    padding: '0px 16px',
+                                },
+                                '& .MuiTouchRipple-root': {
+                                    boderColor: 'rgb(99, 102, 241)'
+                                }
+                            }}
+    
+                        >
+                            <Tab label="Tất cả" {...a11yProps(0)} />
+                            <Tab label="Thể loại cấp cao nhất" {...a11yProps(1)} />
+                            <Tab label="Thể loại cấp thấp hơn" {...a11yProps(2)} />
+                        </Tabs>
+                    </Box>
+                    <Divider sx={{ borderColor: '#fff' }} />
+                    <Grid container spacing={0} sx={{ padding: '32px 0', margin: 0 }}>
+                        <Grid item xs={12} sx={{ p: '0 12px' }}>
+                            <InputSearch onChange={handleSearch} />
+                        </Grid>
                     </Grid>
-                </Grid>
-                <CustomTabPanel index={0} value={value}>
-                    <TableDataCategory data={filteredCategories} /> {/* Use filteredCategories here */}
-                </CustomTabPanel>
-                <CustomTabPanel align='center' colSpan={7} index={1} value={value}>
-                    <TableDataCategory data={topLevelCategories} />
-                </CustomTabPanel>
-                <CustomTabPanel align='center' colSpan={7} index={2} value={value}>
-                    <TableDataCategory data={lowLevelCategories} />
-                </CustomTabPanel>
-
-            </Box>
-        </div>
-    );
+                    <CustomTabPanel index={0} value={value}>
+                        <TableDataCategory data={filteredCategories} onDeleteCategory={handleDeleteCategory} /> {/* Use filteredCategories here */}
+                    </CustomTabPanel>
+                    <CustomTabPanel align='center' colSpan={7} index={1} value={value}>
+                        <TableDataCategory data={topLevelCategories} onDeleteCategory={handleDeleteCategory} />
+                    </CustomTabPanel>
+                    <CustomTabPanel align='center' colSpan={7} index={2} value={value}>
+                        <TableDataCategory data={lowLevelCategories} onDeleteCategory={handleDeleteCategory} />
+                    </CustomTabPanel>
+    
+                </Box>
+            </div>
+        );
+    }
+    
 };
 
 export default ListCategoriesPage;

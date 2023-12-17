@@ -5,7 +5,16 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 
-export default function IconField({ text, icon, value }) {
+export default function IconField({
+    text,
+    icon,
+    value,
+    onBlur,
+    onChange,
+    error,
+    helperText,
+    name,
+}) {
     return (
         <FormControl
             variant="standard"
@@ -23,6 +32,11 @@ export default function IconField({ text, icon, value }) {
             <Input
                 id="input-with-icon-adornment"
                 value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+                error={error}
+                helperText={helperText}
+                name={name}
                 startAdornment={
                     <InputAdornment position="start">{icon}</InputAdornment>
                 }

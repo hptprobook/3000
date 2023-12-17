@@ -59,13 +59,13 @@ const headCells = [
         id: 'name',
         numeric: false,
         disablePadding: true,
-        label: 'Tên',
+        label: 'Tên phân loại',
     },
     {
         id: 'icon_url',
         numeric: false,
         disablePadding: false,
-        label: 'Đường dẫn',
+        label: 'Ảnh đại diện',
     },
     {
         id: 'action',
@@ -223,14 +223,15 @@ EnhancedTableHead.propTypes = {
 };
 
 // The component name and the props it accepts are adjusted
-export default function TableDataCategory(props) {
-    const rows = props.data;
+export default function TableDataCategory({ data, onDeleteCategory }) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+    const handleDeleteCategory = (id) => {
+        onDeleteCategory(id);
+    };
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -239,7 +240,7 @@ export default function TableDataCategory(props) {
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = rows.map((n) => n.id);
+            const newSelected = data.map((n) => n.id);
             setSelected(newSelected);
             return;
         }
@@ -281,38 +282,17 @@ export default function TableDataCategory(props) {
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0;
 
-    const visibleRow = React.useMemo(
+    const visibleRows = React.useMemo(
         () =>
-            stableSort(rows, getComparator(order, orderBy)).slice(
+            stableSort(data, getComparator(order, orderBy)).slice(
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage,
             ),
-        [order, orderBy, page, rowsPerPage],
+        [order, orderBy, page, rowsPerPage, data],
     );
-    const [visibleRows, setVisibleRows] = React.useState(visibleRow);
-    const [open, setOpen] = React.useState(0);
-    function handleOpen(key) {
-        if (open === key) {
-            setOpen(0);
-        }
-        else {
-            setOpen(key);
-        }
-    }
-    React.useEffect(() => {
-        // Tính toán visibleRows từ props.data
-        const newVisibleRows = stableSort(props.data, getComparator(order, orderBy)).slice(
-            page * rowsPerPage,
-            page * rowsPerPage + rowsPerPage
-        );
 
-        setVisibleRows(newVisibleRows);
-    }, [props.data, order, orderBy, page, rowsPerPage]);
-    // ... (Existing code remains unchanged)
-
-    // Adjust table cells to render category-specific data
     return (
         <Paper
             sx={{
@@ -334,7 +314,7 @@ export default function TableDataCategory(props) {
                         orderBy={orderBy}
                         onSelectAllClick={handleSelectAllClick}
                         onRequestSort={handleRequestSort}
-                        rowCount={rows.length}
+                        rowCount={data.length}
                         selected={selected}
                         handleDelete={handleDelete}
                     />
@@ -416,43 +396,60 @@ export default function TableDataCategory(props) {
                                         />
                                     </CustomTableCell>
                                     <CustomTableCell
-                                                sx={{
-                                                    '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
-                                                        color: '#edf2f7 !important',
-                                                    },
-                                                    '& :hover ': {
-                                                        color: '#edf2f7 !important',
-                                                    }
-                                                }}
-                                                colSpan="5"
-                                                align="right"
-                                            >
-                                    
-                                    <NavLink to={'/category/edit/' + row.id}>
-                                        <Tooltip title="Sửa" onClick={() => handleDelete(selected)} >
+                                        sx={{
+                                            '& .MuiButtonBase-root.MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+                                                color: '#edf2f7 !important',
+                                            },
+                                            '& :hover ': {
+                                                color: '#edf2f7 !important',
+                                            }
+                                        }}
+                                        colSpan="5"
+                                        align="right"
+                                    >
 
+                                        <NavLink to={'/category/edit/' + row.id}>
+                                            <Tooltip title="Sửa" onClick={() => handleDelete(selected)} >
+
+                                                <IconButton sx={{
+                                                    color: '#9da4ae',
+                                                    marginRight: '8px'
+                                                }}
+                                                >
+                                                    <BiSolidPencil style={{ fontSize: '16px' }} />
+                                                </IconButton>
+                                            </Tooltip>
+                                        </NavLink>
+                                        <Tooltip title="Xóa" >
                                             <IconButton sx={{
                                                 color: '#9da4ae',
                                                 marginRight: '8px'
                                             }}
+                                                onClick={(e) => handleDeleteCategory(row.id)}
                                             >
-                                                <BiSolidPencil style={{ fontSize: '16px' }} />
+                                                <MdDelete style={{ fontSize: '16px' }} />
                                             </IconButton>
                                         </Tooltip>
-                                    </NavLink>
-
-
                                     </CustomTableCell>
                                 </TableRow>
                             );
                         })}
+                        {emptyRows > 0 && (
+                            <TableRow
+                                style={{
+                                    height: 53 * emptyRows,
+                                }}
+                            >
+                                <TableCell colSpan={6} />
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
             <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={rows.length}
+                count={data.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

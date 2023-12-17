@@ -2,6 +2,7 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
+import { useOrderAddressContext } from "@/provider/OrderAddressContext";
 
 const StyledAddressCheckout = styled("div")(() => ({
     padding: "20px 16px",
@@ -11,14 +12,13 @@ const StyledAddressCheckout = styled("div")(() => ({
 }));
 
 export default function AddressCheckout({ data }) {
-    console.log(
-        "🚀 ~ file: AddressCheckout.jsx:14 ~ AddressCheckout ~ data:",
-        data
-    );
+    const { selectAddress, selectedAddress } = useOrderAddressContext();
+
     let defaultAddress = "";
 
     if (data.length > 0) {
-        defaultAddress = data?.find((address) => address.default === 1);
+        defaultAddress =
+            selectedAddress || data?.find((address) => address.default === 1);
     }
 
     return (

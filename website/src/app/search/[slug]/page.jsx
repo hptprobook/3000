@@ -10,7 +10,16 @@ export default function page() {
             <div className="appContainer__searchPage">
                 <SearchContainer />
             </div>
-            <HomeFooter />
+            <div
+                style={{
+                    width: "100%",
+                    padding: "0 300px",
+                    margin: "0 auto",
+                    backgroundColor: "#fff",
+                }}
+            >
+                <HomeFooter />
+            </div>
         </>
     );
 }

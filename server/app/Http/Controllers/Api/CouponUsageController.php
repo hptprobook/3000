@@ -48,49 +48,46 @@ class CouponUsageController extends Controller
 
             $request->validate([
                 'code' => 'required|string',
-                'order_id' => 'required|integer|exists:orders,id'
             ]);
 
             $code = $request->input('code');
             $coupon = Coupon::where('code', $code)->first();
 
-            if ($coupon->quantity <= 0) {
-                return response()->json(['error' => 'This coupon is no longer available.'], Response::HTTP_BAD_REQUEST);
+            if (!$coupon) {
+                return response()->json(['error' => 'Mã giảm giá không chính xác'], Response::HTTP_BAD_REQUEST);
             }
 
-            if (!$coupon) {
-                return response()->json(['error' => 'Invalid coupon code.'], Response::HTTP_BAD_REQUEST);
+            if ($coupon->quantity <= 0) {
+                return response()->json(['error' => 'Mã đã được sử dụng hết'], Response::HTTP_BAD_REQUEST);
             }
 
             $existingUsage = CouponUsage::where('coupon_id', $coupon->id)
-                ->where('order_id', $request->order_id)
+                ->where('user_id', $user_id)
                 ->exists();
             if ($existingUsage) {
-                return response()->json(['error' => 'This coupon has already been used for this order.'], Response::HTTP_BAD_REQUEST);
+                return response()->json(['error' => 'Bạn đã sử dụng mã giảm giá này'], Response::HTTP_BAD_REQUEST);
             }
-
-            $order = Order::find($request->order_id);
-            $discountValue = $this->calculateDiscount($order->total_amount, $coupon->amount);
-
-            $order->total_amount -= $discountValue;
-            $order->save();
 
             $coupon->quantity -= 1;
             $coupon->save();
 
             $coupon_usage = CouponUsage::create([
                 'user_id' => $user_id,
-                'order_id' => $request->order_id,
                 'coupon_id' => $coupon->id,
             ]);
 
-            return response()->json($coupon_usage, Response::HTTP_CREATED);
+            return response()->json([
+                'coupon_usage' => $coupon_usage,
+                'type' => $coupon->type,
+                'amount' => $coupon->amount,
+            ], Response::HTTP_CREATED);
         } catch (ValidationException $e) {
-            return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(['errors' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
 
     public function show(string $id)
     {

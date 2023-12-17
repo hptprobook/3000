@@ -36,7 +36,12 @@ export default function ProductDetail({ params }) {
 
     return (
         <>
-            <Breadcrumb productId={productId} />
+            <Breadcrumb
+                link="/"
+                text1={"Sản phẩm"}
+                text2={products?.selectedProduct?.name}
+                productId={productId}
+            />
             <Grid className="appContainer__detail" container>
                 <VariantProvider>
                     <Grid item xs={3.5}>

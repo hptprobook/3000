@@ -26,12 +26,24 @@ export const fetchUserById = createAsyncThunk(
     }
 );
 
-const updateUser = createAsyncThunk(
-    "users/updateUser",
-    async ({ user, id }, { rejectWithValue }) => {
+export const getCurrentUser = createAsyncThunk(
+    "users/getCurrentUser",
+    async (_, { rejectWithValue }) => {
         try {
-            const response = await UserService.updateUser(user, id);
-            return response;
+            const response = await UserService.getCurrentUser();
+            return response.data;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const updateCurrentUser = createAsyncThunk(
+    "users/updateCurrentUser",
+    async (user, { rejectWithValue }) => {
+        try {
+            const response = await UserService.updateCurrentUser(user);
+            return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -42,6 +54,7 @@ const initialState = {
     users: [],
     updateUser: {},
     selectedUser: null,
+    currentUser: null,
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
     error: null,
 };
@@ -74,14 +87,25 @@ const userSlice = createSlice({
                 state.status = "failed";
                 state.error = action.payload;
             })
-            .addCase(updateUser.pending, (state) => {
+            .addCase(updateCurrentUser.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(updateUser.fulfilled, (state, action) => {
+            .addCase(updateCurrentUser.fulfilled, (state, action) => {
                 state.status = "succeeded";
                 state.updateUser = action.payload;
             })
-            .addCase(updateUser.rejected, (state, action) => {
+            .addCase(updateCurrentUser.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(getCurrentUser.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(getCurrentUser.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.currentUser = action.payload;
+            })
+            .addCase(getCurrentUser.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });

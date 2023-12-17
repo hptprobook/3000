@@ -56,6 +56,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/addresses/getWards/{id}', [AddressController::class, 'getWards']);
     Route::get('/addresses/getProvinceGHN', [AddressController::class, 'getProvincesByGHN']);
 
+    Route::get('users/current_user', [UserController::class, 'getCurrentUser']);
+    Route::put('users/updateCurrentUser', [UserController::class, 'updateCurrentUser']);
     Route::apiResource('users', UserController::class);
 
     Route::apiResource('addresses', AddressController::class);
@@ -70,6 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('reviews', ReviewController::class);
 
+
+    Route::post('carts/ids', [CartController::class, 'updateCart']);
     Route::apiResource('carts', CartController::class);
 
     Route::post('/carts/get_cart_with_ids', [CartController::class, 'getCartsWithIds']);

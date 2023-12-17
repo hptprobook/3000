@@ -5,8 +5,14 @@ import AddressCheckout from "@/components/layouts/Order/AddressCheckout";
 import Checkout from "@/components/layouts/Order/Checkout";
 import OrderContainer from "@/components/layouts/Order/OrderContainer";
 import OrderCoupon from "@/components/layouts/Order/OrderCoupon";
+import { CouponProvider } from "@/provider/CouponContext";
+import {
+    OrderAddressProvider,
+    useOrderAddressContext,
+} from "@/provider/OrderAddressContext";
 import { getAddresses } from "@/redux/slices/addressSlice";
 import { fetchWithIds } from "@/redux/slices/cartSlice";
+import { getFee } from "@/redux/slices/deliverySlice";
 import { Grid } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -16,6 +22,7 @@ export default function OrderPage() {
     const searchParams = useSearchParams();
     const [cartItemIds, setCartItemIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
+    const { setAddressesList, selectedAddress } = useOrderAddressContext();
 
     useEffect(() => {
         const cartItemIds = searchParams.get("cartItemIds");
@@ -32,102 +39,54 @@ export default function OrderPage() {
         setTotalPrice(totalPrice);
     }, [searchParams]);
 
-    const addressFake = [
-        {
-            id: 5,
-            user_id: 14,
-            name: "Nguyen Van A",
-            phone: "0123456789",
-            district_id: 30,
-            province_id: 13,
-            ward_id: 12,
-            address_info: "123 Phố Xanh",
-            default: 0,
-            ward: null,
-        },
-        {
-            id: 6,
-            user_id: 14,
-            name: "Phan Thanh Hóa",
-            phone: "0833129021",
-            district_id: 30,
-            province_id: 13,
-            ward_id: 31,
-            address_info: "45/19 Nguyễn Viết Xuân",
-            default: 1,
-            ward: {
-                id: 31,
-                name: "Giảng Võ",
-                type: "phuong",
-                slug: "giang-vo",
-                name_with_type: "Phường Giảng Võ",
-                path: "Giảng Võ, Ba Đình, Hà Nội",
-                path_with_type:
-                    "Phường Giảng Võ, Quận Ba Đình, Thành phố Hà Nội",
-                code: "00031",
-                parent_code: "001",
-            },
-        },
-        {
-            id: 7,
-            user_id: 14,
-            name: "Phan Thanh Hóa",
-            phone: "0833129021",
-            district_id: null,
-            province_id: null,
-            ward_id: 34,
-            address_info: "45/19 Nguyễn Viết Xuân",
-            default: 0,
-            ward: {
-                id: 34,
-                name: "Thành Công",
-                type: "phuong",
-                slug: "thanh-cong",
-                name_with_type: "Phường Thành Công",
-                path: "Thành Công, Ba Đình, Hà Nội",
-                path_with_type:
-                    "Phường Thành Công, Quận Ba Đình, Thành phố Hà Nội",
-                code: "00034",
-                parent_code: "001",
-            },
-        },
-        {
-            id: 8,
-            user_id: 14,
-            name: "Phan Thanh Hóa",
-            phone: "0833129021",
-            district_id: null,
-            province_id: null,
-            ward_id: 37,
-            address_info: "45/19 Nguyễn Viết Xuân",
-            default: 0,
-            ward: {
-                id: 37,
-                name: "Phúc Tân",
-                type: "phuong",
-                slug: "phuc-tan",
-                name_with_type: "Phường Phúc Tân",
-                path: "Phúc Tân, Hoàn Kiếm, Hà Nội",
-                path_with_type:
-                    "Phường Phúc Tân, Quận Hoàn Kiếm, Thành phố Hà Nội",
-                code: "00037",
-                parent_code: "002",
-            },
-        },
-    ];
-
     const dispatch = useDispatch();
     const cartWithIds = useSelector((state) => state.carts.cartWithIds);
+    let totalHeight = 0,
+        totalWeight = 0,
+        totalWidth = 0,
+        totalLength = 0;
+
+    cartWithIds.forEach((item) => {
+        totalHeight += item.product.height || 0;
+        totalWeight += item.product.weight || 0;
+        totalWidth += item.product.width || 0;
+        totalLength += item.product.length || 0;
+    });
+
     const cartStatus = useSelector((state) => state.carts.status);
 
     const addresses = useSelector((state) => state.addresses);
     const addressFetchStatus = useSelector((state) => state.addresses.status);
+    const fee = useSelector((state) => state.deliveries);
+    const targetAddress =
+        selectedAddress ??
+        addresses.addresses?.find((address) => address.default === 1);
 
     useEffect(() => {
         if (addressFetchStatus == "idle") {
             dispatch(getAddresses());
         }
+        setAddressesList(addresses.addresses);
     }, [addressFetchStatus]);
+
+    const feeData = {
+        service_id: 53320,
+        insurance_value: parseFloat(totalPrice),
+        coupon: null,
+        from_district_id: 1552,
+        to_district_id: targetAddress?.district_id,
+        to_ward_code: targetAddress?.ward_id.toString(),
+        height: totalHeight,
+        length: totalLength,
+        weight: totalWeight,
+        width: totalWidth,
+    };
+
+    useEffect(() => {
+        if (targetAddress && cartWithIds) {
+            dispatch(getFee(feeData));
+        }
+    }, [targetAddress, cartWithIds]);
 
     useEffect(() => {
         if (cartItemIds.length > 0) {
@@ -157,12 +116,28 @@ export default function OrderPage() {
                     </Grid>
                     <Grid item xs={3}>
                         <AddressCheckout data={addresses.addresses} />
-                        <OrderCoupon />
-                        <Checkout totalPrice={totalPrice} />
+                        <CouponProvider>
+                            <OrderCoupon />
+                            <Checkout
+                                totalPrice={totalPrice}
+                                fee={fee?.fee?.data?.total}
+                                cartItemIds={cartItemIds}
+                                addresses={addresses.addresses}
+                            />
+                        </CouponProvider>
                     </Grid>
                 </Grid>
             </div>
-            <HomeFooter />
+            <div
+                style={{
+                    width: "100%",
+                    padding: "0 300px",
+                    margin: "0 auto",
+                    backgroundColor: "#fff",
+                }}
+            >
+                <HomeFooter />
+            </div>
         </>
     );
 }
