@@ -138,13 +138,11 @@ export default function SearchBar() {
     const inputRef = useRef(null);
 
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && products.length === 0) {
             dispatch(fetchAllProducts());
-            if (status !== "idle") {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, status]);
+    }, [loadData, products]);
 
     const handleFocus = () => {
         setShowSuggestions(true);

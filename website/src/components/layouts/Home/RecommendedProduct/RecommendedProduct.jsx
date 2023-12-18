@@ -14,13 +14,11 @@ export default function RecommendedProduct() {
     );
 
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && recommended.length === 0) {
             dispatch(fetchRecommendedCategory());
-            if (loading) {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, loading]);
+    }, [loadData, recommended]);
 
     if (loading) {
         return <CirLoading />;

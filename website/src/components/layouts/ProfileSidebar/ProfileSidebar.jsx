@@ -6,6 +6,7 @@ import { profileSidebarOpt } from "./Options";
 
 const StyledProfileSidebar = styled("ul")(() => ({
     borderRadius: "5px",
+    position: "sticky",
     listStyle: "none",
 }));
 
