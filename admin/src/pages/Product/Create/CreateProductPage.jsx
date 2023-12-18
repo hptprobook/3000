@@ -104,9 +104,11 @@ export default function CreateProductPage() {
     // khai báo các hàm liên quan đến dữ liệu
     const [thumbnail, setThumbnail] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState('');
-    const [createError, setCreateError] = useState('');
+    const [createError, setCreateError] = useState(false);
+    const [createErrorHelp, setCreateErrorHelp] = useState('');
 
     const [short_desc, setShort_desc] = useState('');
+    const [short_descError, setShort_descError] = useState('');
     const [detail, setDetail] = useState('');
 
 
@@ -126,8 +128,34 @@ export default function CreateProductPage() {
         },
         validationSchema: productSchema,
         onSubmit: (values) => {
-            console.log(detail);
-            setCreateError('Lỗi')
+            if (category_id == '') {
+                setCreateError(true);
+                setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
+            } else {
+                setCreateError(false);
+                if (listVariant.length < 1) {
+                    setCreateError(true);
+                    setCreateErrorHelp('Vui lòng nhập biến thể!');
+                }
+                else {
+                    setCreateError(false);
+                    if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
+                        setCreateError(true);
+                        setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
+                    }
+                    else {
+                        setCreateError(false);
+                        if (detail == '') {
+                            setCreateError(true);
+                            setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
+                        }
+                        else {
+                            setCreateError(false);
+                            alert('khong lõi');
+                        }
+                    }
+                }
+            }
             // const payload = {
             //     name: values.name,
             //     phone: values.phone,
@@ -159,6 +187,15 @@ export default function CreateProductPage() {
     const handleDetail = (value) => {
         setDetail(value);
     }
+    const handleShortDesc = (value) => {
+        if (value.length > 1000) {
+            setShort_descError('Mô tả ngắn không quá 1000 kí tự');
+        }
+        else {
+            setShort_descError('');
+            setShort_desc(value);
+        }
+    };
     // upload ảnh
     const handleUploadThumnail = () => {
         const thumbnailRef = ref(storageFirebase, `product_image/${v4()}`);
@@ -280,14 +317,13 @@ export default function CreateProductPage() {
         }
     }
     // debug
-    console.log(category_id)
     if (statusLoad === "loading" && statusLoadVariant !== "success") {
         return <div><Loading /></div>;
     }
     if (statusLoadVariant === "success") {
         return (
             <Box>
-                {createError != '' ? <BasicAlertl label={createError} severity={'error'} /> : null}
+                {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
 
                 <HeaderPage
                     namePage={"Tạo mới"}
@@ -399,10 +435,6 @@ export default function CreateProductPage() {
                                     onChange={formik.handleChange}
                                     name={'brand_id'}
                                     error={
-                                        formik.touched.brand_id &&
-                                        Boolean(formik.errors.brand_id)
-                                    }
-                                    helperText={
                                         formik.touched.brand_id && formik.errors.brand_id
                                     }
                                 />
@@ -553,7 +585,7 @@ export default function CreateProductPage() {
                                 >
                                     Mô tả ngắn
                                 </Typography>
-                                <TinyEditorMini />
+                                <TinyEditorMini onEditorChange={handleShortDesc} />
                             </DivMargin>
                             <div
                                 style={{
