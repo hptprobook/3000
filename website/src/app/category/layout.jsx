@@ -1,28 +1,40 @@
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 import CategorySidebar from "@/components/layouts/Category/CategorySidebar";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
+import { CategoryProvider } from "@/provider/CategoryContext";
 import { Grid } from "@mui/material";
 import React from "react";
 
 export default function CategoryLayout({ children }) {
     return (
-        <Grid container className="appContainer__category">
-            <Grid item xs={12}>
-                <Breadcrumb
-                    link="/"
-                    text1={"Danh mục"}
-                    text2={"Đồ chơi mẹ và bé"}
-                />
+        <>
+            <Grid container className="appContainer__category">
+                <Grid item xs={12}>
+                    <Breadcrumb
+                        link="/"
+                        text1={"Danh mục"}
+                        text2={"Đồ chơi mẹ và bé"}
+                    />
+                </Grid>
+                <CategoryProvider>
+                    <Grid item xs={2}>
+                        <CategorySidebar />
+                    </Grid>
+                    <Grid item xs={10}>
+                        {children}
+                    </Grid>
+                </CategoryProvider>
             </Grid>
-            <Grid item xs={2}>
-                <CategorySidebar />
-            </Grid>
-            <Grid item xs={10}>
-                {children}
-            </Grid>
-            <Grid item xs={12}>
+            <div
+                style={{
+                    width: "100%",
+                    padding: "0 300px",
+                    margin: "0 auto",
+                    backgroundColor: "#fff",
+                }}
+            >
                 <HomeFooter />
-            </Grid>
-        </Grid>
+            </div>
+        </>
     );
 }

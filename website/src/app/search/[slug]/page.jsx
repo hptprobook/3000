@@ -6,7 +6,11 @@ import React from "react";
 export default function page() {
     return (
         <>
-            <Breadcrumb />
+            <Breadcrumb
+                link={"/"}
+                text1={"Trang chủ"}
+                text2={"Tìm kiếm với từ khóa: "}
+            />
             <div className="appContainer__searchPage">
                 <SearchContainer />
             </div>

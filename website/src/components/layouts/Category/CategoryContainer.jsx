@@ -1,8 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import ProductItem from "@/components/common/Home/ProductItem/ProductItem";
+import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { generateProductHref } from "@/utils/generateHref";
+import { useCategoryContext } from "@/provider/CategoryContext";
 
 const StyledCategoryContainer = styled("div")(() => ({
     padding: "0 4px 4px",
@@ -31,22 +34,67 @@ const StyledCategoryContainer = styled("div")(() => ({
 }));
 
 export default function CategoryContainer({ data }) {
-    console.log(
-        "🚀 ~ file: CategoryContainer.jsx:34 ~ CategoryContainer ~ data:",
-        data
-    );
     const tabs = [
         "Phổ biến",
         "Bán chạy",
         "Giá từ thấp đến cao",
         "Giá từ cao đến thấp",
     ];
-
     const [activeTab, setActiveTab] = useState(tabs[0]);
+    const [sortedData, setSortedData] = useState(data);
+
+    const sortData = (tab) => {
+        let newData = [...data];
+        if (tab === "Bán chạy") {
+            newData.sort((a, b) => b.sold - a.sold);
+        } else if (tab === "Giá từ thấp đến cao") {
+            newData.sort((a, b) => a.price - b.price);
+        } else if (tab === "Giá từ cao đến thấp") {
+            newData.sort((a, b) => b.price - a.price);
+        }
+        setSortedData(newData);
+    };
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
+        sortData(tab);
     };
+
+    useEffect(() => {
+        sortData(activeTab);
+    }, [data]);
+
+    const { filterCriteria } = useCategoryContext();
+    const sortAndFilterData = () => {
+        let filteredData = [...data];
+        if (filterCriteria.priceRange) {
+            filteredData = filteredData.filter(
+                (item) =>
+                    item.price >= filterCriteria.priceRange.from &&
+                    item.price <= filterCriteria.priceRange.to
+            );
+        }
+
+        if (filterCriteria.rating) {
+            filteredData = filteredData.filter(
+                (item) => item.average_rating >= filterCriteria.rating
+            );
+        }
+
+        setSortedData(filteredData);
+    };
+
+    useEffect(() => {
+        sortAndFilterData();
+    }, [filterCriteria, data]);
+
+    if (!sortedData) {
+        return <CirLoading />;
+    }
+
+    if (sortedData.length === 0) {
+        return <div>Không có sản phẩm nào</div>;
+    }
 
     return (
         <StyledCategoryContainer>
@@ -64,20 +112,19 @@ export default function CategoryContainer({ data }) {
                 ))}
             </div>
             <Grid container spacing={1}>
-                {data &&
-                    data.map((item) => (
-                        <Grid item xs={2.4}>
-                            <ProductItem
-                                name={item?.name}
-                                imgUrl={item?.thumbnail}
-                                rate={5}
-                                sold={item?.sold}
-                                discount={item?.discount}
-                                price={item?.price}
-                                href={""}
-                            />
-                        </Grid>
-                    ))}
+                {sortedData.map((item, index) => (
+                    <Grid item xs={2.4} key={index}>
+                        <ProductItem
+                            name={item?.name}
+                            imgUrl={item?.thumbnail}
+                            rate={item?.average_rating}
+                            sold={item?.sold}
+                            discount={item?.discount}
+                            price={item?.price}
+                            href={generateProductHref(item?.name, item?.id)}
+                        />
+                    </Grid>
+                ))}
             </Grid>
         </StyledCategoryContainer>
     );
