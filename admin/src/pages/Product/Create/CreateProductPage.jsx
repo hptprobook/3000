@@ -25,6 +25,8 @@ import AutoVariant from "../../../components/common/AutoCompelete/AutoVariant";
 import { fetchVariant } from "../../../redux/slices/variantSlice";
 import ListVariantSelect from "../../../components/common/List/ListVariantSelect";
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
+import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
+import { createProduct } from "../../../redux/slices/productSlice";
 
 const fetchAllData = () => async (dispatch) => {
     try {
@@ -51,7 +53,7 @@ const productSchema = Yup.object().shape({
         .matches(/^[1-9][0-9]*$/, "Số lương không được âm"),
     price: Yup.number()
         .required("Giá không được trống")
-        .min(0, "Giá không thể âm")
+        .min(1000, "Giá không thể dưới 1000đ")
         .integer("Giá phải là số nguyên"),
     discount: Yup.number()
         .nullable()
@@ -83,7 +85,8 @@ export default function CreateProductPage() {
     const statusLoadVariant = useSelector((state) => state.variant.status);
     const statusLoad = useSelector((state) => state.categories.status);
 
-    const error = useSelector((state) => state.users.error);
+    const statusCreate = useSelector((state) => state.products.statusCreate);
+    const dataCreate = useSelector((state) => state.products.dataCreate);
 
     // khai báo các hàm liên quan đế dữ liệu lấy về 
     const [parentCategories, setParentCategories] = useState([]);
@@ -99,11 +102,10 @@ export default function CreateProductPage() {
     const [variantValueError, setVariantValueError] = useState('');
     const [variantPrice, setVariantPrice] = useState('');
     const [variantPriceError, setVariantPriceError] = useState('');
-
+    const [taglist, setTaglist] = useState('');
 
     // khai báo các hàm liên quan đến dữ liệu
-    const [thumbnail, setThumbnail] = useState('');
-    const [thumbnailUrl, setThumbnailUrl] = useState('');
+    const [imglist, setImglist] = useState([]);
     const [createError, setCreateError] = useState(false);
     const [createErrorHelp, setCreateErrorHelp] = useState('');
 
@@ -111,14 +113,67 @@ export default function CreateProductPage() {
     const [short_descError, setShort_descError] = useState('');
     const [detail, setDetail] = useState('');
 
+    const [loadingUpload, setLoadingUpload] = useState(false);
+    const [successUpload, setSuccessUpload] = useState(false);
+    const [successCreate, setSuccessCreate] = useState(false);
+
 
     const [selectedCategory, setSelectedCategory] = useState('');
     const [category_id, setCategory_id] = useState('');
+
+    useEffect(() => {
+        if (statusCreate == 'success') {
+            setSuccessCreate(true);
+        }
+        else {
+            setSuccessCreate(false);
+        }
+    }, [statusCreate])
+    // upload anh
+    const handleUploadFireBase = async (name, imgList, data) => {
+        const storageRef = ref(storageFirebase, `products/${name}/${v4()}`);
+        const uploadPromises = imgList.map((img) => {
+            return new Promise((resolve, reject) => {
+                const uploadTask = uploadBytesResumable(storageRef, img);
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // Xử lý sự kiện thay đổi trạng thái
+                        switch (snapshot.state) {
+                            case 'running':
+                                setLoadingUpload(true);
+                                setSuccessUpload(false);
+                                break;
+                        }
+                    },
+                    (error) => {
+                        reject(error); // Xử lý lỗi khi upload
+                    },
+                    () => {
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            resolve(downloadURL); // Đưa ra URL khi upload thành công
+                        });
+                    }
+                );
+            });
+        });
+
+        try {
+            const urls = await Promise.all(uploadPromises);
+            setLoadingUpload(false);
+            setSuccessUpload(true);
+            data['thumbnail'] = urls[0];
+            data['images'] = urls;
+            dispatch(createProduct({ data: data }));
+        } catch (error) {
+            console.error('Error uploading images:', error);
+        }
+    };
+
     const formik = useFormik({
         initialValues: {
             name: "",
-            price: "",
-            discount: null,
+            price: 1000,
+            discount: 0,
             quantity: "",
             height: 1,
             width: 1,
@@ -151,7 +206,25 @@ export default function CreateProductPage() {
                         }
                         else {
                             setCreateError(false);
-                            alert('khong lõi');
+                            if (imglist.length < 1) {
+                                setCreateError(true);
+                                setCreateErrorHelp('Vui lòng tải ảnh sản phẩm!');
+                            }
+                            else {
+                                setCreateError(false);
+                                let variants = listVariant.map(item => {
+                                    const { id, ...rest } = item;
+                                    return rest;
+                                });
+                                if (taglist !== '') {
+                                    values['tags'] = taglist;
+                                }
+                                values['detail'] = detail;
+                                values['short_desc'] = short_desc;
+                                values['category_id'] = category_id;
+                                values['variants'] = variants;
+                                handleUploadFireBase('banrh', imglist, values);
+                            }
                         }
                     }
                 }
@@ -185,7 +258,13 @@ export default function CreateProductPage() {
     }, [selectedCategory]);
 
     const handleDetail = (value) => {
-        setDetail(value);
+        if (value.length < 12) {
+            setCreateError('Mô tả chi tiết không ít hơn 12 kí tự');
+        }
+        else {
+            setCreateError('');
+            setDetail(value);
+        }
     }
     const handleShortDesc = (value) => {
         if (value.length > 1000) {
@@ -197,32 +276,6 @@ export default function CreateProductPage() {
         }
     };
     // upload ảnh
-    const handleUploadThumnail = () => {
-        const thumbnailRef = ref(storageFirebase, `product_image/${v4()}`);
-        const uploadTask = uploadBytesResumable(thumbnailRef, thumbnail);
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                console.log('Upload is ' + progress + '% done');
-                switch (snapshot.state) {
-                    case 'paused':
-                        console.log('Upload is paused');
-                        break;
-                    case 'running':
-                        console.log('Upload is running');
-                        break;
-                }
-            },
-            (error) => {
-                // Handle unsuccessful uploads
-            },
-            () => {
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    setThumbnailUrl(downloadURL);
-                });
-            }
-        );
-    };
     const handleChangeVariantName = (variant) => {
         handleValidateVariant('name', variant);
     }
@@ -230,6 +283,9 @@ export default function CreateProductPage() {
         const updatedList = listVariant.filter(variant => variant.id !== id);
         setListVariant(updatedList);
     };
+    const handleChangeUploadImg = (value) => {
+        setImglist(value);
+    }
     const handleCreateVariant = () => {
         if (handleValidateVariant('name', variantName)) {
             if (handleValidateVariant('price', variantPrice)) {
@@ -249,8 +305,11 @@ export default function CreateProductPage() {
         }
     }
     const handleAddTag = (value) => {
-        // console.log(value);
+        const nameTags = value.map((item) => item.name);
+        const nameTag = nameTags.join(' | ');
+        setTaglist(nameTag);
     }
+
     const handleValidateVariant = (name, value) => {
         switch (name) {
             case 'name': {
@@ -323,6 +382,10 @@ export default function CreateProductPage() {
     if (statusLoadVariant === "success") {
         return (
             <Box>
+                {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
+                {successCreate ? <BasicAlertl label={'Tạo sản phẩm thành công'} severity={'success'} /> : null}
+                {loadingUpload ? <LinearIndeterminate /> : null}
+                {statusCreate == 'loading' ? <LinearIndeterminate /> : null}
                 {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
 
                 <HeaderPage
@@ -566,7 +629,7 @@ export default function CreateProductPage() {
                         </InfoBox>
                         <InfoBox title="Hình ảnh">
                             <DivMargin>
-                                <ImageDropZone />
+                                <ImageDropZone handleUpload={handleChangeUploadImg} />
                             </DivMargin>
                         </InfoBox>
                         <InfoBox title="Mô tả">

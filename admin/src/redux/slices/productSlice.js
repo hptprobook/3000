@@ -13,6 +13,18 @@ export const fetchAllProducts = createAsyncThunk(
         }
     }
 );
+export const createProduct = createAsyncThunk(
+    "products/createProduct",
+    async ({ data }, { rejectWithValue }) => {
+        try {
+            const response = await ProductsService.createProduct(data);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
 
 
 const productsSlice = createSlice({
@@ -30,6 +42,17 @@ const productsSlice = createSlice({
             })
             .addCase(fetchAllProducts.rejected, (state, action) => {
                 state.status = "failed";
+                state.error = action.error.message;
+            })
+            .addCase(createProduct.pending, (state) => {
+                state.statusCreate = "loading";
+            })
+            .addCase(createProduct.fulfilled, (state, action) => {
+                state.statusCreate = "success";
+                state.dataCreate = action.payload;
+            })
+            .addCase(createProduct.rejected, (state, action) => {
+                state.statusCreate = "failed";
                 state.error = action.error.message;
             });
     },
