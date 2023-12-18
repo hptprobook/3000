@@ -41,7 +41,8 @@ Route::apiResource('brands', BrandController::class)->only(['index', 'show', 'to
 Route::get('/categories/recommended', [CategoryController::class, 'recommended']);
 Route::get('/categories/best-seller', [CategoryController::class, 'bestSeller']);
 Route::get('/categories/main', [CategoryController::class, 'mainCategories']);
-Route::apiResource('categories', CategoryController::class)->only(['index', 'show', 'bestSeller', 'mainCategories']);
+Route::get('/categories/getProductByCatId/{id}', [CategoryController::class, 'getProductByCatId']);
+Route::apiResource('categories', CategoryController::class)->only(['index', 'show', 'bestSeller', 'mainCategories', 'getProductById']);
 
 // Setting
 Route::apiResource('settings', SettingController::class)->only(['index', 'show']);
@@ -64,7 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('brands', BrandController::class)->except(['index', 'show', 'topBrand']);
 
-    Route::apiResource('categories', CategoryController::class)->except(['index', 'show', 'mainCategories', 'bestSeller', 'recommended']);
+    Route::apiResource('categories', CategoryController::class)->except(['index', 'show', 'mainCategories', 'bestSeller', 'recommended', 'getProductById']);
 
     Route::apiResource('variant_types', VariantTypesController::class);
 

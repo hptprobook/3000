@@ -8,7 +8,11 @@ export default function CategoryLayout({ children }) {
     return (
         <Grid container className="appContainer__category">
             <Grid item xs={12}>
-                <Breadcrumb />
+                <Breadcrumb
+                    link="/"
+                    text1={"Danh mục"}
+                    text2={"Đồ chơi mẹ và bé"}
+                />
             </Grid>
             <Grid item xs={2}>
                 <CategorySidebar />

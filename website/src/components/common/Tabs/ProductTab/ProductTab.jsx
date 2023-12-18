@@ -7,6 +7,7 @@ import "swiper/css";
 import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import "./style.css";
+import CirLoading from "../../Loading/CircularLoading/CirLoading";
 
 const StyledProductTab = styled("div")(() => ({
     "& .tabContent": {
@@ -47,18 +48,25 @@ export default function ProductTab({ tabs }) {
         slidesToScroll: 6,
     };
 
+    if (tabs) {
+        return;
+    }
+
     return (
         <StyledProductTab className="appContainer__ProductTab">
             <div className="tabs" style={{ marginTop: "12px" }}>
-                {tabs.map((tab, index) => (
-                    <StyledButtonTab
-                        key={index}
-                        className={`tab ${index === activeTab ? "active" : ""}`}
-                        onClick={() => setActiveTab(index)}
-                    >
-                        {tab.name}
-                    </StyledButtonTab>
-                ))}
+                {tabs &&
+                    tabs?.map((tab) => (
+                        <StyledButtonTab
+                            key={tab.id}
+                            className={`tab ${
+                                tab.id === activeTab ? "active" : ""
+                            }`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            {tab.name}
+                        </StyledButtonTab>
+                    ))}
             </div>
             <div className="tabContent">
                 <Swiper

@@ -10,6 +10,7 @@ export default function BasicAlertl({ label, severity }) {
 
     return (
         <Box sx={{
+            zIndex: 100000,
             position: 'fixed',
             top: '80px',
             right: '32px',

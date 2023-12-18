@@ -23,6 +23,20 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import AutoVariant from "../../../components/common/AutoCompelete/AutoVariant";
 import { fetchVariant } from "../../../redux/slices/variantSlice";
+import ListVariantSelect from "../../../components/common/List/ListVariantSelect";
+import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
+
+const fetchAllData = () => async (dispatch) => {
+    try {
+        // Dispatch individual actions in the required order
+        await dispatch(fetchCategoriesAsync());
+        await dispatch(fetchAllBrands());
+        await dispatch(fetchAllTags());
+        await dispatch(fetchVariant());
+    } catch (error) {
+        // Handle errors if needed
+    }
+};
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -68,8 +82,6 @@ export default function CreateProductPage() {
     const variant = useSelector((state) => state.variant.data);
     const statusLoadVariant = useSelector((state) => state.variant.status);
     const statusLoad = useSelector((state) => state.categories.status);
-    const statusLoadBrands = useSelector((state) => state.brands.status);
-    const statusLoadTags = useSelector((state) => state.tags.status);
 
     const error = useSelector((state) => state.users.error);
 
@@ -78,6 +90,8 @@ export default function CreateProductPage() {
     const [childCategories, setChildCategories] = useState([]);
 
     // khai báo các hàm liên quan đến variant type
+
+    const [listVariant, setListVariant] = useState([]);
 
     const [variantName, setVariantName] = useState('');
     const [variantNameError, setVariantNameError] = useState('');
@@ -90,32 +104,30 @@ export default function CreateProductPage() {
     // khai báo các hàm liên quan đến dữ liệu
     const [thumbnail, setThumbnail] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState('');
-    const [createError, setCreateError] = useState(true);
+    const [createError, setCreateError] = useState('');
 
     const [short_desc, setShort_desc] = useState('');
     const [detail, setDetail] = useState('');
 
 
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [selectedErrorCategory, setSelectedErrorCategory] = useState('');
-
-    const [selectedCategoryChild, setSelectedCategoryChild] = useState('');
-    const [selectedErrorCategoryChild, setSelectedErrorCategoryChild] = useState('');
+    const [category_id, setCategory_id] = useState('');
     const formik = useFormik({
         initialValues: {
             name: "",
             price: "",
             discount: null,
-            quantity: 1,
+            quantity: "",
             height: 1,
             width: 1,
             length: 1,
             weight: 1,
             brand_id: "",
         },
-        // validationSchema: productSchema,
+        validationSchema: productSchema,
         onSubmit: (values) => {
             console.log(detail);
+            setCreateError('Lỗi')
             // const payload = {
             //     name: values.name,
             //     phone: values.phone,
@@ -129,25 +141,11 @@ export default function CreateProductPage() {
 
         },
     });
-
     useEffect(() => {
-        dispatch(fetchCategoriesAsync());
-    }, [dispatch]);
-    useEffect(() => {
-        if (statusLoad === 'succeeded') {
-            dispatch(fetchAllBrands());
+        if (statusLoad === 'idle') {
+            dispatch(fetchAllData());
         }
-    }, [statusLoad]);
-    useEffect(() => {
-        if (statusLoadBrands == 'brands is ready') {
-            dispatch(fetchAllTags());
-        }
-    }, [statusLoadBrands]);
-    useEffect(() => {
-        if (statusLoadTags == 'succeeded tags') {
-            dispatch(fetchVariant());
-        }
-    }, [statusLoadTags]);
+    }, [statusLoad, dispatch]);
     useEffect(() => {
         const parent = categories.filter(item => item.parent_id == 0);
         setParentCategories(parent);
@@ -183,27 +181,114 @@ export default function CreateProductPage() {
             },
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log('File available at', downloadURL);
                     setThumbnailUrl(downloadURL);
                 });
             }
         );
     };
-    const handleChangeVariant = (variant) => {
-        console.log(variant)
+    const handleChangeVariantName = (variant) => {
+        handleValidateVariant('name', variant);
     }
-
+    const handleDeleteItemVariant = (id) => {
+        const updatedList = listVariant.filter(variant => variant.id !== id);
+        setListVariant(updatedList);
+    };
+    const handleCreateVariant = () => {
+        if (handleValidateVariant('name', variantName)) {
+            if (handleValidateVariant('price', variantPrice)) {
+                if (handleValidateVariant('value', variantValue)) {
+                    const id = listVariant.length > 0 ? listVariant[listVariant.length - 1].id + 1 : 1;
+                    const variant = {
+                        id: id,
+                        name: variantName,
+                        price: variantPrice,
+                        value: variantValue
+                    }
+                    setListVariant([...listVariant, variant])
+                    setVariantPrice('');
+                    setVariantValue('');
+                }
+            }
+        }
+    }
     const handleAddTag = (value) => {
         // console.log(value);
     }
-    // debug
+    const handleValidateVariant = (name, value) => {
+        switch (name) {
+            case 'name': {
+                if (value === '') {
+                    setVariantNameError('Tên biến thể không được để trống');
+                    setVariantName('');
+                    return false;
+                }
+                else if (value.length > 100) {
+                    setVariantNameError('Tên biến thể không được quá 100 kí tự');
+                    setVariantName('');
+                    return false;
+                }
+                else {
+                    setVariantNameError('');
+                    setVariantName(value);
+                    return true;
+                }
+            }
+                break;
+            case 'value': {
+                if (value === '') {
+                    setVariantValueError('Giá trị biến thể không được để trống');
+                    setVariantValue('');
+                    return false;
+                }
+                else if (value.length > 128) {
+                    setVariantValue('');
+                    setVariantValueError('Giá trị biến thể không được quá 128 kí tự');
+                    return false;
+                }
+                else {
+                    setVariantValueError('');
+                    setVariantValue(value);
+                    return true;
+                }
+            }
+                break;
+            case 'price': {
+                if (value === '') {
+                    setVariantPriceError('Giá tiền biến thể không được để trống');
+                    setVariantPrice('');
+                    return false;
+                }
+                else if (isNaN(value)) {
+                    setVariantPriceError('Giá tiền không đúng định dạng');
+                    setVariantPrice('');
 
-    if (statusLoad === "loading") {
+                    return false;
+                }
+                else if (value < 0) {
+                    setVariantPriceError('Giá tiền không được nhỏ hơn 0');
+                    setVariantPrice('');
+                    return false;
+                }
+                else {
+                    setVariantPriceError('');
+                    setVariantPrice(value);
+                    return true;
+                }
+            }
+                break;
+
+        }
+    }
+    // debug
+    console.log(category_id)
+    if (statusLoad === "loading" && statusLoadVariant !== "success") {
         return <div><Loading /></div>;
     }
     if (statusLoadVariant === "success") {
         return (
             <Box>
+                {createError != '' ? <BasicAlertl label={createError} severity={'error'} /> : null}
+
                 <HeaderPage
                     namePage={"Tạo mới"}
                     Breadcrumb={["Sản phẩm", "Tạo"]}
@@ -288,9 +373,9 @@ export default function CreateProductPage() {
                                     data={parentCategories}
                                     value={''}
                                     onChange={(e) => {
-                                        setSelectedCategory(e.target.value)
+                                        setSelectedCategory(e.target.value),
+                                            setCategory_id(e.target.value)
                                     }}
-                                    error={selectedErrorCategory}
                                 />
                             </DivMargin>
                             <DivMargin>
@@ -300,9 +385,8 @@ export default function CreateProductPage() {
                                     value={''}
                                     disable={selectedCategory ? false : true}
                                     onChange={(e) => {
-                                        setSelectedCategoryChild(e.target.value)
+                                        setCategory_id(e.target.value)
                                     }}
-                                    error={selectedErrorCategory}
                                 />
                             </DivMargin>
                             <DivMargin>
@@ -405,41 +489,45 @@ export default function CreateProductPage() {
                         <InfoBox title="Biến thể">
                             <DivMargin>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12} md={3}>
-                                        <AutoVariant label={'Tên biến thể'} data={variant} handleChange={handleChangeVariant} />
+                                    <Grid item xs={12} md={4}>
+                                        <AutoVariant
+                                            label={'Tên biến thể'}
+                                            data={variant}
+                                            handleChange={handleChangeVariantName}
+                                            error={variantNameError == '' ? false : true}
+                                            helperText={variantNameError}
+                                        />
                                     </Grid>
-                                    <Grid item xs={12} md={3}>
+                                    <Grid item xs={12} md={4}>
                                         <InputEdit
                                             id={'variant-value'}
                                             label={'Giá trị'}
                                             name={'variant-value'}
-                                        // error={
-                                        //     formik.touched.width &&
-                                        //     Boolean(formik.errors.width)
-                                        // }
-                                        // helperText={
-                                        //     formik.touched.width && formik.errors.width
-                                        // }
+                                            value={variantValue}
+                                            onChange={(e) => { handleValidateVariant('value', e.target.value) }}
+                                            onBlur={(e) => { handleValidateVariant('value', e.target.value) }}
+                                            error={variantValueError == '' ? false : true}
+                                            helperText={variantValueError}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={3}>
+                                    <Grid item xs={12} md={4}>
                                         <InputEdit
                                             id={'variant-price'}
                                             label={'Giá tiền'}
                                             name={'variant-price'}
-                                        // error={
-                                        //     formik.touched.variant-price &&
-                                        //     Boolean(formik.errors.length)
-                                        // }
-                                        // helperText={
-                                        //     formik.touched.length && formik.errors.length
-                                        // }
+                                            value={variantPrice}
+                                            onChange={(e) => { handleValidateVariant('price', e.target.value) }}
+                                            onBlur={(e) => { handleValidateVariant('price', e.target.value) }}
+                                            error={variantPriceError == '' ? false : true}
+                                            helperText={variantPriceError}
                                         />
                                     </Grid>
-                                    <Grid item xs={12} md={3}>
-                                        <div style={{ display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-                                            <ButtonNormal label='Thêm' bg='true' />
-                                        </div>
+                                    <Grid item xs={12} md={12}>
+                                        <ButtonNormal label='Thêm' bg='true' onClick={handleCreateVariant} />
+
+                                    </Grid>
+                                    <Grid item xs={12} md={12}>
+                                        {listVariant.length > 0 ? <ListVariantSelect data={listVariant} onClick={handleDeleteItemVariant} /> : ''}
                                     </Grid>
                                 </Grid>
                             </DivMargin>
@@ -492,7 +580,6 @@ export default function CreateProductPage() {
                                 float: 'right'
                             }}
                         >
-                            <button type="submit">dasd</button>
                             <ButtonNormal label={'Hủy'} />
                             <ButtonNormal label={'Tạo'} type={'submit'} bg={'true'} />
                         </DivMargin>
@@ -502,5 +589,4 @@ export default function CreateProductPage() {
             </Box>
         );
     }
-
 }
