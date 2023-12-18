@@ -166,7 +166,7 @@ export default function CreateBrandPage() {
                 {loadingUpload ? <LinearIndeterminate /> : null}
                 <HeaderPage
                     namePage={"Tạo mới"}
-                    Breadcrumb={["Nhãn sản phẩm", "Tạo"]}
+                    Breadcrumb={["Thương hiệu", "Tạo"]}
                 />
                 <Box sx={{
                     marginTop: '32px'
