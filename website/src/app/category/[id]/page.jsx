@@ -11,10 +11,6 @@ export default function CategoryPage({ params }) {
     const dispatch = useDispatch();
     const categoriesDispatch = useSelector((state) => state.categories);
     const status = useSelector((state) => state.categories.status);
-    console.log(
-        "🚀 ~ file: page.jsx:12 ~ CategoryPage ~ categoriesDispatch:",
-        categoriesDispatch
-    );
 
     useEffect(() => {
         dispatch(getProductByCatId(params.id));

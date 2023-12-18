@@ -170,10 +170,6 @@ export default function ProfileOrder({ data }) {
     const dispatch = useDispatch();
     const putOrder = useSelector((state) => state.orders.putOrder);
     const statusOrder = useSelector((state) => state.orders.status);
-    console.log(
-        "🚀 ~ file: ProfileOrder.jsx:171 ~ ProfileOrder ~ putOrder:",
-        putOrder
-    );
     const [filteredOrders, setFilteredOrders] = useState([]);
 
     const statusConvert = (status) => {
@@ -283,10 +279,10 @@ export default function ProfileOrder({ data }) {
 
     return (
         <StyledProfileOrder>
-            <div className="cancelModal">
+            {/* <div className="cancelModal">
                 <input type="text" placeholder="Lý do hủy đơn hàng này" />
                 <button>Hủy đơn hàng</button>
-            </div>
+            </div> */}
             <div className="tabs">
                 {tabs.map((tab) => (
                     <div
