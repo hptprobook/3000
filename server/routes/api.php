@@ -26,7 +26,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 
 // Search
-Route::get('/search', [SearchController::class, 'search']);
+Route::get('/search/{searchValue?}', [SearchController::class, 'search']);
 Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
 // Product
