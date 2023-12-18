@@ -23,27 +23,6 @@ class CategoryController extends Controller
         }
     }
 
-    public function getProductByCatId(string $id)
-    {
-        try {
-            $categories = Category::where('id', $id)
-                ->orWhere('parent_id', $id)
-                ->get();
-
-            $products = collect();
-
-            foreach ($categories as $category) {
-                $products = $products->merge($category->products);
-            }
-
-            return response()->json($products, Response::HTTP_OK);
-        } catch (Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-
-
     public function mainCategories()
     {
         try {
@@ -54,6 +33,28 @@ class CategoryController extends Controller
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function getProductByCatId(string $id)
+    {
+        try {
+            $categories = Category::where('id', $id)->orWhere('parent_id', $id)->get();
+
+            $products = collect();
+
+            foreach ($categories as $category) {
+                $category->products->each(function ($product) {
+                    $product->average_rating = $product->reviews->avg('rating') ?: 0;
+                });
+
+                $products = $products->merge($category->products);
+            }
+
+            return response()->json($products, Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public function bestSeller()
     {
@@ -78,22 +79,22 @@ class CategoryController extends Controller
         }
     }
 
-
-
     public function recommended()
     {
         try {
-            $categories = Category::with(['products.reviews'])->get()->map(function ($category) {
-                // Tính toán đánh giá trung bình cho mỗi sản phẩm
+            $sortedCategories = Category::with(['products.reviews'])->get()->map(function ($category) {
                 $category->products->each(function ($product) {
                     $product->average_rating = $product->reviews->avg('rating') ?: 0;
                 });
 
-                // Tính toán đánh giá trung bình cho mỗi danh mục
                 $category->average_rating = $category->products->avg('average_rating') ?: 0;
 
-                return $category;
+                return [
+                    'category' => $category
+                ];
             })->sortByDesc('average_rating')->take(5);
+
+            $categories = $sortedCategories->pluck('category');
 
             return response()->json($categories, Response::HTTP_OK);
         } catch (Exception $e) {

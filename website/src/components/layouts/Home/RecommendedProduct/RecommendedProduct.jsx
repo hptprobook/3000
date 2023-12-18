@@ -26,10 +26,12 @@ export default function RecommendedProduct() {
         return <CirLoading />;
     }
 
-    return (
-        <div className="appContainer__recommended">
-            <h4>Bạn có thể thích</h4>
-            <ProductTab tabs={recommended} />
-        </div>
-    );
+    if (!loading) {
+        return (
+            <div className="appContainer__recommended">
+                <h4>Bạn có thể thích</h4>
+                <ProductTab tabs={recommended} />
+            </div>
+        );
+    }
 }
