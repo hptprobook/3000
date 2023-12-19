@@ -21,7 +21,7 @@ export default function ListVariantSelect({ data, onClick }) {
         <Demo>
             <List>
                 {data.map((item, index) => (
-                    <ListItem ListItem
+                    <ListItem
                         key={index}
                         sx={{
                             color: color.textColor.dark
