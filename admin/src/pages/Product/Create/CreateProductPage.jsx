@@ -648,7 +648,7 @@ export default function CreateProductPage() {
                                 >
                                     Mô tả ngắn
                                 </Typography>
-                                <TinyEditorMini onEditorChange={handleShortDesc} />
+                                <TinyEditorMini defaultValue={short_desc} onEditorChange={handleShortDesc} />
                             </DivMargin>
                             <div
                                 style={{
@@ -666,6 +666,7 @@ export default function CreateProductPage() {
                                     Chi tiết
                                 </Typography>
                                 <TinyEditor
+                                    defaultValue={detail}
                                     handleChange={handleDetail} />
                             </div>
                         </InfoBox>

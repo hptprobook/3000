@@ -18,6 +18,7 @@ import { v4 } from "uuid";
 import color from "../../../config/colorConfig";
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 import { useParams } from "react-router-dom";
+import Loading from "../../../components/common/Loading/Loading";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -162,7 +163,11 @@ export default function EditBrandPage() {
                 return false; // Default to no error
         }
     };
-
+    if (status === 'loading') {
+        return (
+            <Loading />
+        )
+    }
     if (status === 'brands is ready' && name != '' && parent_id != '') {
 
         return (
