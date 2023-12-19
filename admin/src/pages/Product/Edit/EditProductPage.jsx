@@ -149,9 +149,6 @@ export default function EditProductPage() {
             setSuccessUpdate(true);
             dispatch(resetState());
         }
-        else {
-            setSuccessUpdate(false);
-        }
     }, [statusUpdate])
     // upload anh
 
