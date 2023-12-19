@@ -42,6 +42,8 @@ export const updateOrder = createAsyncThunk(
     async ({ data, id }, { rejectWithValue }) => {
         try {
             const response = await OrderService.updateOrder(data, id);
+            console.log("🚀 ~ file: orderSlice.js:45 ~ id:", id);
+            console.log("🚀 ~ file: orderSlice.js:45 ~ data:", data);
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -74,7 +76,11 @@ const initialState = {
 const orderSlice = createSlice({
     name: "orders",
     initialState,
-    reducers: {},
+    reducers: {
+        clearPutOrder: (state) => {
+            state.putOrder = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getAllOrder.pending, (state) => {
@@ -140,4 +146,5 @@ const orderSlice = createSlice({
     },
 });
 
+export const { clearPutOrder } = orderSlice.actions;
 export default orderSlice.reducer;

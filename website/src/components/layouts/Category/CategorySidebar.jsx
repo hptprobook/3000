@@ -1,9 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import Rating from "@/components/common/Rating/Rating";
 import FilterComment from "@/components/common/Button/FilterComment/FilterComment";
+import { useCategoryContext } from "@/provider/CategoryContext";
 
 const StyledCategorySidebar = styled("div")(() => ({
     backgroundColor: "#fff",
@@ -46,6 +47,53 @@ const StyledCategorySidebar = styled("div")(() => ({
 }));
 
 export default function CategorySidebar() {
+    const { updateFilter } = useCategoryContext(); // Sử dụng context
+
+    const handleRatingFilter = (rating) => {
+        updateFilter({ rating });
+    };
+
+    const priceRanges = {
+        "dưới 1 triệu": { from: 0, to: 1000000 },
+        "từ 1 - 5 triệu": { from: 1000000, to: 5000000 },
+        "trên 5 triệu": { from: 5000000, to: Infinity },
+    };
+    const [selectedPriceRanges, setSelectedPriceRanges] = useState({});
+
+    const handlePriceFilter = (priceRangeKey) => {
+        const priceRange = priceRanges[priceRangeKey];
+        setSelectedPriceRanges((prevRanges) => ({
+            ...prevRanges,
+            [priceRangeKey]: !prevRanges[priceRangeKey],
+        }));
+        updateFilter({ priceRange });
+    };
+
+    useEffect(() => {
+        const selectedKeys = Object.keys(selectedPriceRanges).filter(
+            (key) => selectedPriceRanges[key]
+        );
+
+        if (selectedKeys.length > 0) {
+            const combinedRange = {
+                from: Math.min(
+                    ...selectedKeys.map((key) => priceRanges[key].from)
+                ),
+                to: Math.max(...selectedKeys.map((key) => priceRanges[key].to)),
+            };
+            updateFilter({ priceRange: combinedRange });
+        } else {
+            // Nếu không có lựa chọn nào, xóa bộ lọc giá
+            updateFilter({ priceRange: null });
+        }
+    }, [selectedPriceRanges]);
+
+    const handlePriceRange = () => {
+        const fromPrice = document.querySelector(".filter-price .from").value;
+        const toPrice = document.querySelector(".filter-price .to").value;
+        updateFilter({ priceRange: { from: fromPrice, to: toPrice } });
+    };
+
     return (
         <StyledCategorySidebar>
             <h5>Danh mục sản phẩm</h5>
@@ -67,31 +115,18 @@ export default function CategorySidebar() {
                 Lọc theo đánh giá
             </h5>
             <ul className="filter-rate ul-list">
-                <li>
-                    <Link href={""} className="d-flex">
-                        <Rating rate={5} size={13} /> từ 5 sao
-                    </Link>
-                </li>
-                <li>
-                    <Link href={""} className="d-flex">
-                        <Rating rate={4} size={13} /> từ 4 sao
-                    </Link>
-                </li>
-                <li>
-                    <Link href={""} className="d-flex">
-                        <Rating rate={3} size={13} /> từ 3 sao
-                    </Link>
-                </li>
-                <li>
-                    <Link href={""} className="d-flex">
-                        <Rating rate={2} size={13} /> từ 2 sao
-                    </Link>
-                </li>
-                <li>
-                    <Link href={""} className="d-flex">
-                        <Rating rate={1} size={13} /> từ 1 sao
-                    </Link>
-                </li>
+                {[5, 4, 3, 2, 1].map((rate) => (
+                    <li
+                        key={rate}
+                        className="d-flex"
+                        style={{
+                            cursor: "pointer",
+                        }}
+                        onClick={() => handleRatingFilter(rate)}
+                    >
+                        <Rating rate={rate} size={13} /> từ {rate} sao
+                    </li>
+                ))}
             </ul>
             <h5
                 style={{
@@ -103,15 +138,17 @@ export default function CategorySidebar() {
                 Lọc theo giá
             </h5>
             <ul className="ul-list">
-                <li>
-                    <FilterComment text={"dưới 1 triệu"} />
-                </li>
-                <li>
-                    <FilterComment text={"từ 1 - 5 triệu"} />
-                </li>
-                <li>
-                    <FilterComment text={"trên 5 triệu"} />
-                </li>
+                {Object.keys(priceRanges).map((priceRangeKey) => (
+                    <li
+                        key={priceRangeKey}
+                        onClick={() => handlePriceFilter(priceRangeKey)}
+                    >
+                        <FilterComment
+                            text={priceRangeKey}
+                            isActive={selectedPriceRanges[priceRangeKey]}
+                        />
+                    </li>
+                ))}
             </ul>
             <h5
                 style={{
@@ -125,12 +162,13 @@ export default function CategorySidebar() {
             <div className="filter-price">
                 <input
                     className="from"
-                    name="from"
                     type="number"
                     placeholder="giá từ ..."
                 />
                 <input className="to" type="number" placeholder="... đến" />
-                <button className="btn">Áp dụng</button>
+                <button className="btn" onClick={handlePriceRange}>
+                    Áp dụng
+                </button>
             </div>
         </StyledCategorySidebar>
     );

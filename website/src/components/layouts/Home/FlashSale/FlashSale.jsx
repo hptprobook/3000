@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import "./style.css";
 import Link from "next/link";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "@/redux/slices/productSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
-export default function FlashSale() {
+function FlashSale() {
     const [timeLeft, setTimeLeft] = useState({
         hours: 0,
         minutes: 0,
@@ -53,13 +53,11 @@ export default function FlashSale() {
     const { products, loading, error } = useSelector((state) => state.products);
 
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && products.length === 0) {
             dispatch(fetchAllProducts());
-            if (loading) {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, loading]);
+    }, [loadData, products]);
 
     if (loading) {
         return <CirLoading />;
@@ -132,3 +130,5 @@ export default function FlashSale() {
         </div>
     );
 }
+
+export default memo(FlashSale);

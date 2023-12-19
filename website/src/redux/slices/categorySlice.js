@@ -37,9 +37,22 @@ export const fetchRecommendedCategory = createAsyncThunk(
     }
 );
 
+export const getProductByCatId = createAsyncThunk(
+    "categories/getProductByCatId",
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await CategoryService.getProductByCatId(id);
+            return res;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
 const initialState = {
     categories: [],
     parentCategories: [],
+    productByCatId: [],
     recommended: [],
     bestSeller: [],
     loading: false,
@@ -89,6 +102,19 @@ const categorySlice = createSlice({
                 state.loading = false;
                 state.error = null;
                 state.recommended = action.payload;
+            })
+            .addCase(getProductByCatId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getProductByCatId.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(getProductByCatId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.productByCatId = action.payload;
             });
     },
 });

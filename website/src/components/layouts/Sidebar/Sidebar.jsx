@@ -50,13 +50,11 @@ export default function Sidebar() {
     );
 
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && parentCategories.length === 0) {
             dispatch(fetchParentCategory());
-            if (loading) {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, loading]);
+    }, [loadData, parentCategories]);
 
     return (
         <div className="appSidebar">

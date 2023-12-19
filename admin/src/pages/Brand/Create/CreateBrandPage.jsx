@@ -63,7 +63,7 @@ export default function CreateBrandPage() {
     }, [statusCreate])
     useEffect(() => {
         if (error === 'The name has already been taken.' && status === 'failed') {
-            setErrorName('Nhãn sản phẩm đã tồn tại');
+            setErrorName('Thương hiệu đã tồn tại');
             setSeccess(false);
         }
 
@@ -166,7 +166,7 @@ export default function CreateBrandPage() {
                 {statusCreate == 'success' ? <BasicAlertl label={'Tạo nhãn hàng thành công'} severity={'success'} /> : null}
                 <HeaderPage
                     namePage={"Tạo mới"}
-                    Breadcrumb={["Nhãn sản phẩm", "Tạo"]}
+                    Breadcrumb={["Thương hiệu", "Tạo"]}
                 />
                 <Box sx={{
                     marginTop: '32px'

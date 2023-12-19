@@ -38,30 +38,42 @@ class SearchController extends Controller
         }
     }
 
-    public function search(Request $request)
+    public function search($searchValue = "")
     {
         try {
+            // Collect IDs of brands, tags, and categories matching the search value
+            $brandIds = Brand::where('name', 'like', "%$searchValue%")->pluck('id');
+            $tagIds = Tag::where('name', 'like', "%$searchValue%")->pluck('id');
+            $categoryIds = Category::where('name', 'like', "%$searchValue%")->pluck('id');
 
-            $q = $request->input('q');
-            $products = Product::where('name', 'like', "%$q%")->get();
-            $tags = Tag::where('name', 'like', "%$q%")->get();
-            $brands = Brand::where('name', 'like', "%$q%")->get();
-            $categories = Category::where('name', 'like', "%$q%")->get();
+            // Query for products
+            $products = Product::query()
+                ->where(function ($query) use ($searchValue, $brandIds, $tagIds, $categoryIds) {
+                    $query->where('name', 'like', "%$searchValue%")
+                        ->orWhere('short_desc', 'like', "%$searchValue%")
+                        ->orWhereHas('brand', function ($q) use ($brandIds) {
+                            $q->whereIn('id', $brandIds);
+                        })
+                        ->orWhereHas('tags', function ($q) use ($tagIds) {
+                            $q->whereIn('id', $tagIds);
+                        })
+                        ->orWhereHas('category', function ($q) use ($categoryIds) {
+                            $q->whereIn('id', $categoryIds);
+                        });
+                })
+                // Add an order clause that prioritizes name and short_desc matches
+                ->orderByRaw("CASE WHEN name LIKE '%$searchValue%' THEN 0 WHEN short_desc LIKE '%$searchValue%' THEN 1 ELSE 2 END")
+                ->get();
 
-            $results = [
-                'products' => $products,
-                'tags' => $tags,
-                'brands' => $brands,
-                'categories' => $categories,
-            ];
-
-            return response()->json($results, Response::HTTP_OK);
+            return response()->json($products, Response::HTTP_OK);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     public function show(string $id)
     {

@@ -5,6 +5,9 @@ import { AddToCartContext } from "@/provider/AddToCartContext";
 import CloseIcon from "@mui/icons-material/Close";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import useAuth from "@/hooks/useAuth";
+import LoginModal from "../../Header/LoginModel/LoginModel";
 
 const CountButton = styled("div")(({ isActive }) => ({
     position: "relative",
@@ -54,6 +57,9 @@ export default function CountBtn({ icon, count }) {
     const { addToCartSuccess, setAddToCartSuccess } =
         useContext(AddToCartContext);
     const [isActive, setIsActive] = useState(true);
+    const router = useRouter();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const isLoggedIn = useAuth();
 
     useEffect(() => {
         setIsActive(!addToCartSuccess);
@@ -87,66 +93,81 @@ export default function CountBtn({ icon, count }) {
         };
     }, []);
 
+    const handleClick = () => {
+        if (!isLoggedIn) {
+            setShowLoginModal(true);
+        } else {
+            router.push("/cart");
+        }
+    };
+
     return (
-        <Link href={"/cart"}>
-            <CountButton isActive={isActive}>
-                <span className="CountBtn__count">{count}</span>
-                {icon}
-                <div className="modal">
-                    <CloseIcon
-                        onClick={(e) => {
-                            handleCloseModal(e);
-                            resetAddToCartSuccess();
-                        }}
-                        sx={{
-                            position: "absolute",
-                            top: "5px",
-                            right: "5px",
-                            cursor: "pointer",
-                            fontSize: "16px",
-                            color: "#9b9b9b",
-                        }}
-                    />
-                    <div className="at-c">
-                        <CheckCircleIcon
-                            sx={{ fontSize: "24px", color: "#4caf50" }}
-                        />{" "}
-                        <p
-                            style={{
-                                color: "#4f4f4f",
-                                fontSize: "14px",
-                                fontWeight: "400",
-                                marginLeft: "8px",
+        <>
+            {showLoginModal && (
+                <LoginModal
+                    isOpen={showLoginModal}
+                    onClose={() => setShowLoginModal(false)}
+                />
+            )}
+            <div onClick={handleClick}>
+                <CountButton isActive={isActive}>
+                    <span className="CountBtn__count">{count}</span>
+                    {icon}
+                    <div className="modal">
+                        <CloseIcon
+                            onClick={(e) => {
+                                handleCloseModal(e);
                             }}
-                        >
-                            Thêm vào giỏ hàng thành công
-                        </p>
-                    </div>
-                    <Link href={"/cart"} className="css-link">
-                        <button
-                            style={{
-                                outline: "none",
-                                width: "100%",
-                                height: "37px",
-                                border: "none",
-                                backgroundColor: "#ff424e",
-                                borderRadius: "4px",
-                                marginTop: "16px",
+                            sx={{
+                                position: "absolute",
+                                top: "5px",
+                                right: "5px",
                                 cursor: "pointer",
-                                color: "#fff",
-                                fontFamily: "var(--font-family)",
-                                fontSize: "14px",
-                                transition: ".2s ease",
-                                "&:hover": {
-                                    opacity: "0.8",
-                                },
+                                fontSize: "16px",
+                                color: "#9b9b9b",
                             }}
-                        >
-                            Xem giỏ hàng và thanh toán
-                        </button>
-                    </Link>
-                </div>
-            </CountButton>
-        </Link>
+                        />
+                        <div className="at-c">
+                            <CheckCircleIcon
+                                sx={{ fontSize: "24px", color: "#4caf50" }}
+                            />{" "}
+                            <p
+                                style={{
+                                    color: "#4f4f4f",
+                                    fontSize: "14px",
+                                    fontWeight: "400",
+                                    marginLeft: "8px",
+                                }}
+                            >
+                                Thêm vào giỏ hàng thành công
+                            </p>
+                        </div>
+                        <Link href={"/cart"} className="css-link">
+                            <button
+                                style={{
+                                    outline: "none",
+                                    width: "100%",
+                                    height: "37px",
+                                    border: "none",
+                                    backgroundColor: "#ff424e",
+                                    borderRadius: "4px",
+                                    marginTop: "16px",
+                                    cursor: "pointer",
+                                    color: "#fff",
+                                    fontFamily: "var(--font-family)",
+                                    fontSize: "14px",
+                                    transition: ".2s ease",
+                                    "&:hover": {
+                                        opacity: "0.8",
+                                    },
+                                }}
+                            >
+                                Xem giỏ hàng và thanh toán
+                            </button>
+                        </Link>
+                    </div>
+                </CountButton>
+            </div>
+        </>
     );
 }

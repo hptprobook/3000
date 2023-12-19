@@ -25,7 +25,7 @@ const OrderService = {
             return err.response;
         }
     },
-    updateOrder: async (id, data) => {
+    updateOrder: async (data, id) => {
         try {
             const res = await request.put(`orders/${id}`, data);
             return res;
