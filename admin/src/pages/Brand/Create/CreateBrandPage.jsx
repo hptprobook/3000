@@ -162,8 +162,8 @@ export default function CreateBrandPage() {
         return (
             <Box>
                 {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
-                {statusCreate == 'success' ? <BasicAlertl label={'Tạo nhãn hàng thành công'} severity={'success'} /> : null}
                 {loadingUpload ? <LinearIndeterminate /> : null}
+                {statusCreate == 'success' ? <BasicAlertl label={'Tạo nhãn hàng thành công'} severity={'success'} /> : null}
                 <HeaderPage
                     namePage={"Tạo mới"}
                     Breadcrumb={["Thương hiệu", "Tạo"]}
