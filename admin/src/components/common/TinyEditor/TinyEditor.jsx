@@ -24,6 +24,7 @@ export default function TinyEditor({ handleChange, name, defaultValue }) {
                 onInit={(evt, editor) => {
                     editorRef.current = editor;
                     editor.on('undo redo', handleUndoRedo);
+                    editor.setContent(defaultValue);
                 }}
 
                 init={{

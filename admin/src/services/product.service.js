@@ -28,6 +28,15 @@ const ProductsService = {
             throw err;
         }
     },
+    updateProduct: async (id, data) => {
+        try {
+            const res = await request.put(`products/${id}`, data);
+            return res.data;
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    },
 };
 
 export default ProductsService;

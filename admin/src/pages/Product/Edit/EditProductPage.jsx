@@ -26,7 +26,7 @@ import { fetchVariant } from "../../../redux/slices/variantSlice";
 import ListVariantSelect from "../../../components/common/List/ListVariantSelect";
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
-import { createProduct, fetchProductById, resetState } from "../../../redux/slices/productSlice";
+import { createProduct, fetchProductById, resetState, updateProduct } from "../../../redux/slices/productSlice";
 import { useParams } from "react-router-dom";
 import { TbCurrencyDong } from "react-icons/tb";
 import { ReadOnly } from "../../../components/common/TextField/ReadOnly";
@@ -77,8 +77,8 @@ export default function EditProductPage() {
     const statusLoad = useSelector((state) => state.categories.status);
     const product = useSelector((state) => state.products.product);
     const statusFetch = useSelector((state) => state.products.statusFetchById);
-    const statusCreate = useSelector((state) => state.products.statusCreate);
-    const dataCreate = useSelector((state) => state.products.dataCreate);
+    const statusUpdate = useSelector((state) => state.products.statusUpdate);
+    const dataUpdateReturn = useSelector((state) => state.products.dataUpdateReturn);
 
     // khai báo các hàm liên quan đế dữ liệu lấy về 
     const [parentCategories, setParentCategories] = useState([]);
@@ -106,10 +106,6 @@ export default function EditProductPage() {
     const [detail, setDetail] = useState('');
     const [successFetch, setSuccessFetch] = useState(false);
     const [successUpdate, setSuccessUpdate] = useState(false);
-    const [loadingUpload, setLoadingUpload] = useState(false);
-    const [successUpload, setSuccessUpload] = useState(false);
-    const [successCreate, setSuccessCreate] = useState(false);
-    const [dataDefault, setDataDefault] = useState('');
 
     const [selectedCategory, setSelectedCategory] = useState('');
     const [category_id, setCategory_id] = useState('');
@@ -146,17 +142,17 @@ export default function EditProductPage() {
             setDetail(product.detail);
             setShort_desc(product.short_desc);
             setCategory_id(product.category_id);
-            console.log(product);
         }
     }, [statusFetch, dispatch]);
     useEffect(() => {
-        if (statusCreate == 'success') {
-            setSuccessCreate(true);
+        if (statusUpdate == 'success') {
+            setSuccessUpdate(true);
+            dispatch(resetState());
         }
         else {
-            setSuccessCreate(false);
+            setSuccessUpdate(false);
         }
-    }, [statusCreate])
+    }, [statusUpdate])
     // upload anh
 
     const formik = useFormik({
@@ -196,7 +192,7 @@ export default function EditProductPage() {
                             values['short_desc'] = short_desc;
                             values['category_id'] = category_id;
                             values['variants'] = variants;
-                            console.log(values)
+                            dispatch(updateProduct({ id: id, data: values }));
                         }
                     }
                 }
@@ -337,10 +333,8 @@ export default function EditProductPage() {
     if (successFetch) {
         return (
             <Box>
-                {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
-                {successCreate ? <BasicAlertl label={'Tạo sản phẩm thành công'} severity={'success'} /> : null}
-                {loadingUpload ? <LinearIndeterminate /> : null}
-                {statusCreate == 'loading' ? <LinearIndeterminate /> : null}
+                {successUpdate ? <BasicAlertl label={'Chỉnh sửa sản phẩm thành công'} severity={'success'} /> : null}
+                {statusUpdate == 'loading' ? <LinearIndeterminate /> : null}
                 {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
 
                 <HeaderPage

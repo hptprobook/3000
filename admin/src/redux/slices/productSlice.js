@@ -35,6 +35,17 @@ export const createProduct = createAsyncThunk(
         }
     }
 );
+export const updateProduct = createAsyncThunk(
+    "products/updateProduct",
+    async ({ id, data }, { rejectWithValue }) => {
+        try {
+            const response = await ProductsService.updateProduct(id, data);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
 
 export const resetState = createAction('products/resetState');
 
@@ -46,7 +57,8 @@ const productsSlice = createSlice({
             // Reset the state to its initial values
             state.status = "idle";
             state.statusFetchById = "idle";  // Add this line if 'statusFetchById' is part of your state
-            state.statusCreate = "idle";  // Add this line if 'statusCreate' is part of your state
+            state.statusCreate = "idle";
+            state.statusUpdate = "idle";// Add this line if 'statusCreate' is part of your state
         },
     },
     extraReducers: (builder) => {
@@ -82,6 +94,17 @@ const productsSlice = createSlice({
             })
             .addCase(createProduct.rejected, (state, action) => {
                 state.statusCreate = "failed";
+                state.error = action.error.message;
+            })
+            .addCase(updateProduct.pending, (state) => {
+                state.statusUpdate = "loading";
+            })
+            .addCase(updateProduct.fulfilled, (state, action) => {
+                state.statusUpdate = "success";
+                state.dataUpdateReturn = action.payload;
+            })
+            .addCase(updateProduct.rejected, (state, action) => {
+                state.statusUpdate = "failed";
                 state.error = action.error.message;
             });
     },

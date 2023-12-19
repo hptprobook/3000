@@ -10,7 +10,7 @@ export default function TinyEditorMini({ onEditorChange, defaultValue }) {
             editorRef.current.setContent(defaultValue);
         }
     }, [defaultValue]);
-
+    console.log(defaultValue)
     const log = () => {
         if (editorRef.current) {
             const content = editorRef.current.getContent();
@@ -25,15 +25,11 @@ export default function TinyEditorMini({ onEditorChange, defaultValue }) {
     return (
         <>
             <Editor
-                apiKey='sda'
+                apiKey='ob2bst5rg8fd0hqhqaxcd9fln8ydipgsidblxo0aakpn3d1c'
                 onInit={(evt, editor) => {
                     editorRef.current = editor;
                     editor.on('undo redo', handleUndoRedo);
-
-                    // Set the initial content if defaultValue is provided
-                    if (defaultValue !== undefined) {
-                        editor.setContent(defaultValue);
-                    }
+                    editor.setContent(defaultValue);
                 }}
                 init={{
                     height: 200,
