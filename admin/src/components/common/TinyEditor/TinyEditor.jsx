@@ -1,13 +1,18 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import './style.css';
-export default function TinyEditor({ handleChange, name }) {
+export default function TinyEditor({ handleChange, name, defaultValue }) {
     const editorRef = useRef(null);
     const log = () => {
         if (editorRef.current) {
             handleChange(editorRef.current.getContent());
         }
     };
+    useEffect(() => {
+        if (editorRef.current && defaultValue !== undefined) {
+            editorRef.current.setContent(defaultValue);
+        }
+    }, [defaultValue]);
     const handleUndoRedo = () => {
         log(); // Trigger the onChange event after undo or redo
     };

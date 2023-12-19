@@ -11,6 +11,14 @@ const ProductsService = {
             throw err;
         }
     },
+    getProductById: async (id) => {
+        try {
+            const res = await request.get(`products/${id}`);
+            return res.data;
+        } catch (err) {
+            throw err;
+        }
+    },
     createProduct: async (data) => {
         try {
             const res = await request.post(`products`, data);
