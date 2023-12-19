@@ -28,7 +28,6 @@ export default function Home() {
                     <FlashSale />
                     <BestSeller />
                     <RecommendedProduct />
-                    <TopBrand />
                     <MainListProduct />
                     <HomeFooter />
                 </Grid>

@@ -59,10 +59,6 @@ export default function CountBtn({ icon, count }) {
     const [isActive, setIsActive] = useState(true);
     const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
-    console.log(
-        "🚀 ~ file: CountButton.jsx:62 ~ CountBtn ~ showLoginModal:",
-        showLoginModal
-    );
     const isLoggedIn = useAuth();
 
     useEffect(() => {

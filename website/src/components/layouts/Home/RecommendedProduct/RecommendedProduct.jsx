@@ -14,22 +14,22 @@ export default function RecommendedProduct() {
     );
 
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && recommended.length === 0) {
             dispatch(fetchRecommendedCategory());
-            if (loading) {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, loading]);
+    }, [loadData, recommended]);
 
     if (loading) {
         return <CirLoading />;
     }
 
-    return (
-        <div className="appContainer__recommended">
-            <h4>Bạn có thể thích</h4>
-            <ProductTab tabs={recommended} />
-        </div>
-    );
+    if (!loading) {
+        return (
+            <div className="appContainer__recommended">
+                <h4>Bạn có thể thích</h4>
+                <ProductTab tabs={recommended} />
+            </div>
+        );
+    }
 }

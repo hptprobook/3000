@@ -14,11 +14,11 @@ export default function Banner() {
     const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {
-        if (!loading && !loadData) {
+        if (!loadData && settings.length === 0) {
             dispatch(fetchAllSettings());
             setLoadData(true);
         }
-    }, [loadData, dispatch, loading]);
+    }, [loadData, settings]);
 
     if (loading) {
         return <CirLoading />;

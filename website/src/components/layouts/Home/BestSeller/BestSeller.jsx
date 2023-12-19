@@ -14,10 +14,11 @@ export default function BestSeller() {
     );
 
     useEffect(() => {
-        if (!bestSeller || bestSeller.length === 0) {
+        if (!loadData && bestSeller.length === 0) {
             dispatch(fetchBestSellerCategory());
+            setLoadData(true);
         }
-    }, []);
+    }, [loadData, bestSeller]);
 
     if (loading) {
         return <CirLoading />;

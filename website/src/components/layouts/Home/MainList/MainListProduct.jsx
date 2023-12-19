@@ -14,13 +14,11 @@ export default function MainListProduct() {
     const status = useSelector((state) => state.products.status);
     const [loadData, setLoadData] = useState(false);
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && products.length === 0) {
             dispatch(fetchAllProducts());
-            if (status !== "idle") {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, status]);
+    }, [loadData, products]);
 
     const [displayCount, setDisplayCount] = useState(6);
     const increment = 6;
@@ -33,7 +31,7 @@ export default function MainListProduct() {
         setTimeout(() => {
             setDisplayCount((prevDisplayCount) => prevDisplayCount + increment);
             setIsLoading(false);
-        }, 500); // Chờ 0.5 giây
+        }, 500);
     };
 
     return (

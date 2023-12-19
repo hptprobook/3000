@@ -26,19 +26,10 @@ import { fetchVariant } from "../../../redux/slices/variantSlice";
 import ListVariantSelect from "../../../components/common/List/ListVariantSelect";
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
-import { createProduct } from "../../../redux/slices/productSlice";
-
-const fetchAllData = () => async (dispatch) => {
-    try {
-        // Dispatch individual actions in the required order
-        await dispatch(fetchCategoriesAsync());
-        await dispatch(fetchAllBrands());
-        await dispatch(fetchAllTags());
-        await dispatch(fetchVariant());
-    } catch (error) {
-        // Handle errors if needed
-    }
-};
+import { createProduct, fetchProductById, resetState, updateProduct } from "../../../redux/slices/productSlice";
+import { useParams } from "react-router-dom";
+import { TbCurrencyDong } from "react-icons/tb";
+import { ReadOnly } from "../../../components/common/TextField/ReadOnly";
 
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
@@ -75,18 +66,19 @@ const productSchema = Yup.object().shape({
         .required("Chiều dài không được để trống")
         .positive("Chiều dài phải là số dương"),
 });
-export default function CreateProductPage() {
+export default function EditProductPage() {
     // khai báo các hàm liên quan đến fecth data 
+    const { id } = useParams();
     const dispatch = useDispatch();
     const categories = useSelector((state) => state.categories.data);
     const brands = useSelector((state) => state.brands.data);
     const tags = useSelector((state) => state.tags.tags);
     const variant = useSelector((state) => state.variant.data);
-    const statusLoadVariant = useSelector((state) => state.variant.status);
     const statusLoad = useSelector((state) => state.categories.status);
-
-    const statusCreate = useSelector((state) => state.products.statusCreate);
-    const dataCreate = useSelector((state) => state.products.dataCreate);
+    const product = useSelector((state) => state.products.product);
+    const statusFetch = useSelector((state) => state.products.statusFetchById);
+    const statusUpdate = useSelector((state) => state.products.statusUpdate);
+    const dataUpdateReturn = useSelector((state) => state.products.dataUpdateReturn);
 
     // khai báo các hàm liên quan đế dữ liệu lấy về 
     const [parentCategories, setParentCategories] = useState([]);
@@ -112,75 +104,58 @@ export default function CreateProductPage() {
     const [short_desc, setShort_desc] = useState('');
     const [short_descError, setShort_descError] = useState('');
     const [detail, setDetail] = useState('');
-
-    const [loadingUpload, setLoadingUpload] = useState(false);
-    const [successUpload, setSuccessUpload] = useState(false);
-    const [successCreate, setSuccessCreate] = useState(false);
-
+    const [successFetch, setSuccessFetch] = useState(false);
+    const [successUpdate, setSuccessUpdate] = useState(false);
 
     const [selectedCategory, setSelectedCategory] = useState('');
     const [category_id, setCategory_id] = useState('');
 
     useEffect(() => {
-        if (statusCreate == 'success') {
-            setSuccessCreate(true);
+        const fetchData = async () => {
+            await dispatch(fetchProductById({ id }));
+            await dispatch(fetchCategoriesAsync());
+            await dispatch(fetchAllBrands());
+            await dispatch(fetchAllTags());
+            await dispatch(fetchVariant());
+        };
+
+        fetchData();
+
+    }, [id, dispatch]);
+
+    useEffect(() => {
+        if (statusFetch === 'success') {
+
+            setSuccessFetch(true);
+            formik.setValues({
+                name: product.name,
+                price: product.price,
+                discount: product.discount,
+                quantity: product.quantity,
+                height: product.height,
+                width: product.width,
+                length: product.length,
+                weight: product.weight,
+                brand_id: product.brand_id,
+            });
+            dispatch(resetState());
+            setDetail(product.detail);
+            setShort_desc(product.short_desc);
+            setCategory_id(product.category_id);
+        }
+    }, [statusFetch, dispatch]);
+    useEffect(() => {
+        if (statusUpdate == 'success') {
+            setSuccessUpdate(true);
+            dispatch(resetState());
         }
         else {
-            setSuccessCreate(false);
+            setSuccessUpdate(false);
         }
-    }, [statusCreate])
+    }, [statusUpdate])
     // upload anh
-    const handleUploadFireBase = async (name, imgList, data) => {
-        const storageRef = ref(storageFirebase, `products/${name}/${v4()}`);
-        const uploadPromises = imgList.map((img) => {
-            return new Promise((resolve, reject) => {
-                const uploadTask = uploadBytesResumable(storageRef, img);
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        // Xử lý sự kiện thay đổi trạng thái
-                        switch (snapshot.state) {
-                            case 'running':
-                                setLoadingUpload(true);
-                                setSuccessUpload(false);
-                                break;
-                        }
-                    },
-                    (error) => {
-                        reject(error); // Xử lý lỗi khi upload
-                    },
-                    () => {
-                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            resolve(downloadURL); // Đưa ra URL khi upload thành công
-                        });
-                    }
-                );
-            });
-        });
-
-        try {
-            const urls = await Promise.all(uploadPromises);
-            setLoadingUpload(false);
-            setSuccessUpload(true);
-            data['thumbnail'] = urls[0];
-            data['images'] = urls;
-            dispatch(createProduct({ data: data }));
-        } catch (error) {
-            console.error('Error uploading images:', error);
-        }
-    };
 
     const formik = useFormik({
-        initialValues: {
-            name: "",
-            price: 1000,
-            discount: 0,
-            quantity: "",
-            height: 1,
-            width: 1,
-            length: 1,
-            weight: 1,
-            brand_id: "",
-        },
         validationSchema: productSchema,
         onSubmit: (values) => {
             if (category_id == '') {
@@ -206,47 +181,25 @@ export default function CreateProductPage() {
                         }
                         else {
                             setCreateError(false);
-                            if (imglist.length < 1) {
-                                setCreateError(true);
-                                setCreateErrorHelp('Vui lòng tải ảnh sản phẩm!');
+                            let variants = listVariant.map(item => {
+                                const { id, ...rest } = item;
+                                return rest;
+                            });
+                            if (taglist !== '') {
+                                values['tags'] = taglist;
                             }
-                            else {
-                                setCreateError(false);
-                                let variants = listVariant.map(item => {
-                                    const { id, ...rest } = item;
-                                    return rest;
-                                });
-                                if (taglist !== '') {
-                                    values['tags'] = taglist;
-                                }
-                                values['detail'] = detail;
-                                values['short_desc'] = short_desc;
-                                values['category_id'] = category_id;
-                                values['variants'] = variants;
-                                handleUploadFireBase('banrh', imglist, values);
-                            }
+                            values['detail'] = detail;
+                            values['short_desc'] = short_desc;
+                            values['category_id'] = category_id;
+                            values['variants'] = variants;
+                            dispatch(updateProduct({ id: id, data: values }));
                         }
                     }
                 }
             }
-            // const payload = {
-            //     name: values.name,
-            //     phone: values.phone,
-            //     province_id,
-            //     district_id,
-            //     street: values.address,
-            //     ward_id: ward_code,
-            //     address_info: fullAddress,
-            //     default: values.isDefault,
-            // };
-
         },
     });
-    useEffect(() => {
-        if (statusLoad === 'idle') {
-            dispatch(fetchAllData());
-        }
-    }, [statusLoad, dispatch]);
+
     useEffect(() => {
         const parent = categories.filter(item => item.parent_id == 0);
         setParentCategories(parent);
@@ -283,9 +236,7 @@ export default function CreateProductPage() {
         const updatedList = listVariant.filter(variant => variant.id !== id);
         setListVariant(updatedList);
     };
-    const handleChangeUploadImg = (value) => {
-        setImglist(value);
-    }
+
     const handleCreateVariant = () => {
         if (handleValidateVariant('name', variantName)) {
             if (handleValidateVariant('price', variantPrice)) {
@@ -376,16 +327,14 @@ export default function CreateProductPage() {
         }
     }
     // debug
-    if (statusLoad === "loading" && statusLoadVariant !== "success") {
+    if (!successFetch) {
         return <div><Loading /></div>;
     }
-    if (statusLoadVariant === "success") {
+    if (successFetch) {
         return (
             <Box>
-                {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
-                {successCreate ? <BasicAlertl label={'Tạo sản phẩm thành công'} severity={'success'} /> : null}
-                {loadingUpload ? <LinearIndeterminate /> : null}
-                {statusCreate == 'loading' ? <LinearIndeterminate /> : null}
+                {successUpdate ? <BasicAlertl label={'Chỉnh sửa sản phẩm thành công'} severity={'success'} /> : null}
+                {statusUpdate == 'loading' ? <LinearIndeterminate /> : null}
                 {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
 
                 <HeaderPage
@@ -421,6 +370,7 @@ export default function CreateProductPage() {
                                     onChange={formik.handleChange}
                                     label={'Số lượng'}
                                     name={'quantity'}
+                                    value={formik.values.quantity}
                                     error={
                                         formik.touched.quantity &&
                                         Boolean(formik.errors.quantity)
@@ -434,6 +384,7 @@ export default function CreateProductPage() {
                                 <InputEdit
                                     id={'price'}
                                     label={'Giá'}
+                                    icon={<TbCurrencyDong />}
                                     value={formik.values.price}
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
@@ -466,6 +417,9 @@ export default function CreateProductPage() {
                             </DivMargin>
                         </InfoBox>
                         <InfoBox title="Phân loại">
+                            <DivMargin>
+                                <ReadOnly label={'Phân loại cũ'} value={product.category.name} />
+                            </DivMargin>
                             <DivMargin>
                                 <SelectEdit
                                     label={'Phân loại cha'}
@@ -627,11 +581,6 @@ export default function CreateProductPage() {
                                 </Grid>
                             </DivMargin>
                         </InfoBox>
-                        <InfoBox title="Hình ảnh">
-                            <DivMargin>
-                                <ImageDropZone handleUpload={handleChangeUploadImg} />
-                            </DivMargin>
-                        </InfoBox>
                         <InfoBox title="Mô tả">
                             <DivMargin
                                 style={{
@@ -648,7 +597,7 @@ export default function CreateProductPage() {
                                 >
                                     Mô tả ngắn
                                 </Typography>
-                                <TinyEditorMini onEditorChange={handleShortDesc} />
+                                <TinyEditorMini defaultValue={product.short_desc} onEditorChange={handleShortDesc} />
                             </DivMargin>
                             <div
                                 style={{
@@ -666,6 +615,7 @@ export default function CreateProductPage() {
                                     Chi tiết
                                 </Typography>
                                 <TinyEditor
+                                    defaultValue={product.detail}
                                     handleChange={handleDetail} />
                             </div>
                         </InfoBox>
