@@ -10,22 +10,22 @@ import ChipPostTag from '../Chip/ChipPostTag';
 import { NavLink } from 'react-router-dom';
 import color from '~/config/colorConfig';
 
-export default function CardPost({ post }) {
+export default function CardPost({ data }) {
   return (
     <Card sx={{  maxWidth: '100%', borderRadius: '14px', background: color.backgroundColorSub.dark }}>
       <CardMedia
         sx={{ height: 200 }}
-        image={`../src/assets/img/post/${post.img}`} // Assuming your image files are in the "static/images/cards" folder
-        title={post.title}
+        image={`../src/assets/img/post/${data.img}`} // Assuming your image files are in the "static/images/cards" folder
+        title={data.title}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          <ChipPostTag label={post.tags} /> {/* Assuming post.tags is a comma-separated string */}
+          <ChipPostTag label={data.tags} /> {/* Assuming post.tags is a comma-separated string */}
         </Typography>
         <Typography gutterBottom variant="h5" component="div">
           <NavLink
             underline="none"
-            to={`/post/edit/${post.id}`}
+            to={`/post/edit/${data.id}`}
             style={{
               color: color.ChipLink.dark,
               textDecoration: 'none',
@@ -34,11 +34,11 @@ export default function CardPost({ post }) {
               },
             }}
           >
-            {post.title}
+            {data.title}
           </NavLink>
         </Typography>
         <Typography variant="body2" color="GrayText">
-          {post.content}
+          {data.content}
         </Typography>
       </CardContent>
     </Card>

@@ -1,195 +1,128 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, CardContent, Grid, Paper, Typography } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import styled from "@emotion/styled";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import { uploadFileToServer } from '../../../services/uploadFileToServer'; // Adjust the import path
 import { uploadFailure, uploadStart, uploadSuccess } from '../../../redux/slices/uploadSlice';
-import color from '../../../config/colorConfig';
 import InputEdit from '../../../components/common/TextField/InputEdit';
-import ButtonNormal from '~/components/common/Button/ButtonNormal';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import InfoBox from '../../../components/common/Box/InforBox';
+import { fetchAllPosts } from '../../../redux/slices/postSlice';
+import ButtonNormal from '../../../components/common/Button/ButtonNormal';
+import color from '../../../config/colorConfig';
+import TinyEditor from '../../../components/common/TinyEditor/TinyEditor';
 
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
+const DivMargin = styled.div(({ theme }) => ({
+    paddingBottom: '24px',
+}));
 
 export default function CreatePostPage() {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [coverImage, setCoverImage] = useState(null);
-    const fileInputRef = useRef(null);
-
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
     const dispatch = useDispatch();
-    const uploading = useSelector((state) => state.upload.uploading);
+    const posts = useSelector((state) => state.posts.data);
+    const error = useSelector((state) => state.posts.error);
+    const status = useSelector((state) => state.posts.status);
+    const statusCreate = useSelector((state) => state.posts.statusCreate);
+    // Access posts from Redux store
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
+    const [coverImage, setCoverImage] = useState(null);
 
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
-    };
+    const [errorTitle, setErrorTitle] = useState('');
+    const [success, setSeccess] = useState(false);
+    //editor
+    const [detail, setDetail] = useState('');
+    useEffect(() => {
+        if (status == 'idle') {
+            dispatch(fetchAllPosts());
+        }
 
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
+    }, [status])
 
-    const handleCoverImageChange = (e) => {
-        const file = e.target.files[0];
-        setCoverImage(file);
-    };
-    console.log(coverImage)
-    const handleUpload = async () => {
-        if (!coverImage || !title || !description) return;
+    useEffect(() => {
+        if (status === 'created post successfully') {
+            setSeccess(true);
+        }
+        if (status === 'loading') {
+            setSeccess(false);
+        }
+    }, [status]);
+    //ADD 
+    const handleCreatePost = () => {
+        console.log(title);
 
-        try {
-            // Perform cover image upload
-            dispatch(uploadStart());
-            const uploadedCoverImage = await uploadFileToServer(coverImage);
-            dispatch(uploadSuccess(uploadedCoverImage));
+    }
+    //check error
+    const handleCheckError = (field, value) => {
+        switch (field) {
+            case 'title': {
+                if (value === '') {
+                    setErrorTitle('Tiêu đề không được để trống!');
+                    return false;
+                }
+                else if (value.length > 128) {
+                    setErrorTitle('Tiêu đề không được quá 128 kí tự!');
+                    return false;
+                }
+                else {
+                    setErrorTitle('');
+                    return true;
+                }
+            }
+                break;
 
-            // Reset state and show success message
-            setCoverImage(null);
-            setTitle('');
-            setDescription('');
-
-            // Display a success message or redirect to a success page.
-        } catch (error) {
-            dispatch(uploadFailure(error.message));
+            default:
+                return false; // Default to no error
         }
     };
-
+    //check editor
+    const handleDetail = (value) => {
+        setDetail(value);
+    }
     return (
         <>
             <HeaderPage
                 namePage={"Tạo bài viết"}
                 Breadcrumb={["Bài viết", "Tạo bài viết"]}
-                ButtonLink="/post/create"
             />
-            <Paper variant="elevation" sx={{ maxWidth: '100%', marginTop: '50px', background: color.backgroundColorSub.dark, }}>
-                <CardContent>
-                    <Grid container rowSpacing={1}>
-                        <Grid item xs={8} md={6}>
-                            <Typography sx={{
-                                padding: '20px',
-                                fontSize: '20px',
-                                color: color.textColor.dark
-                            }}>
-                                Chi tiết cơ bản
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6} xl={2}>
-                            <Grid>
-                                <InputEdit
-                                    id="title-input"
-                                    label="Tiêu đề"
-                                    type="text"
-                                    variant="outlined"
-                                    value={title}
-                                    onChange={handleTitleChange}
-                                />
-                            </Grid>
-                            <Grid>
-                                <InputEdit
-                                    id="description-input"
-                                    label="Mô tả ngắn"
-                                    type="text"
-                                    variant="outlined"
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-                <CardContent>
-                    <Grid container rowSpacing={1}>
-                        <Grid item xs={8} md={6}>
-                            <Typography
-                                sx={{
-                                    padding: '20px',
-                                    fontSize: '20px',
-                                    color: color.textColor.dark
-                                }}
-                            >
-                                Bìa ảnh bài viết
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6} xl={2}>
-                            <Box
-                                sx={{
-                                    flexGrow: 1,
-                                    marginTop: '32px',
-                                    backgroundColor: color.backgroundColorSub.dark,
-                                    borderRadius: '14px'
-                                }} >
-                                <ButtonNormal
-                                    variant="contained"
-                                    label={'Đăng bìa ảnh'}
-                                    bg='true'
-                                    onClick={handleButtonClick}>
-                                    Đăng bìa ảnh
-                                </ButtonNormal>
-                                <VisuallyHiddenInput
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleCoverImageChange}
-                                />
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-                {coverImage && (
-                    <CardContent sx={{
-                        width: '900px',
-                        height: '400px',
-                    }}>
-                        <Typography variant="subtitle1">Ảnh bìa:</Typography>
-                        <img
-                            src={URL.createObjectURL(coverImage)}
-                            alt="Cover"
-                            style={{ maxWidth: '100%' }}
-                        />
-                    </CardContent>
-                )}
-
-                <div className="App">
-                    <h2>Using CKEditor&nbsp;5 build in React</h2>
-                    <CKEditor
-                    sx={{
-                        backgroundColor: color.backgroundColorSub2.dark,
-
-                    }}
-                        editor={ClassicEditor}
-                        data="<p>Hello from CKEditor&nbsp;5!</p>"
-                        onReady={editor => {
-                            // You can store the "editor" and use when it is needed.
-                            console.log('Editor is ready to use!', editor);
+            <Box sx={{
+                marginTop: '32px'
+            }}></Box>
+            <InfoBox title="Thông tin">
+                <DivMargin>
+                    <InputEdit
+                        id={'title'}
+                        onBlur={(event) => {
+                            setTitle(event.target.value);
+                            handleCheckError('title', event.target.value)
                         }}
-                        onChange={(event, editor) => {
-                            const data = editor.getData();
-                            console.log({ event, editor, data });
-                        }}
-                        onBlur={(event, editor) => {
-                            console.log('Blur.', editor);
-                        }}
-                        onFocus={(event, editor) => {
-                            console.log('Focus.', editor);
-                        }}
+                        label={'Tiêu đề'}
+                        error={errorTitle ? true : false}
+                        helperText={errorTitle}
                     />
-                </div>
-
-            </Paper >
+                </DivMargin>
+                <DivMargin>
+                    <Typography
+                        variant="p"
+                        component="p"
+                        sx={{
+                            marginBottom: '12px',
+                            color: color.textGray
+                        }}
+                    >
+                        Nội dung
+                    </Typography>
+                    <TinyEditor
+                        handleChange={handleDetail} />
+                </DivMargin>
+                <DivMargin>
+                    <ButtonNormal bg={'true'} label={'Thêm'} onClick={handleCreatePost} />
+                </DivMargin>
+            </InfoBox>
         </>
     );
 }
+
+
+
+
+

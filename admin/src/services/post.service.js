@@ -10,13 +10,21 @@ const PostService = {
             throw err;
         }
     },
-    getPost: async (id) => {
+    getPostByID: async (id) => {
         try {
             const res = await request.get(`posts/${id}`); // Replace "users" with "posts"
             console.log(res.data);
             return res.data;
         } catch (err) {
             console.log("Error: ", err);
+            throw err;
+        }
+    },
+    createPost: async (data) => {
+        try {
+            const res = await request.post(`posts`, data);
+            return res;
+        } catch (err) {
             throw err;
         }
     },

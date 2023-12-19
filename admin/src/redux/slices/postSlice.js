@@ -19,10 +19,22 @@ export const fetchPostById = createAsyncThunk(
     "posts/fetchById", // Change the name to "posts/fetchById"
     async (postId, { rejectWithValue }) => {
         try {
-            const response = await PostService.getPost(postId); // Use your post service to fetch a post
+            const response = await PostService.getPostByID(postId); // Use your post service to fetch a post
             return response;
         } catch (err) {
             return rejectWithValue(err.response.data);
+        }
+    }
+);
+export const createPost = createAsyncThunk(
+    "posts/createPost",
+    async ({ data }, thunkAPI) => {
+        try {
+            const res = await PostService.createPost(data);
+            console.log(res);
+            return res.data;
+        } catch (error) {
+            throw error;
         }
     }
 );
@@ -44,7 +56,7 @@ const postSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(fetchAllPosts.fulfilled, (state, action) => {
-                state.status = "succeeded";
+                state.status = "featch all posts";
                 state.posts = action.payload;
             })
             .addCase(fetchAllPosts.rejected, (state, action) => {
@@ -55,12 +67,23 @@ const postSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(fetchPostById.fulfilled, (state, action) => {
-                state.status = "succeeded";
+                state.status = "featch one id";
                 state.selectedPost = action.payload;
             })
             .addCase(fetchPostById.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
+            })
+            .addCase(createPost.pending, (state) => {
+                state.statusCreate = "loading";
+            })
+            .addCase(createPost.fulfilled, (state, action) => {
+                state.statusCreate = "created post successfully";
+                state.newPost = action.payload; // Update based on the actual structure
+            })
+            .addCase(createPost.rejected, (state, action) => {
+                state.statusCreate = "failed";
+                state.error = action.error.message;
             });
     },
 });
