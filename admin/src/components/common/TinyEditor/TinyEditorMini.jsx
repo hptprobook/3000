@@ -9,7 +9,9 @@ export default function TinyEditorMini({ onEditorChange, defaultValue }) {
         if (editorRef.current && defaultValue !== undefined) {
             editorRef.current.setContent(defaultValue);
         }
+
     }, [defaultValue, editorRef.current]);
+
     const log = () => {
         if (editorRef.current) {
             const content = editorRef.current.getContent();

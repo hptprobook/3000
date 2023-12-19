@@ -4,6 +4,7 @@ import ProfileInfo from "@/components/layouts/Profile/ProfileInfo/ProfileInfo";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "@/redux/slices/userSlice";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const theme = createTheme({
     typography: {
@@ -21,6 +22,10 @@ export default function ProfilePage() {
             dispatch(getCurrentUser());
         }
     }, []);
+
+    if (status == "loading") {
+        return <ProgressLoading />;
+    }
 
     return (
         <ThemeProvider theme={theme}>

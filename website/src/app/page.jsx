@@ -10,6 +10,7 @@ import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
 import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { createTheme, ThemeProvider } from "@mui/material";
+import Skeleton from "react-loading-skeleton";
 
 export default function Home() {
     return (

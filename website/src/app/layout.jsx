@@ -8,6 +8,7 @@ import Header from "@/components/layouts/Header/Header";
 import { Providers } from "@/redux/provider";
 import { AddToCartProvider } from "@/provider/AddToCartContext";
 import { OrderAddressProvider } from "@/provider/OrderAddressContext";
+import Skeleton from "react-loading-skeleton";
 
 const inter = Inter({ subsets: ["latin"] });
 

@@ -9,7 +9,11 @@ export default function TinyEditor({ handleChange, name, defaultValue }) {
             handleChange(editorRef.current.getContent());
         }
     };
-
+    useEffect(() => {
+        if (editorRef.current && defaultValue !== undefined) {
+            editorRef.current.setContent(defaultValue);
+        }
+    }, [defaultValue]);
     const handleUndoRedo = () => {
         log(); // Trigger the onChange event after undo or redo
     };
@@ -32,6 +36,7 @@ export default function TinyEditor({ handleChange, name, defaultValue }) {
                 tagName={name}
                 apiKey='ob2bst5rg8fd0hqhqaxcd9fln8ydipgsidblxo0aakpn3d1c'
                 onInit={handleEditorInit}
+
                 init={{
                     height: 400,
                     menubar: false,

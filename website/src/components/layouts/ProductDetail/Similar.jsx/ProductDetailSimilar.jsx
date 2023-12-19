@@ -8,6 +8,7 @@ import "swiper/css/grid";
 import "swiper/css/pagination";
 import { Autoplay, Grid } from "swiper/modules";
 import "./style.css";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProductDetailSimilar = styled("div")(() => ({
     width: "100%",

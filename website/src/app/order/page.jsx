@@ -1,5 +1,6 @@
 "use client";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import AddressCheckout from "@/components/layouts/Order/AddressCheckout";
 import Checkout from "@/components/layouts/Order/Checkout";
@@ -99,7 +100,7 @@ export default function OrderPage() {
     }, [cartItemIds]);
 
     if (cartStatus == "loading" || addressFetchStatus == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

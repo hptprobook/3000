@@ -649,6 +649,7 @@ export default function CreateProductPage() {
                                     Mô tả ngắn
                                 </Typography>
                                 <TinyEditorMini defaultValue={short_desc} onEditorChange={handleShortDesc} />
+
                             </DivMargin>
                             <div
                                 style={{
