@@ -17,6 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useRouter } from "next/navigation";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProfileEditAddress = styled("div")(() => ({
     "& .form": {
@@ -278,7 +279,7 @@ export default function ProfileEditAddress({ data, provinces }) {
     }, [addressById]);
 
     if (!addressById) {
-        return <CirLoading />;
+        return <ProgressLoading />;
     } else {
         return (
             <StyledProfileEditAddress>

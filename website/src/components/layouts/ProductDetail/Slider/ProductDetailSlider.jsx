@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProductDetailSlider = styled("div")(() => ({
     backgroundColor: "#fff",
@@ -54,6 +55,9 @@ const StyledProductDetailSlider = styled("div")(() => ({
 }));
 
 export default function ProductDetailSlider({ product }) {
+    if (!product) {
+        return <ProgressLoading />;
+    }
     const initialImage = product?.thumbnail || product?.images[0]?.image_url;
     const [selectedImage, setSelectedImage] = useState(initialImage);
     const [activeThumbnail, setActiveThumbnail] = useState(

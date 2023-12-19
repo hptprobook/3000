@@ -1,5 +1,5 @@
 import React from "react";
 
 export default function ProfileNotify() {
-    return <div>ProfileNotify</div>;
+    return <div>Comming soon...</div>;
 }

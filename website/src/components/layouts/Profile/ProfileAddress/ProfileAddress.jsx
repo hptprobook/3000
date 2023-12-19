@@ -8,6 +8,7 @@ import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { deleteAddress } from "@/redux/slices/addressSlice";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProfileAddress = styled("div")(() => ({
     "& .create": {
@@ -81,7 +82,7 @@ export default function ProfileAddress({ data }) {
     };
 
     if (!data) {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

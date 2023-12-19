@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import ProductItem from "@/components/common/Home/ProductItem/ProductItem";
 import { generateProductHref } from "@/utils/generateHref";
+import EmptyProduct from "@/components/common/Middleware/EmptyProduct";
 
 const StyledSearchContainer = styled("div")(() => ({
     width: "100%",
@@ -104,7 +105,14 @@ export default function SearchContainer({ data }) {
                         </Grid>
                     ))
                 ) : (
-                    <div>Không có sản phẩm phù hợp</div>
+                    <div
+                        style={{
+                            width: "100%",
+                            height: "500px",
+                        }}
+                    >
+                        <EmptyProduct />
+                    </div>
                 )}
             </Grid>
         </StyledSearchContainer>

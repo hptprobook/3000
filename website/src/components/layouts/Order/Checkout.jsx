@@ -57,7 +57,7 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                     cart_item_ids: cartItemIds,
                     address_id: defaultAddress.id,
                     total_amount: finalPrice,
-                    ship_fee: fee,
+                    ship_fee: fee ?? 0,
                 })
             )
                 .then(() => {
@@ -185,7 +185,6 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                     color: "#fff",
                 }}
                 onClick={handleSubmit}
-                disabled={defaultAddress ? true : false}
             >
                 Đặt hàng
             </button>

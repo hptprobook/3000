@@ -8,6 +8,7 @@ import useAuth from "@/hooks/useAuth";
 import LoginModal from "@/components/common/Header/LoginModel/LoginModel";
 import Link from "next/link";
 import { AddToCartContext } from "@/provider/AddToCartContext";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProductDetailAdd = styled("div")(() => ({
     width: "100%",
@@ -97,6 +98,9 @@ const StyledProductDetailAdd = styled("div")(() => ({
 }));
 
 export default function ProductDetailAdd({ data }) {
+    // if (!data) {
+    //     return <ProgressLoading />;
+    // }
     const [quantity, setQuantity] = useState(1);
 
     const incrementQuantity = () => {

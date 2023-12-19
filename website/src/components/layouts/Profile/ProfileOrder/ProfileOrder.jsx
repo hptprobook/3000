@@ -8,6 +8,7 @@ import { Grid } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { clearPutOrder, updateOrder } from "@/redux/slices/orderSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProfileOrder = styled("div")(({ isActive }) => ({
     "& .tabs": {
@@ -274,7 +275,7 @@ export default function ProfileOrder({ data }) {
     };
 
     if (statusOrder == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

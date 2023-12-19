@@ -7,6 +7,7 @@ import Link from "next/link";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import CommingSoon from "../../../common/ComingSoon/ComingSoon";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProductDetailSeller = styled("div")(() => ({
     width: "100%",

@@ -13,6 +13,7 @@ import { TextField } from "@mui/material";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { updateCurrentUser } from "@/redux/slices/userSlice";
 import { useDispatch } from "react-redux";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProfileInfo = styled("div")(() => ({
     borderRadius: "5px",
@@ -185,7 +186,7 @@ export default function ProfileInfo({ user }) {
     }, [user]);
 
     if (!user) {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

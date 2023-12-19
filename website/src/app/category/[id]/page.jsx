@@ -1,5 +1,6 @@
 "use client";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import CategoryContainer from "@/components/layouts/Category/CategoryContainer";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { getProductByCatId } from "@/redux/slices/categorySlice";
@@ -17,7 +18,7 @@ export default function CategoryPage({ params }) {
     }, []);
 
     if (status == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (
