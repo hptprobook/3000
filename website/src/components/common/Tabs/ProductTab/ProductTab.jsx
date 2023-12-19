@@ -7,6 +7,7 @@ import "swiper/css";
 import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import "./style.css";
+import CirLoading from "../../Loading/CircularLoading/CirLoading";
 
 const StyledProductTab = styled("div")(() => ({
     "& .tabContent": {
@@ -38,39 +39,41 @@ const StyledButtonTab = styled("button")(() => ({
 }));
 
 export default function ProductTab({ tabs }) {
-    const [activeTab, setActiveTab] = useState(0);
-    const settings = {
-        dots: false,
-        infinite: false,
-        speed: false,
-        slidesToShow: 6,
-        slidesToScroll: 6,
-    };
+    const [activeTab, setActiveTab] = useState(
+        tabs && tabs.length > 0 ? tabs[0].id : 0
+    );
+
+    const activeTabData = tabs?.find((tab) => tab.id === activeTab);
 
     return (
         <StyledProductTab className="appContainer__ProductTab">
             <div className="tabs" style={{ marginTop: "12px" }}>
-                {tabs.map((tab, index) => (
-                    <StyledButtonTab
-                        key={index}
-                        className={`tab ${index === activeTab ? "active" : ""}`}
-                        onClick={() => setActiveTab(index)}
-                    >
-                        {tab.name}
-                    </StyledButtonTab>
-                ))}
+                {tabs &&
+                    tabs.map((tab) => (
+                        <StyledButtonTab
+                            key={tab.id}
+                            className={`tab ${
+                                tab.id === activeTab ? "active" : ""
+                            }`}
+                            onClick={() => setActiveTab(tab.id)}
+                        >
+                            {tab.name}
+                        </StyledButtonTab>
+                    ))}
             </div>
             <div className="tabContent">
-                <Swiper
-                    slidesPerView={6}
-                    spaceBetween={8}
-                    navigation={true}
-                    modules={[Navigation]}
-                    className="ProductTabSwiper"
-                    slideToClickedSlide={6}
-                >
-                    {tabs[activeTab] &&
-                        tabs[activeTab]?.products.map((product) => (
+                {activeTabData &&
+                activeTabData.products &&
+                activeTabData.products.length > 0 ? (
+                    <Swiper
+                        slidesPerView={6}
+                        spaceBetween={8}
+                        navigation={true}
+                        modules={[Navigation]}
+                        className="ProductTabSwiper"
+                        slideToClickedSlide={6}
+                    >
+                        {activeTabData.products.map((product) => (
                             <SwiperSlide key={product.id}>
                                 <ProductItem
                                     name={product.name}
@@ -85,12 +88,10 @@ export default function ProductTab({ tabs }) {
                                 />
                             </SwiperSlide>
                         ))}
-                </Swiper>
-                {/* {tabs[activeTab]?.products.map((product, i) => (
-                    <a href={product.id}>
-                        {product.name} - {product.id}
-                    </a>
-                ))} */}
+                    </Swiper>
+                ) : (
+                    <p>Không có sản phẩm nào trong danh mục này</p>
+                )}
             </div>
         </StyledProductTab>
     );

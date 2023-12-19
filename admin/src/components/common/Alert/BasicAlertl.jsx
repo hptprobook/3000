@@ -7,9 +7,12 @@ import CloseIcon from '@mui/icons-material/Close';
 
 export default function BasicAlertl({ label, severity }) {
     const [open, setOpen] = React.useState(true);
-
+    React.useEffect(() => {
+        setOpen(true);
+    }, [label])
     return (
         <Box sx={{
+            zIndex: 100000,
             position: 'fixed',
             top: '80px',
             right: '32px',

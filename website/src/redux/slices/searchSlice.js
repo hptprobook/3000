@@ -3,9 +3,9 @@ import SearchService from "@/services/search.service";
 
 export const fetchSearch = createAsyncThunk(
     "search/fetchSearch",
-    async (q, { rejectWithValue }) => {
+    async (searchValue, { rejectWithValue }) => {
         try {
-            const response = await SearchService.searchWithKeyword(q);
+            const response = await SearchService.searchWithKeyword(searchValue);
             return response;
         } catch (err) {
             return rejectWithValue(
@@ -28,7 +28,7 @@ const searchSlice = createSlice({
         builder
             .addCase(fetchSearch.pending, (state) => {
                 state.status = "loading";
-                state.error = null; // Clear error state on pending
+                state.error = null;
             })
             .addCase(fetchSearch.fulfilled, (state, action) => {
                 state.status = "succeeded";

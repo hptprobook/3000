@@ -22,9 +22,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
-                    <ToastContainer
-                        style={{ zIndex: "9999999999999999999999999" }}
-                    />
+                    <ToastContainer style={{ zIndex: "99999999999999" }} />
                     <OrderAddressProvider>
                         <AddToCartProvider>
                             <Header />

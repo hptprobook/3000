@@ -4,6 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
 import { dark } from '@mui/material/styles/createPalette';
+import { FormHelperText } from '@mui/material';
 const StyledInputVariant = styled(TextField)(({ theme }) => ({
     width: '100%',
     '& .MuiFormLabel-root': {
@@ -48,28 +49,31 @@ const StyledInputVariant = styled(TextField)(({ theme }) => ({
         color: color.colorHover.hoverGray
     }
 }));
-export default function AutoVariant({ label, data, handleChange }) {
+export default function AutoVariant({ label, data, handleChange, error, helperText }) {
     const handleOptionChange = (event, value) => {
         handleChange(value) // Giá trị của option được chọn
     };
     return (
-        <Autocomplete
-            freeSolo
-            id="free-solo-2-demo"
-            disableClearable
-            options={data.map((option) => option.name)}
-            onChange={handleOptionChange}
-            renderInput={(params) => (
-                <StyledInputVariant
-                    {...params}
-                    label={label}
-                    InputProps={{
-                        ...params.InputProps,
-                        type: 'search',
-                    }}
-                    onBlur={(e) => handleChange(e.target.value)}
-                />
-            )}
-        />
+        <>
+            <Autocomplete
+                freeSolo
+                id="free-solo-2-demo"
+                disableClearable
+                options={data.map((option) => option.name)}
+                onChange={handleOptionChange}
+                renderInput={(params) => (
+                    <StyledInputVariant
+                        {...params}
+                        label={label}
+                        InputProps={{
+                            ...params.InputProps,
+                            type: 'search',
+                        }}
+                        onBlur={(e) => handleChange(e.target.value)}
+                    />
+                )}
+            />
+            <FormHelperText sx={{ color: color.textColor.error }} id="component-error-text">{error ? helperText : ''}</FormHelperText>
+        </>
     );
 }

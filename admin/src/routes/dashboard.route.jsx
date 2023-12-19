@@ -23,6 +23,7 @@ import ListBrandPage from "../pages/Brand/List/ListBrandPage";
 import CreateBrandPage from "../pages/Brand/Create/CreateBrandPage";
 import EditBrandPage from "../pages/Brand/Edit/EditBrandPage";
 import { DetailOrderPage } from "../pages/Order/Detail/DetailOrderPage";
+import EditProductPage from "../pages/Product/Edit/EditProductPage";
 
 function DashboardRoute() {
     return (
@@ -38,6 +39,7 @@ function DashboardRoute() {
             <Route path="post/create" element={<CreatePostPage />} />
             <Route path="post/edit/:id" element={<EditPostPage />} />
             <Route path="product/warehouse" element={<WarehouseProductPage />} />
+            <Route path="product/edit/:id" element={<EditProductPage />} />
             <Route path="category/list" element={<ListCategoriesPage />} />
             <Route path="category/create" element={<CreateCategoryPage />} />
             <Route path="category/edit/:id" element={<EditCategoryPage />} />
