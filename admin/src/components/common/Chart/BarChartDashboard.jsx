@@ -2,61 +2,77 @@ import * as React from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import color from "../../../config/colorConfig";
 
-const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const xLabels = [
-    '1 Ngày ',
-    '2 Ngày ',
-    '3 Ngày ',
-    '4 Ngày ',
-    '5 Ngày ',
-    '6 Ngày ',
-    '7 Ngày ',
-];
-const orders = [
-    { id: 1, date: '2023-12-01', amount: 100 },
-    { id: 2, date: '2023-12-02', amount: 150 },
-    { id: 3, date: '2023-12-02', amount: 200 },
-    // ... other orders
-];
 
-// Function to group orders by date and get day of the week
-const groupOrdersByDate = (orders) => {
-    const groupedOrders = {};
 
-    orders.forEach((order) => {
-        const date = new Date(order.date);
-        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+export default function BarChartDashboard({ data }) {
 
-        if (!groupedOrders[date.toISOString()]) {
-            groupedOrders[date.toISOString()] = {
-                date: date.toISOString(),
-                dayOfWeek,
-                orders: [order],
-            };
-        } else {
-            groupedOrders[date.toISOString()].orders.push(order);
+    // Function to format the date as 'DD/MM' in the ICT time zone
+    const formatDayMonth = (date) => {
+        const options = {
+            day: '2-digit',
+            year: 'numeric',
+            month: '2-digit',
+            timeZone: 'Asia/Ho_Chi_Minh'
+        };
+        return date.toLocaleString('en-US', options).replace(/\//g, '-').split('-').reverse().join('/');
+    };
+    const formatDayMonthNoYear = (date) => {
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
+            timeZone: 'Asia/Ho_Chi_Minh'
+        };
+        return date.toLocaleString('en-US', options).replace(/\//g, '-').split('-').reverse().join('/');
+    };
+
+    // Create an array to store the labels for the 8th day to the current day in the ICT time zone
+    const xLabels = [];
+    const xLabel = [];
+
+    const today = new Date();
+
+    for (let i = 0; i < 7; i++) {
+        const date = new Date();
+        date.setDate(today.getDate() - i);
+        xLabels.unshift(formatDayMonth(date));
+        xLabel.unshift(formatDayMonthNoYear(date));
+    }
+
+    const orderStats = {
+        delivered: Array(7).fill(0),
+        orderCreate: Array(7).fill(0),
+    };
+
+    // Duyệt qua mảng orders để đếm số lượng đơn hàng cho mỗi ngày và trạng thái
+    data.forEach(order => {
+        const orderDate = formatDayMonth(new Date(order.created_at)); // Format the order date consistently
+
+        // Tìm vị trí của ngày trong xLabels
+        const index = xLabels.indexOf(orderDate);
+
+        // Nếu ngày có trong xLabels
+        if (index !== -1) {
+            // Tăng số lượng đơn hàng cho ngày đó và trạng thái tương ứng
+            if (order.status === 'delivered') {
+                orderStats.delivered[index]++;
+            } else {
+                orderStats.orderCreate[index]++;
+            }
         }
     });
 
-    return Object.values(groupedOrders);
-};
 
-// Group orders by date
-const groupedOrders = groupOrdersByDate(orders);
+    const uData = orderStats.delivered;
+    const pData = orderStats.orderCreate;
 
-// Log the result
-console.log(groupedOrders);
-
-export default function BarChartDashboard() {
     return (
         <BarChart
             height={360}
             series={[
-                { data: pData, label: 'pv', id: 'pvId', color: 'blue' },
-                { data: uData, label: 'uv', id: 'uvId', color: 'green' },
+                { data: pData, label: 'Tất cả đơn', id: 'pvId', color: '#312e81', type: 'bar' },
+                { data: uData, label: 'Đơn hoàn thành', id: 'uvId', color: '#6366f1', type: 'bar' },
             ]}
-            xAxis={[{ data: xLabels, scaleType: 'band' }]}
+            xAxis={[{ data: xLabel, scaleType: 'band' }]}
             sx={{
                 '.MuiChartsAxis-directionY': {
                     display: 'none',
@@ -65,6 +81,9 @@ export default function BarChartDashboard() {
                     display: 'none',
                 },
                 '.MuiChartsAxis-tickLabel tspan': {
+                    fill: color.textColor.dark,
+                },
+                '.MuiChartsLegend-series tspan': {
                     fill: color.textColor.dark,
                 }
             }}
