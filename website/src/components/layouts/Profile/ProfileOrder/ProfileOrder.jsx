@@ -9,6 +9,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { clearPutOrder, updateOrder } from "@/redux/slices/orderSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import Link from "next/link";
+import { generateProductHref } from "@/utils/generateHref";
 
 const StyledProfileOrder = styled("div")(({ isActive }) => ({
     "& .tabs": {
@@ -136,6 +138,7 @@ const StyledProfileOrder = styled("div")(({ isActive }) => ({
                 backgroundColor: "#fff",
                 color: "#333",
                 fontSize: "13px",
+                marginRight: "8px",
                 "&.cancelled": {
                     border: "1px solid red",
                     "&:hover": {
@@ -156,6 +159,14 @@ const StyledProfileOrder = styled("div")(({ isActive }) => ({
                     border: "1px solid orange",
                     "&:hover": {
                         backgroundColor: "orange",
+                        color: "#fff",
+                        borderColor: "transparent",
+                    },
+                },
+                "&.detail": {
+                    border: "1px solid #009653",
+                    "&:hover": {
+                        backgroundColor: "#009653",
                         color: "#fff",
                         borderColor: "transparent",
                     },
@@ -280,10 +291,6 @@ export default function ProfileOrder({ data }) {
 
     return (
         <StyledProfileOrder>
-            {/* <div className="cancelModal">
-                <input type="text" placeholder="Lý do hủy đơn hàng này" />
-                <button>Hủy đơn hàng</button>
-            </div> */}
             <div className="tabs">
                 {tabs.map((tab) => (
                     <div
@@ -372,23 +379,29 @@ export default function ProfileOrder({ data }) {
                                     <div className="img">
                                         <img
                                             className="img-c"
-                                            src="https://salt.tikicdn.com/cache/280x280/ts/product/88/5b/7f/1096df0853ef100b427ff58a032c3bdc.jpg.webp"
+                                            src={detail?.product.thumbnail}
                                             alt=""
                                         />
                                     </div>
                                     <div className="info">
-                                        <p className="name">
+                                        <Link
+                                            href={generateProductHref(
+                                                detail?.product.name,
+                                                detail.product.id
+                                            )}
+                                            className="name"
+                                        >
                                             {truncateString(
                                                 detail.product.name,
                                                 100
                                             )}
-                                        </p>
+                                        </Link>
                                         <div
                                             className="jc-sb"
                                             style={{ marginTop: "8px" }}
                                         >
                                             <p className="quantity">
-                                                SL: x{detail.product.quantity}
+                                                SL: x{detail.quantity}
                                             </p>
                                             <p className="price">
                                                 {detail?.product?.price.toLocaleString()}
@@ -400,6 +413,12 @@ export default function ProfileOrder({ data }) {
                             ))}
                         </div>
                         <div className="actions">
+                            <Link
+                                href={`/profile/orders/${item.id}`}
+                                className="btn receipt"
+                            >
+                                Chi tiết
+                            </Link>
                             {item.status === "pending" ||
                             item.status === "processing" ? (
                                 <button
