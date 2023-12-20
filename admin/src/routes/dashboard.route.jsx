@@ -24,6 +24,8 @@ import CreateBrandPage from "../pages/Brand/Create/CreateBrandPage";
 import EditBrandPage from "../pages/Brand/Edit/EditBrandPage";
 import { DetailOrderPage } from "../pages/Order/Detail/DetailOrderPage";
 import EditProductPage from "../pages/Product/Edit/EditProductPage";
+import ListCouponsPage from "../pages/Coupons/List/ListCouponsPage";
+import CreateCouponPage from "../pages/Coupons/Create/CreateCouponPage";
 
 function DashboardRoute() {
     return (
@@ -50,6 +52,10 @@ function DashboardRoute() {
             <Route path="category/brand" element={<ListBrandPage />} />
             <Route path="category/brand/create" element={<CreateBrandPage />} />
             <Route path="category/brand/edit/:id" element={<EditBrandPage />} />
+
+            <Route path="coupon/list" element={<ListCouponsPage />} />
+            <Route path="coupon/create" element={<CreateCouponPage />} />
+
 
             <Route path="order/detail/:id" element={<DetailOrderPage />} />
             <Route path="order" element={<ListOrderPage />} />
