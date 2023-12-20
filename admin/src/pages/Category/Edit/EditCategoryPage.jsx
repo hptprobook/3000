@@ -173,7 +173,7 @@ const handleUpdateCategory = () => {
                 return false; // Default to no error
         }
     };
-    if (status === 'succeeded' && name != ''&& parent_id != '' ) {
+    if (status === 'succeeded' && name != '' ) {
 
         return (
             <Box>
