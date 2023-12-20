@@ -31,13 +31,13 @@ const ListPostPage = () => {
         }
     }, [loadData]);
     useEffect(() => {
-        if (statusPost == 'success') {
-            setPostStatusList(orders);
+        if (statusPost == 'featch all posts') {
+            setPostStatusList(posts);
             setLoadData(true);
         }
     }, [statusPost]);
     useEffect(() => {
-        if (statusPost == 'success') {
+        if (statusPost == 'featch all posts') {
             setPostStatusList(posts);
 
             if (selectedFilters.length > 0) {
@@ -87,7 +87,7 @@ const ListPostPage = () => {
                             <InputSearch onChange={handleSearch} />
                         </Grid>
                     </Grid>
-                    <TablePosts data={posts} onDeletePost={handleDeletepPost} />
+                    <TablePosts data={postList} onDeletePost={handleDeletepPost} />
                 </Box>
             </>
         );

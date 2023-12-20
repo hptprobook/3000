@@ -7,124 +7,141 @@ import { uploadFileToServer } from '../../../services/uploadFileToServer'; // Ad
 import { uploadFailure, uploadStart, uploadSuccess } from '../../../redux/slices/uploadSlice';
 import InputEdit from '../../../components/common/TextField/InputEdit';
 import InfoBox from '../../../components/common/Box/InforBox';
-import { fetchAllPosts } from '../../../redux/slices/postSlice';
+import { createPost, fetchAllPosts } from '../../../redux/slices/postSlice';
 import ButtonNormal from '../../../components/common/Button/ButtonNormal';
 import color from '../../../config/colorConfig';
 import TinyEditor from '../../../components/common/TinyEditor/TinyEditor';
-
+import { useFormik } from 'formik';
+import * as Yup from "yup";
+import BasicAlertl from '../../../components/common/Alert/BasicAlertl';
+import Loading from '../../../components/common/Loading/Loading';
+import LinearIndeterminate from '../../../components/common/Loading/LoadingLine';
 const DivMargin = styled.div(({ theme }) => ({
     paddingBottom: '24px',
 }));
-
+const productSchema = Yup.object().shape({
+    title: Yup.string()
+        .required("Tiêu đề không được để trống")
+        .min(20, "Tiêu đề không được dưới 20 ký tự")
+        .max(255, "Tiêu đề không vượt quá 255 ký tự"),
+});
 export default function CreatePostPage() {
     const dispatch = useDispatch();
-    const posts = useSelector((state) => state.posts.data);
-    const error = useSelector((state) => state.posts.error);
     const status = useSelector((state) => state.posts.status);
     const statusCreate = useSelector((state) => state.posts.statusCreate);
-    // Access posts from Redux store
     const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [coverImage, setCoverImage] = useState(null);
-
-    const [errorTitle, setErrorTitle] = useState('');
+    // Access posts from Redux store
     const [success, setSeccess] = useState(false);
+    const [successCreate, setSuccessCreate] = useState(false);
+    const [createErrorHelp, setCreateErrorHelp] = useState('');
     //editor
-    const [detail, setDetail] = useState('');
+    const [content, setContent] = useState('');
     const [createError, setCreateError] = useState(false);
-    useEffect(() => {
-        if (status == 'idle') {
-            dispatch(fetchAllPosts());
-        }
-
-    }, [status])
 
     useEffect(() => {
-        if (status === 'created post successfully') {
-            setSeccess(true);
-        }
-        if (status === 'loading') {
-            setSeccess(false);
-        }
-    }, [status]);
-    //ADD 
-    const handleCreatePost = () => {
-        console.log(title);
-
-    }
-    //check error
-    const handleCheckError = (field, value) => {
-        switch (field) {
-            case 'title': {
-                if (value === '') {
-                    setErrorTitle('Tiêu đề không được để trống!');
-                    return false;
-                }
-                else if (value.length > 128) {
-                    setErrorTitle('Tiêu đề không được quá 128 kí tự!');
-                    return false;
-                }
-                else {
-                    setErrorTitle('');
-                    return true;
-                }
-            }
-                break;
-
-            default:
-                return false; // Default to no error
-        }
-    };
-    //check editor
-    const handleDetail = (value) => {
-        if (value.length < 12) {
-            setCreateError('Nội dung không ít hơn 12 kí tự');
+        if (statusCreate == 'created post successfully') {
+            setSuccessCreate(true);
         }
         else {
-            setCreateError('');
-            setDetail(value);
+            setSuccessCreate(false);
         }
+    }, [statusCreate])
+
+    //formik
+    const formik = useFormik({
+        initialValues: {
+            title: "",
+            content: "",
+        },
+        validationSchema: productSchema,        
+        onSubmit: (values) => {
+            setCreateError(false);
+            if (content == '') {
+                setCreateError(true);
+                setCreateErrorHelp('Vui lòng nhập nội dung');
+            }
+            else {
+                
+                setCreateError(false);
+                values['content'] = content;                  
+            }
+            console.log("Form values:", values);
+            dispatch(createPost({data: values}));
+        },
+    });
+
+    //ADD 
+    //check editor
+    const handleContent = (value) => {
+        setCreateError(false);
+        if (value.length < 12) {
+            setCreateError(true);
+            setCreateErrorHelp('Nội dung không ít hơn 12 kí tự');
+        }
+        else {
+            setCreateError(false);
+            setContent(value);
+        }
+    }
+    if (status ==="loading") {
+        return <div><Loading/> </div>
+        
     }
     return (
         <>
-            <HeaderPage
-                namePage={"Tạo bài viết"}
-                Breadcrumb={["Bài viết", "Tạo bài viết"]}
-            />
-            <Box sx={{
-                marginTop: '32px'
-            }}></Box>
-            <InfoBox title="Thông tin">
-                <DivMargin>
-                    <InputEdit
-                        id={'title'}
-                        onBlur={(event) => {
-                            setTitle(event.target.value);
-                            handleCheckError('title', event.target.value)
-                        }}
-                        label={'Tiêu đề'}
-                        error={errorTitle ? true : false}
-                        helperText={errorTitle}
-                    />
-                </DivMargin>
-                <DivMargin>
-                    <Typography
-                        variant="p"
-                        component="p"
-                        sx={{
-                            marginBottom: '12px',
-                            color: color.textGray
-                        }}
-                    >
-                        Nội dung
-                    </Typography>
-                    <TinyEditor
-                        handleChange={handleDetail} />
-                </DivMargin>
-                <DivMargin>
-                    <ButtonNormal bg={'true'} label={'Thêm'} onClick={handleCreatePost} />
-                </DivMargin>
-            </InfoBox>
+            <Box>
+                {successCreate ? <BasicAlertl label={'Tạo bài viết thành công'} severity={'success'} /> : null}
+                {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
+                {statusCreate == 'loading' ? <LinearIndeterminate /> : null}
+                <HeaderPage
+                    namePage={"Tạo bài viết"}
+                    Breadcrumb={["Bài viết", "Tạo bài viết"]}
+                />
+                <Box sx={{
+                    marginTop: '32px'
+                }}>
+                </Box>
+                <form onSubmit={formik.handleSubmit}>
+                    <InfoBox title="Thông tin">
+                        <DivMargin>
+                            <InputEdit
+                                id={'title'}
+                                label={'Tiêu đề'}
+                                name={'title'}
+                                value={formik.values.title}
+                                onBlur={formik.handleBlur}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.title &&
+                                    Boolean(formik.errors.title)
+                                }
+                                helperText={
+                                    formik.touched.title && formik.errors.title
+                                }
+                            />
+                        </DivMargin>
+                        <DivMargin>
+                            <Typography
+                                variant="p"
+                                component="p"
+                                sx={{
+                                    marginBottom: '12px',
+                                    color: color.textGray
+                                }}
+                            >
+                                Nội dung
+                            </Typography>
+                            <TinyEditor
+                                defaultValue={content}
+                                handleChange={handleContent} />
+                        </DivMargin>
+                        <DivMargin>
+                            <ButtonNormal label={'Tạo'} type={'submit'} bg={'true'} />
+                        </DivMargin>
+                    </InfoBox>
+                </form>
+            </Box>
+
         </>
     );
 }

@@ -8,7 +8,6 @@ export const fetchAllPosts = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const res = await PostService.getAllPosts(); // Use your post service to fetch posts
-            console.log(res.data);
             return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -32,7 +31,6 @@ export const createPost = createAsyncThunk(
     async ({ data }, thunkAPI) => {
         try {
             const res = await PostService.createPost(data);
-            console.log(res);
             return res.data;
         } catch (error) {
             throw error;
