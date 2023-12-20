@@ -82,6 +82,8 @@ class OrderController extends Controller
                     'product_id' => $cartItem->product_id,
                     'quantity' => $cartItem->quantity,
                     'discount' => $cartItem->discount ?? 0,
+                    'variants' => $cartItem->variants,
+                    'price' => $cartItem->price
                 ]);
 
                 $cartItem->delete();

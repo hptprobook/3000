@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
 import LoginModal from "../../Header/LoginModel/LoginModel";
+import { useSelector } from "react-redux";
 
 const CountButton = styled("div")(({ isActive }) => ({
     position: "relative",
@@ -60,6 +61,7 @@ export default function CountBtn({ icon, count }) {
     const router = useRouter();
     const [showLoginModal, setShowLoginModal] = useState(false);
     const isLoggedIn = useAuth();
+    const carts = useSelector((state) => state.carts.cartList);
 
     useEffect(() => {
         setIsActive(!addToCartSuccess);
@@ -111,7 +113,9 @@ export default function CountBtn({ icon, count }) {
             )}
             <div onClick={handleClick}>
                 <CountButton isActive={isActive}>
-                    <span className="CountBtn__count">{count}</span>
+                    <span className="CountBtn__count">
+                        {carts?.data?.length || 0}
+                    </span>
                     {icon}
                     <div className="modal">
                         <CloseIcon
