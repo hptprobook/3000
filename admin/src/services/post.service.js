@@ -27,6 +27,24 @@ const PostService = {
             throw err;
         }
     },
+    deletePostByID: async (id) => {
+        try {
+            const res = await request.delete(`posts/${id}`);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
+    updatePostByID: async (postId, data) => {
+        try {
+            const res = await request.put(`posts/${postId}`, data);
+            return res.data;
+        } catch (err) {
+            console.log("Error: ", err);
+            throw err;
+        }
+    },
 };
 
 export default PostService;

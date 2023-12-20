@@ -1,7 +1,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { Box, Checkbox, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Tooltip } from '@mui/material';
+import { Box, Checkbox, Chip, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Tooltip, Typography } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import IndeterminateCheckBoxIcon from '@mui/icons-material/IndeterminateCheckBox';
@@ -388,8 +388,21 @@ export default function TablePosts({ data, onDeletePost }) {
                                     >
                                         {row.title}
                                     </CustomTableCell>
-                                    <CustomTableCell>
-                                        {row.content}
+                                    <CustomTableCell
+
+                                    >
+                                        <Typography
+                                            sx={{
+                                                width: '100px',/* Adjust the width as needed */
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                            }}
+                                        >
+                                            {row.content}
+                                        </Typography>
+
+
                                     </CustomTableCell>
                                     <CustomTableCell
                                         sx={{

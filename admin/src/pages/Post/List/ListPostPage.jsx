@@ -9,18 +9,24 @@ import ChipPostTag from "../../../components/common/Chip/ChipPostTag";
 import Loading from "../../../components/common/Loading/Loading";
 import TablePosts from "../../../components/common/Table/TablePosts";
 import InputSearch from "../../../components/common/TextField/InputSearch";
+import { deletePostByID } from "../../../redux/slices/postSlice";
+import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 
 const ListPostPage = () => {
     const dispatch = useDispatch();
     const posts = useSelector((state) => state.posts.posts); // Update the selector for posts
+    //status
     const statusPost = useSelector((state) => state.posts.status); // Update the selector for posts
     const error = useSelector((state) => state.posts.error); // Update the selector for posts
+    const statusDelete = useSelector((state) => state.posts.statusDelete);
+    const [postsStatusList, setPostStatusList] = React.useState([]);
+
+    //search data 
     const [loadData, setLoadData] = useState(false);
     const [selectedFilters, setSelectedFilters] = React.useState([]);
-    const [postsStatusList, setPostStatusList] = React.useState([]);
     const [postList, setPostsList] = React.useState([]);
 
-    console.log(posts.posts);
+    
     const handleFilterReturn = (filters) => {
         setSelectedFilters(filters);
         // You can perform additional actions based on the selected filters if needed
@@ -61,7 +67,7 @@ const ListPostPage = () => {
     };
     //delete 
     const handleDeletepPost = (value) => {
-        console.log(value);
+        dispatch(deletePostByID({ id: value }));
     }
     if (statusPost === 'loading') {
         return (
@@ -76,6 +82,7 @@ const ListPostPage = () => {
     if (statusPost === 'featch all posts') {
         return (
             <>
+             {statusDelete === 'loading delete' ? <LinearIndeterminate /> : null}
                 <HeaderPage
                     namePage={"Bài viết"}
                     Breadcrumb={["Bài viết", "Danh sách"]}

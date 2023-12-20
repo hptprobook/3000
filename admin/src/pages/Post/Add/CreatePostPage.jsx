@@ -29,9 +29,7 @@ export default function CreatePostPage() {
     const dispatch = useDispatch();
     const status = useSelector((state) => state.posts.status);
     const statusCreate = useSelector((state) => state.posts.statusCreate);
-    const [title, setTitle] = useState('');
     // Access posts from Redux store
-    const [success, setSeccess] = useState(false);
     const [successCreate, setSuccessCreate] = useState(false);
     const [createErrorHelp, setCreateErrorHelp] = useState('');
     //editor
