@@ -4,7 +4,7 @@ const PostService = {
     getAllPosts: async () => {
         try {
             const res = await request.get("posts"); // Replace "users" with "posts"
-            return res.data;
+            return res;
         } catch (err) {
             console.log("Error: ", err);
             throw err;
@@ -13,8 +13,7 @@ const PostService = {
     getPostByID: async (id) => {
         try {
             const res = await request.get(`posts/${id}`); // Replace "users" with "posts"
-            console.log(res.data);
-            return res.data;
+            return res;
         } catch (err) {
             console.log("Error: ", err);
             throw err;

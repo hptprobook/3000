@@ -31,6 +31,7 @@ export default function CreatePostPage() {
     const [success, setSeccess] = useState(false);
     //editor
     const [detail, setDetail] = useState('');
+    const [createError, setCreateError] = useState(false);
     useEffect(() => {
         if (status == 'idle') {
             dispatch(fetchAllPosts());
@@ -76,7 +77,13 @@ export default function CreatePostPage() {
     };
     //check editor
     const handleDetail = (value) => {
-        setDetail(value);
+        if (value.length < 12) {
+            setCreateError('Nội dung không ít hơn 12 kí tự');
+        }
+        else {
+            setCreateError('');
+            setDetail(value);
+        }
     }
     return (
         <>

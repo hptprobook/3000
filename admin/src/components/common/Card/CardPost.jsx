@@ -13,14 +13,9 @@ import color from '~/config/colorConfig';
 export default function CardPost({ data }) {
   return (
     <Card sx={{  maxWidth: '100%', borderRadius: '14px', background: color.backgroundColorSub.dark }}>
-      <CardMedia
-        sx={{ height: 200 }}
-        image={`../src/assets/img/post/${data.img}`} // Assuming your image files are in the "static/images/cards" folder
-        title={data.title}
-      />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          <ChipPostTag label={data.tags} /> {/* Assuming post.tags is a comma-separated string */}
+          <ChipPostTag label={data.title} /> {/* Assuming post.tags is a comma-separated string */}
         </Typography>
         <Typography gutterBottom variant="h5" component="div">
           <NavLink

@@ -4,11 +4,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import PostService from "../../services/post.service"; // Import your post service
 
 export const fetchAllPosts = createAsyncThunk(
-    "posts", // Change the name to "posts"
+    "posts/fetchAllPosts", // Change the name to "posts"
     async (_, { rejectWithValue }) => {
         try {
-            const response = await PostService.getAllPosts(); // Use your post service to fetch posts
-            return response;
+            const res = await PostService.getAllPosts(); // Use your post service to fetch posts
+            console.log(res.data);
+            return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
@@ -19,8 +20,8 @@ export const fetchPostById = createAsyncThunk(
     "posts/fetchById", // Change the name to "posts/fetchById"
     async (postId, { rejectWithValue }) => {
         try {
-            const response = await PostService.getPostByID(postId); // Use your post service to fetch a post
-            return response;
+            const res = await PostService.getPostByID(postId); // Use your post service to fetch a post
+            return res.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
         }
