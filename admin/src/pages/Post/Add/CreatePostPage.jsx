@@ -1,195 +1,150 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Button, CardContent, Grid, Paper, Typography } from "@mui/material";
-import { styled } from '@mui/material/styles';
+import styled from "@emotion/styled";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import { uploadFileToServer } from '../../../services/uploadFileToServer'; // Adjust the import path
 import { uploadFailure, uploadStart, uploadSuccess } from '../../../redux/slices/uploadSlice';
-import color from '../../../config/colorConfig';
 import InputEdit from '../../../components/common/TextField/InputEdit';
-import ButtonNormal from '~/components/common/Button/ButtonNormal';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
-const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
+import InfoBox from '../../../components/common/Box/InforBox';
+import { createPost, fetchAllPosts } from '../../../redux/slices/postSlice';
+import ButtonNormal from '../../../components/common/Button/ButtonNormal';
+import color from '../../../config/colorConfig';
+import TinyEditor from '../../../components/common/TinyEditor/TinyEditor';
+import { useFormik } from 'formik';
+import * as Yup from "yup";
+import BasicAlertl from '../../../components/common/Alert/BasicAlertl';
+import Loading from '../../../components/common/Loading/Loading';
+import LinearIndeterminate from '../../../components/common/Loading/LoadingLine';
+const DivMargin = styled.div(({ theme }) => ({
+    paddingBottom: '24px',
+}));
+const productSchema = Yup.object().shape({
+    title: Yup.string()
+        .required("Tiêu đề không được để trống")
+        .min(20, "Tiêu đề không được dưới 20 ký tự")
+        .max(255, "Tiêu đề không vượt quá 255 ký tự"),
 });
-
 export default function CreatePostPage() {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [coverImage, setCoverImage] = useState(null);
-    const fileInputRef = useRef(null);
-
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
     const dispatch = useDispatch();
-    const uploading = useSelector((state) => state.upload.uploading);
+    const status = useSelector((state) => state.posts.status);
+    const statusCreate = useSelector((state) => state.posts.statusCreate);
+    // Access posts from Redux store
+    const [successCreate, setSuccessCreate] = useState(false);
+    const [createErrorHelp, setCreateErrorHelp] = useState('');
+    //editor
+    const [content, setContent] = useState('');
+    const [createError, setCreateError] = useState(false);
 
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
-    };
-
-    const handleDescriptionChange = (e) => {
-        setDescription(e.target.value);
-    };
-
-    const handleCoverImageChange = (e) => {
-        const file = e.target.files[0];
-        setCoverImage(file);
-    };
-    console.log(coverImage)
-    const handleUpload = async () => {
-        if (!coverImage || !title || !description) return;
-
-        try {
-            // Perform cover image upload
-            dispatch(uploadStart());
-            const uploadedCoverImage = await uploadFileToServer(coverImage);
-            dispatch(uploadSuccess(uploadedCoverImage));
-
-            // Reset state and show success message
-            setCoverImage(null);
-            setTitle('');
-            setDescription('');
-
-            // Display a success message or redirect to a success page.
-        } catch (error) {
-            dispatch(uploadFailure(error.message));
+    useEffect(() => {
+        if (statusCreate == 'created post successfully') {
+            setSuccessCreate(true);
         }
-    };
+        else {
+            setSuccessCreate(false);
+        }
+    }, [statusCreate])
 
+    //formik
+    const formik = useFormik({
+        initialValues: {
+            title: "",
+            content: "",
+        },
+        validationSchema: productSchema,        
+        onSubmit: (values) => {
+            setCreateError(false);
+            if (content == '') {
+                setCreateError(true);
+                setCreateErrorHelp('Vui lòng nhập nội dung');
+            }
+            else {
+                
+                setCreateError(false);
+                values['content'] = content;                  
+            }
+            console.log("Form values:", values);
+            dispatch(createPost({data: values}));
+        },
+    });
+
+    //ADD 
+    //check editor
+    const handleContent = (value) => {
+        setCreateError(false);
+        if (value.length < 12) {
+            setCreateError(true);
+            setCreateErrorHelp('Nội dung không ít hơn 12 kí tự');
+        }
+        else {
+            setCreateError(false);
+            setContent(value);
+        }
+    }
+    if (status ==="loading") {
+        return <div><Loading/> </div>
+        
+    }
     return (
         <>
-            <HeaderPage
-                namePage={"Tạo bài viết"}
-                Breadcrumb={["Bài viết", "Tạo bài viết"]}
-                ButtonLink="/post/create"
-            />
-            <Paper variant="elevation" sx={{ maxWidth: '100%', marginTop: '50px', background: color.backgroundColorSub.dark, }}>
-                <CardContent>
-                    <Grid container rowSpacing={1}>
-                        <Grid item xs={8} md={6}>
-                            <Typography sx={{
-                                padding: '20px',
-                                fontSize: '20px',
-                                color: color.textColor.dark
-                            }}>
-                                Chi tiết cơ bản
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6} xl={2}>
-                            <Grid>
-                                <InputEdit
-                                    id="title-input"
-                                    label="Tiêu đề"
-                                    type="text"
-                                    variant="outlined"
-                                    value={title}
-                                    onChange={handleTitleChange}
-                                />
-                            </Grid>
-                            <Grid>
-                                <InputEdit
-                                    id="description-input"
-                                    label="Mô tả ngắn"
-                                    type="text"
-                                    variant="outlined"
-                                    value={description}
-                                    onChange={handleDescriptionChange}
-                                />
-                            </Grid>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-                <CardContent>
-                    <Grid container rowSpacing={1}>
-                        <Grid item xs={8} md={6}>
+            <Box>
+                {successCreate ? <BasicAlertl label={'Tạo bài viết thành công'} severity={'success'} /> : null}
+                {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
+                {statusCreate == 'loading' ? <LinearIndeterminate /> : null}
+                <HeaderPage
+                    namePage={"Tạo bài viết"}
+                    Breadcrumb={["Bài viết", "Tạo bài viết"]}
+                />
+                <Box sx={{
+                    marginTop: '32px'
+                }}>
+                </Box>
+                <form onSubmit={formik.handleSubmit}>
+                    <InfoBox title="Thông tin">
+                        <DivMargin>
+                            <InputEdit
+                                id={'title'}
+                                label={'Tiêu đề'}
+                                name={'title'}
+                                value={formik.values.title}
+                                onBlur={formik.handleBlur}
+                                onChange={formik.handleChange}
+                                error={
+                                    formik.touched.title &&
+                                    Boolean(formik.errors.title)
+                                }
+                                helperText={
+                                    formik.touched.title && formik.errors.title
+                                }
+                            />
+                        </DivMargin>
+                        <DivMargin>
                             <Typography
+                                variant="p"
+                                component="p"
                                 sx={{
-                                    padding: '20px',
-                                    fontSize: '20px',
-                                    color: color.textColor.dark
+                                    marginBottom: '12px',
+                                    color: color.textGray
                                 }}
                             >
-                                Bìa ảnh bài viết
+                                Nội dung
                             </Typography>
-                        </Grid>
-                        <Grid item xs={6} xl={2}>
-                            <Box
-                                sx={{
-                                    flexGrow: 1,
-                                    marginTop: '32px',
-                                    backgroundColor: color.backgroundColorSub.dark,
-                                    borderRadius: '14px'
-                                }} >
-                                <ButtonNormal
-                                    variant="contained"
-                                    label={'Đăng bìa ảnh'}
-                                    bg='true'
-                                    onClick={handleButtonClick}>
-                                    Đăng bìa ảnh
-                                </ButtonNormal>
-                                <VisuallyHiddenInput
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleCoverImageChange}
-                                />
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </CardContent>
-                {coverImage && (
-                    <CardContent sx={{
-                        width: '900px',
-                        height: '400px',
-                    }}>
-                        <Typography variant="subtitle1">Ảnh bìa:</Typography>
-                        <img
-                            src={URL.createObjectURL(coverImage)}
-                            alt="Cover"
-                            style={{ maxWidth: '100%' }}
-                        />
-                    </CardContent>
-                )}
+                            <TinyEditor
+                                defaultValue={content}
+                                handleChange={handleContent} />
+                        </DivMargin>
+                        <DivMargin>
+                            <ButtonNormal label={'Tạo'} type={'submit'} bg={'true'} />
+                        </DivMargin>
+                    </InfoBox>
+                </form>
+            </Box>
 
-                <div className="App">
-                    <h2>Using CKEditor&nbsp;5 build in React</h2>
-                    <CKEditor
-                    sx={{
-                        backgroundColor: color.backgroundColorSub2.dark,
-
-                    }}
-                        editor={ClassicEditor}
-                        data="<p>Hello from CKEditor&nbsp;5!</p>"
-                        onReady={editor => {
-                            // You can store the "editor" and use when it is needed.
-                            console.log('Editor is ready to use!', editor);
-                        }}
-                        onChange={(event, editor) => {
-                            const data = editor.getData();
-                            console.log({ event, editor, data });
-                        }}
-                        onBlur={(event, editor) => {
-                            console.log('Blur.', editor);
-                        }}
-                        onFocus={(event, editor) => {
-                            console.log('Focus.', editor);
-                        }}
-                    />
-                </div>
-
-            </Paper >
         </>
     );
 }
+
+
+
+
+
