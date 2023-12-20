@@ -15,6 +15,8 @@ import { visuallyHidden } from '@mui/utils';
 import styled from '@emotion/styled';
 import color from '../../../config/colorConfig';
 import FormatDateTime from '../Function/FormatDate';
+import FormatVND from '../Function/FormatVND';
+
 import { IconButton, Tooltip } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 import { FaEye } from 'react-icons/fa';
@@ -264,9 +266,9 @@ export default function TableOrder({ data }) {
                                             scope="row"
                                             padding="none"
                                         >
-                                            {row.address.name}
+                                            {row.address ? row.address.name : 'Khách hàng ẩn danh'}
                                         </CustomTableCell>
-                                        <CustomTableCell align="right">{row.total_amount}</CustomTableCell>
+                                        <CustomTableCell align="right">{FormatVND(row.total_amount)}</CustomTableCell>
                                         <CustomTableCell align="right">{FormatDateTime(row.created_at)}</CustomTableCell>
                                         <CustomTableCell align="right">
                                             <ChipStatusOrder status={row.status} />
