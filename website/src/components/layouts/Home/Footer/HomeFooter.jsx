@@ -81,8 +81,6 @@ export default function HomeFooter() {
             </Grid>
             <Grid xs={3} item>
                 <h4>Kết nối với chúng tôi</h4>
-                <Link href={""}>Fb</Link>
-                <Link href={""}>Zalo</Link>
             </Grid>
         </Grid>
     );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Rating from "@/components/common/Rating/Rating";
 import Variant from "@/components/common/Variant/Variant";
 import { VariantContext } from "@/provider/VariantContext";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledDetailInfo = styled("div")(() => ({
     backgroundColor: "#fff",
@@ -72,6 +73,9 @@ const StyledDetailInfo = styled("div")(() => ({
 }));
 
 export default function ProductDetailInfo({ product }) {
+    if (!product) {
+        return <ProgressLoading />;
+    }
     const formatPriceToVND = (price) => {
         return price ? price.toLocaleString("vi-VN") : 0;
     };

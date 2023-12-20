@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+
 
 const BootstrapButton = styled(Button)(({ bg }) => ({
     boxShadow: 'none',
@@ -23,8 +25,8 @@ const BootstrapButton = styled(Button)(({ bg }) => ({
     },
 }));
 
-export default function ButtonNormal({ label, bg, onClick, type }) {
+export default function ButtonNormal({ label, bg, onClick, type, icon }) {
     return (
-        <BootstrapButton type={type ? type : 'button'} variant="contained" onClick={onClick} bg={bg}>{label}</BootstrapButton>
+        <BootstrapButton endIcon={icon ? icon : ''} type={type ? type : 'button'} variant="contained" onClick={onClick} bg={bg}>{label}</BootstrapButton>
     )
 }

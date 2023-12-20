@@ -1,6 +1,7 @@
 "use client";
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import SearchContainer from "@/components/layouts/Search/SearchContainer";
 import { fetchSearch } from "@/redux/slices/searchSlice";
@@ -21,7 +22,7 @@ export default function page() {
     }, [pathname]);
 
     if (status == "loading" || !modifiedPathname) {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

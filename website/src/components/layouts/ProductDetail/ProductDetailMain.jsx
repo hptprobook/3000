@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProductDetailMain = styled("div")(({ isMore }) => ({
     width: "100%",
@@ -36,13 +37,13 @@ const StyledProductDetailMain = styled("div")(({ isMore }) => ({
 export default function ProductDetailMain({ data }) {
     const [isMore, setIsMore] = useState(false);
     const toggleDetailHeight = () => {
-        setIsMore(!isMore); // Khi bấm vào nút "Xem thêm", đảo ngược trạng thái isMore
+        setIsMore(!isMore);
     };
 
     return (
         <StyledProductDetailMain isMore={isMore}>
             <h4>Chi tiết sản phẩm</h4>
-            <div className="detail">{data}</div>
+            <div className="detail">{data ? data : ""}</div>
             <div
                 onClick={toggleDetailHeight}
                 style={{

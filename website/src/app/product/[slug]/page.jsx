@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProductById } from "@/redux/slices/productSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 export default function ProductDetail({ params }) {
     const productId = params.slug ? params.slug.split("-").pop() : null;
@@ -31,7 +32,7 @@ export default function ProductDetail({ params }) {
     }, []);
 
     if (status == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

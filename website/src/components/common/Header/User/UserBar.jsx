@@ -15,6 +15,7 @@ import useAuth from "@/hooks/useAuth";
 import { logoutUser } from "@/redux/slices/authSlice";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
+import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 
 const UserBarContainer = styled("div")(() => ({}));
 
@@ -182,12 +183,14 @@ export default function UserBar() {
                         alignItems: "center",
                     }}
                 >
-                    <LocationOnOutlinedIcon sx={{ fontSize: "22px" }} /> Giao
-                    đến:
+                    <LocalPhoneIcon sx={{ fontSize: "22px" }} /> CSKH:
                 </span>
                 &nbsp;
-                <Link style={{ textDecoration: "underline" }} href={"/"}>
-                    45/19 Nguyễn Viết Xuân
+                <Link
+                    style={{ textDecoration: "underline" }}
+                    href={"to:0833129021"}
+                >
+                    0833.129.021
                 </Link>
             </UserBarAddress>
         </UserBarContainer>
