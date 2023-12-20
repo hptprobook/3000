@@ -74,6 +74,12 @@ class CartController extends Controller
                 ]);
             }
 
+            if ($product->quantity < $request->quantity) {
+                throw new Exception('Sản phẩm không đủ số lượng');
+            }
+
+            $product->decrement('quantity', $request->quantity);
+
             return response()->json($cartItem, Response::HTTP_CREATED);
         } catch (ValidationException $e) {
             return response()->json(['errors' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -186,6 +192,8 @@ class CartController extends Controller
             if (!$cartItem || $cartItem->cart->user_id !== Auth::id()) {
                 return response()->json(['error' => 'Not found'], Response::HTTP_NOT_FOUND);
             }
+
+            $cartItem->product->increment('quantity', $cartItem->quantity);
 
             $cartItem->delete();
 

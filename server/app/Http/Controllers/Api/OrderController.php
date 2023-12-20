@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\CartItem;
+use App\Models\Coupon;
+use App\Models\CouponUsage;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Validation\ValidationException;
@@ -20,13 +22,13 @@ class OrderController extends Controller
     {
         try {
             $user = Auth::user();
-            $orders = $user->orders;
+            $orders = $user->orders()->with(['order_details.product', 'address'])
+                ->orderBy('created_at', 'desc')
+                ->get();
 
-            if (!$orders) {
-                return response()->json(['error' => 'Orders is empty'], Response::HTTP_NOT_FOUND);
+            if ($orders->isEmpty()) {
+                return response()->json(['error' => 'Orders are empty'], Response::HTTP_NOT_FOUND);
             }
-
-            $orders = $user->orders()->with(['order_details.product', 'address.ward'])->get();
 
             return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
@@ -37,7 +39,9 @@ class OrderController extends Controller
     public function getAll()
     {
         try {
-            $orders = Order::with(['order_details.product', 'address.ward'])->get();
+            $orders = Order::with(['order_details.product', 'address'])
+                ->orderBy('created_at', 'desc')
+                ->get();
 
             return response()->json($orders, Response::HTTP_OK);
         } catch (Exception $e) {
@@ -56,7 +60,9 @@ class OrderController extends Controller
                 'address_id' => 'required',
                 'note' => 'string',
                 'total_amount' => 'required|numeric',
-                'ship_fee' => 'required|numeric'
+                'ship_fee' => 'required|numeric',
+                'discount' => 'numeric|nullable',
+                'code' => 'string|nullable',
             ]);
 
             $cartItems = CartItem::whereIn('id', $validatedData['cart_item_ids'])->get();
@@ -67,6 +73,7 @@ class OrderController extends Controller
                 'status' => 'pending',
                 'address_id' => $request->address_id,
                 'note' => $request->note,
+                'discount' => $request->discount,
                 'ship_fee' => $request->ship_fee
             ]);
 
@@ -78,6 +85,18 @@ class OrderController extends Controller
                 ]);
 
                 $cartItem->delete();
+            }
+
+            if (!empty($validatedData['code']) || $validatedData['code'] != null) {
+                $coupon = Coupon::where('code', $validatedData['code'])->firstOrFail();
+                $coupon->quantity -= 1;
+                $coupon->save();
+
+                CouponUsage::create([
+                    'user_id' => $user->id,
+                    'coupon_id' => $coupon->id,
+                    'order_id' => $order->id
+                ]);
             }
 
             DB::commit();

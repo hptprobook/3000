@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { addOrder } from "@/redux/slices/orderSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { addCoupon } from "@/redux/slices/couponSlice";
 
 const StyledCheckout = styled("div")(() => ({
     padding: "20px 16px",
@@ -38,12 +39,12 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
     useEffect(() => {
         let newDiscount = 0;
         if (coupon && coupon.type) {
-            if (coupon.type === "amount") {
+            if (coupon.type === "direct") {
                 newDiscount = coupon.amount;
             } else if (coupon.type === "percent") {
                 newDiscount = totalPrice * (coupon.amount / 100);
             } else if (coupon.type === "ship") {
-                newDiscount = fee * (coupon.amount / 100);
+                newDiscount = fee ? fee * (coupon.amount / 100) : 0;
             }
         }
         setDiscount(newDiscount);
@@ -58,15 +59,18 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                     address_id: defaultAddress.id,
                     total_amount: finalPrice,
                     ship_fee: fee ?? 0,
+                    code: coupon ? coupon.code : null,
+                    discount: discount,
                 })
             )
                 .then(() => {
-                    toast.success("Đặt hàng thành công thành công", {
+                    toast.success("Đặt hàng thành công", {
                         autoClose: 2000,
                     });
                     setTimeout(() => {
                         router.push("/profile/orders");
                     }, 1000);
+                    // dispatch(addCoupon({ code: coupon.code }));
                     clearCoupon();
                 })
                 .catch((error) => {

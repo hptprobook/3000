@@ -53,21 +53,6 @@ class CouponUsageController extends Controller
             $code = $request->input('code');
             $coupon = Coupon::where('code', $code)->first();
 
-            if (!$coupon) {
-                return response()->json(['error' => 'Mã giảm giá không chính xác'], Response::HTTP_BAD_REQUEST);
-            }
-
-            if ($coupon->quantity <= 0) {
-                return response()->json(['error' => 'Mã đã được sử dụng hết'], Response::HTTP_BAD_REQUEST);
-            }
-
-            $existingUsage = CouponUsage::where('coupon_id', $coupon->id)
-                ->where('user_id', $user_id)
-                ->exists();
-            if ($existingUsage) {
-                return response()->json(['error' => 'Bạn đã sử dụng mã giảm giá này'], Response::HTTP_BAD_REQUEST);
-            }
-
             $coupon->quantity -= 1;
             $coupon->save();
 
@@ -88,6 +73,44 @@ class CouponUsageController extends Controller
         }
     }
 
+    public function checkCoupon(Request $request)
+    {
+        try {
+            $user_id = Auth::id();
+
+            $request->validate([
+                'code' => 'required|string',
+            ]);
+
+            $code = $request->input('code');
+            $coupon = Coupon::where('code', $code)->first();
+
+            if (!$coupon) {
+                return response()->json(['error' => 'Mã giảm giá không chính xác'], Response::HTTP_BAD_REQUEST);
+            }
+
+            if ($coupon->quantity <= 0) {
+                return response()->json(['error' => 'Mã đã được sử dụng hết'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $existingUsage = CouponUsage::where('coupon_id', $coupon->id)
+                ->where('user_id', $user_id)
+                ->exists();
+            if ($existingUsage) {
+                return response()->json(['error' => 'Bạn đã sử dụng mã giảm giá này'], Response::HTTP_BAD_REQUEST);
+            }
+
+            return response()->json([
+                'type' => $coupon->type,
+                'amount' => $coupon->amount,
+                'code' => $request->code
+            ], Response::HTTP_CREATED);
+        } catch (ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], Response::HTTP_UNPROCESSABLE_ENTITY);
+        } catch (Exception $e) {
+            return response()->json(['errors' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function show(string $id)
     {
