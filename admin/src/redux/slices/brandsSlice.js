@@ -74,10 +74,10 @@ const brandsSlice = createSlice({
         state.error = action.error.message;
       })
       .addCase(fetchOneBrands.pending, (state) => {
-        state.statusLoadOne = 'loading one';
+        state.statusLoadOne = 'loading';
       })
       .addCase(fetchOneBrands.fulfilled, (state, action) => {
-        state.statusLoadOne = 'brand is ready';
+        state.statusLoadOne = 'success';
         state.dataOne = action.payload; // Storing only the brands array
       })
       .addCase(fetchOneBrands.rejected, (state, action) => {
