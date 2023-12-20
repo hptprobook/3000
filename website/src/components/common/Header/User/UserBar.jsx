@@ -70,6 +70,16 @@ export default function UserBar() {
         setIsLoginModalOpen(false);
     };
 
+    const [activeButton, setActiveButton] = useState("home");
+
+    const handleHomeClick = () => {
+        setActiveButton("home");
+    };
+
+    const handleAccountClick = () => {
+        setActiveButton("account");
+    };
+
     // const cartList = useSelector((state) => state.carts.cartList);
 
     // useEffect(() => {
@@ -85,7 +95,8 @@ export default function UserBar() {
                         <PrimaryBtn
                             icon={<HomeRoundedIcon />}
                             text="Trang chủ"
-                            isActive={true}
+                            isActive={activeButton === "home"}
+                            onClick={handleHomeClick}
                         />
                     </Link>
                     <Link href={"/"}>
@@ -107,7 +118,7 @@ export default function UserBar() {
                         <PrimaryBtn
                             icon={<SentimentSatisfiedAltIcon />}
                             text="Tài khoản"
-                            isActive={false}
+                            isActive={activeButton === "account"}
                         />
                         {isLoggedIn && (
                             <Box
@@ -150,12 +161,17 @@ export default function UserBar() {
                                 }}
                             >
                                 <Link href={"/profile"}>
-                                    <p>Thông tin tài khoản</p>
+                                    <p onClick={handleAccountClick}>
+                                        Thông tin tài khoản
+                                    </p>
                                 </Link>
-                                <Link href={"/"}>
+                                <Link
+                                    href={"/profile/orders"}
+                                    onClick={handleAccountClick}
+                                >
                                     <p>Đơn hàng của tôi</p>
                                 </Link>
-                                <Link href={"/"}>
+                                <Link href={"/"} onClick={handleAccountClick}>
                                     <p>Trung tâm hỗ trợ</p>
                                 </Link>
                                 <div

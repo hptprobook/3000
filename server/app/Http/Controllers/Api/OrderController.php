@@ -95,7 +95,7 @@ class OrderController extends Controller
     public function show(string $id)
     {
         try {
-            $order = Auth::user()->orders()->with(['order_details', 'address'])->findOrFail($id);
+            $order = Auth::user()->orders()->with(['order_details.product', 'address'])->findOrFail($id);
 
             return response()->json($order, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {

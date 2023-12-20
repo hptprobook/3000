@@ -43,7 +43,10 @@ export default function ProductDetailMain({ data }) {
     return (
         <StyledProductDetailMain isMore={isMore}>
             <h4>Chi tiết sản phẩm</h4>
-            <div className="detail">{data ? data : ""}</div>
+            <div
+                className="detail"
+                dangerouslySetInnerHTML={{ __html: data ? data : "" }}
+            />
             <div
                 onClick={toggleDetailHeight}
                 style={{
