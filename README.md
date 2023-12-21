@@ -4,9 +4,9 @@ Dự án về website thương mại điện tử gồm 4 phần: server, admin,
    ``code`` git clone https://github.com/hptprobook/3000.git
 2. Chi tiết
      * Admin:
-       ``code`` cd admin
-       ``code`` npm i
-       ``code`` npm run dev
+       `` cd admin
+        npm i
+        npm run dev``
      * Website:
        ``code`` cd website
        ``code`` npm i
