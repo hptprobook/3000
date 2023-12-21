@@ -77,10 +77,7 @@ export function getMenuNav() {
                     ),
                 ]
             ),
-            createList("Mã giảm giá", "coupon", "/coupon", <BiSolidCoupon />, [
-                createList("Danh sách", "coupon-list", "/coupon/list"),
-                createList("Tạo", "coupon-create", "/coupon/create"),
-            ]),
+            createList("Mã giảm giá", "coupon", "/coupon/list", <BiSolidCoupon />),
             createList("Đơn hàng", "order", "/order", <FaShoppingCart />),
         ]),
         createList("Trang web", "menu3", true, <MdWebAsset />, [
