@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import styled from '@emotion/styled';
 import { ThemeProvider, createTheme } from '@mui/material';
 
-export default function InputLogin({ type, id, label , error, helperText}) {
+export default function InputLogin({ type, id, label, error, helperText, onBlur, onChange }) {
     const theme = createTheme({
         overrides: {
             MuiOutlinedInput: {
@@ -38,9 +38,9 @@ export default function InputLogin({ type, id, label , error, helperText}) {
     return (
         <ThemeProvider theme={theme}>
             <ValidationTextField
-            autoComplete='off'
-            error = {error}
-            // {...(error ? 'error': null)}
+                autoComplete='off'
+                error={error}
+                // {...(error ? 'error': null)}
                 fullWidth
                 sx={{
                     m: 1,
@@ -49,9 +49,11 @@ export default function InputLogin({ type, id, label , error, helperText}) {
                 required
                 id={id}
                 label={label}
-                helperText ={helperText}
+                helperText={helperText}
+                onChange={onChange}
+                onBlur={onBlur}
             />
-          
+
         </ThemeProvider>
     );
 }

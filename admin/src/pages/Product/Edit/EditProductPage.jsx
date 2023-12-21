@@ -125,8 +125,9 @@ export default function EditProductPage() {
 
     useEffect(() => {
         if (statusFetch === 'success') {
-
             setSuccessFetch(true);
+            const dfVariant = transformVariant(product.variants);
+            setListVariant(dfVariant);
             formik.setValues({
                 name: product.name,
                 price: product.price,
@@ -160,48 +161,39 @@ export default function EditProductPage() {
                 setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
             } else {
                 setCreateError(false);
-                if (listVariant.length < 1) {
+                if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
                     setCreateError(true);
-                    setCreateErrorHelp('Vui lòng nhập biến thể!');
+                    setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
                 }
                 else {
                     setCreateError(false);
-                    if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
+                    if (detail == '') {
                         setCreateError(true);
-                        setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
+                        setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
                     }
                     else {
                         setCreateError(false);
-                        if (detail == '') {
-                            setCreateError(true);
-                            setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
+                        let variants = listVariant.map(item => {
+                            const { id, ...rest } = item;
+                            return rest;
+                        });
+                        if (taglist !== '') {
+                            values['tags'] = taglist;
                         }
-                        else {
-                            setCreateError(false);
-                            let variants = listVariant.map(item => {
-                                const { id, ...rest } = item;
-                                return rest;
-                            });
-                            if (taglist !== '') {
-                                values['tags'] = taglist;
-                            }
-                            values['detail'] = detail;
-                            values['short_desc'] = short_desc;
-                            values['category_id'] = category_id;
-                            values['variants'] = variants;
-                            dispatch(updateProduct({ id: id, data: values }));
-                        }
+                        values['detail'] = detail;
+                        values['short_desc'] = short_desc;
+                        values['category_id'] = category_id;
+                        values['variants'] = variants;
+                        dispatch(updateProduct({ id: id, data: values }));
                     }
                 }
             }
         },
     });
-
     useEffect(() => {
         const parent = categories.filter(item => item.parent_id == 0);
         setParentCategories(parent);
     }, [categories]);
-
     useEffect(() => {
         const child = categories.filter(item => item.parent_id == selectedCategory);
         setChildCategories(child);
@@ -225,6 +217,31 @@ export default function EditProductPage() {
             setShort_desc(value);
         }
     };
+    const transformVariant = (originalData) => {
+        const result = [];
+        let idCounter = 1;
+
+        // Duyệt qua mỗi phần tử trong mảng gốc
+        originalData.forEach(category => {
+            const variantType = category.variantType;
+
+            // Duyệt qua từng option trong mỗi category
+            category.options.forEach(option => {
+                const name = option.name;
+                const price = option.price;
+
+                // Tạo đối tượng mới và đẩy vào mảng kết quả
+                result.push({
+                    id: idCounter++,
+                    value: variantType,
+                    name: name,
+                    price: price
+                });
+            });
+        });
+
+        return result;
+    }
     // upload ảnh
     const handleChangeVariantName = (variant) => {
         handleValidateVariant('name', variant);

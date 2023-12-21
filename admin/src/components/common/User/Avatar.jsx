@@ -13,6 +13,8 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
+import BasicAlertl from '../Alert/BasicAlertl';
 
 // Create a styled Menu component
 const AvatarMenu = styled(Menu)(({ theme, custombg }) => ({
@@ -26,7 +28,11 @@ const CustomListIcon = styled(ListItemIcon)(({ customcolor }) => ({
     color: customcolor,
 }));
 export default function AvatarUser({ customBg, customColor, customColor2, mode }) {
+    const navigate = useNavigate();
+
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [logout, setLogout] = React.useState(false);
+
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -35,10 +41,15 @@ export default function AvatarUser({ customBg, customColor, customColor2, mode }
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        navigate('/login');
+    }
 
     return (
         <React.Fragment>
             <Tooltip title="Tài khoản">
+                {logout ? <BasicAlertl label={'Đăng xuất thành công'} /> : ''}
                 <IconButton
                     onClick={handleClick}
                     size="small"
@@ -92,7 +103,7 @@ export default function AvatarUser({ customBg, customColor, customColor2, mode }
                 <Typography variant="p" sx={{ padding: '8px 16px', color: customColor2 }} component="p">
                     bguyt46@gmail.com
                 </Typography>
-                <hr style={{margin:0, color: customColor}}/>
+                <hr style={{ margin: 0, color: customColor }} />
                 <Divider />
                 <MenuItem
                     onClick={handleClose}
@@ -144,7 +155,7 @@ export default function AvatarUser({ customBg, customColor, customColor2, mode }
                     <CustomListIcon customcolor={customColor2}>
                         <Logout fontSize="small" />
                     </CustomListIcon>
-                    <Typography variant="p" sx={{ color: customColor }} component="p">
+                    <Typography variant="p" sx={{ color: customColor }} component="p" onClick={handleLogout}>
                         Đăng xuất
                     </Typography>
                 </MenuItem>
