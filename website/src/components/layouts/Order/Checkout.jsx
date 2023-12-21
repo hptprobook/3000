@@ -7,6 +7,8 @@ import { useDispatch } from "react-redux";
 import { addOrder } from "@/redux/slices/orderSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { addCoupon } from "@/redux/slices/couponSlice";
+import useAuth from "@/hooks/useAuth";
 
 const StyledCheckout = styled("div")(() => ({
     padding: "20px 16px",
@@ -20,6 +22,7 @@ const StyledCheckout = styled("div")(() => ({
 }));
 
 export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
+    const newFee = fee ? fee : 0;
     const { clearCoupon, coupon } = useCouponContext();
     const { selectAddress, selectedAddress } = useOrderAddressContext();
     let defaultAddress = "";
@@ -37,39 +40,48 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
     useEffect(() => {
         let newDiscount = 0;
         if (coupon && coupon.type) {
-            if (coupon.type === "amount") {
+            if (coupon.type === "direct") {
                 newDiscount = coupon.amount;
             } else if (coupon.type === "percent") {
                 newDiscount = totalPrice * (coupon.amount / 100);
             } else if (coupon.type === "ship") {
-                newDiscount = fee * (coupon.amount / 100);
+                newDiscount = fee ? fee * (coupon.amount / 100) : 0;
             }
         }
         setDiscount(newDiscount);
-        setFinalPrice(Number(totalPrice) + fee - newDiscount);
+        setFinalPrice(Number(totalPrice) + newFee - newDiscount);
     }, [coupon, totalPrice, fee]);
 
     const handleSubmit = () => {
-        dispatch(
-            addOrder({
-                cart_item_ids: cartItemIds,
-                address_id: defaultAddress.id,
-                total_amount: finalPrice,
-                ship_fee: fee,
-            })
-        )
-            .then(() => {
-                toast.success("Đặt hàng thành công thành công", {
-                    autoClose: 2000,
+        if (defaultAddress) {
+            dispatch(
+                addOrder({
+                    cart_item_ids: cartItemIds,
+                    address_id: defaultAddress.id,
+                    total_amount: finalPrice,
+                    ship_fee: fee ?? 0,
+                    code: coupon ? coupon.code : null,
+                    discount: discount,
+                })
+            )
+                .then(() => {
+                    toast.success("Đặt hàng thành công", {
+                        autoClose: 2000,
+                    });
+                    setTimeout(() => {
+                        router.push("/profile/orders");
+                    }, 1000);
+                    // dispatch(addCoupon({ code: coupon.code }));
+                    clearCoupon();
+                })
+                .catch((error) => {
+                    toast.error(error);
                 });
-                setTimeout(() => {
-                    router.push("/profile/orders");
-                }, 1000);
-                clearCoupon();
-            })
-            .catch((error) => {
-                toast.error(error);
+        } else {
+            toast.error("Bạn cần phải thêm địa chỉ giao hàng", {
+                autoClose: 2000,
             });
+        }
     };
 
     return (
@@ -116,7 +128,7 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                         color: "#808089",
                     }}
                 >
-                    {fee && Number(fee).toLocaleString()}đ
+                    {fee ? Number(fee).toLocaleString() : 0}đ
                 </p>
             </div>
             <div className="jc-sb mt-6">
@@ -159,7 +171,7 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                         fontWeight: "500",
                     }}
                 >
-                    {finalPrice.toLocaleString()}đ
+                    {finalPrice?.toLocaleString()}đ
                 </span>
             </div>
             <button

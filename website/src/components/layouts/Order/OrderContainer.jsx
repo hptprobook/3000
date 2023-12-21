@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { styled } from "@mui/material/styles";
+import EmptyData from "@/components/common/Middleware/EmptyData";
 
 const StyledOrderContainer = styled("div")(() => ({
     padding: "20px 16px",
@@ -47,6 +48,10 @@ const StyledOrderContainer = styled("div")(() => ({
 }));
 
 export default function OrderContainer({ data }) {
+    if (!data || data.length === 0) {
+        return <EmptyData text={"Không có sản phẩm nào được chọn"} />;
+    }
+
     function truncateString(str, num) {
         if (str.length > num) {
             return str.slice(0, num) + "...";

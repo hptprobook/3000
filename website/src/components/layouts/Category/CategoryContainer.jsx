@@ -6,6 +6,8 @@ import ProductItem from "@/components/common/Home/ProductItem/ProductItem";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { generateProductHref } from "@/utils/generateHref";
 import { useCategoryContext } from "@/provider/CategoryContext";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import EmptyProduct from "@/components/common/Middleware/EmptyProduct";
 
 const StyledCategoryContainer = styled("div")(() => ({
     padding: "0 4px 4px",
@@ -34,6 +36,9 @@ const StyledCategoryContainer = styled("div")(() => ({
 }));
 
 export default function CategoryContainer({ data }) {
+    if (!data || data?.length === 0) {
+        return <EmptyProduct />;
+    }
     const tabs = [
         "Phổ biến",
         "Bán chạy",
@@ -89,11 +94,11 @@ export default function CategoryContainer({ data }) {
     }, [filterCriteria, data]);
 
     if (!sortedData) {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     if (sortedData.length === 0) {
-        return <div>Không có sản phẩm nào</div>;
+        return <EmptyProduct />;
     }
 
     return (

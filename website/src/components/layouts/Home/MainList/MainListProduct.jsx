@@ -7,6 +7,7 @@ import SeeMoreBtn from "@/components/common/Button/SeeMore/SeeMoreBtn";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "@/redux/slices/productSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 export default function MainListProduct() {
     const dispatch = useDispatch();
@@ -14,16 +15,14 @@ export default function MainListProduct() {
     const status = useSelector((state) => state.products.status);
     const [loadData, setLoadData] = useState(false);
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && products.length === 0) {
             dispatch(fetchAllProducts());
-            if (status !== "idle") {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, status]);
+    }, [loadData, products]);
 
-    const [displayCount, setDisplayCount] = useState(6);
-    const increment = 6;
+    const [displayCount, setDisplayCount] = useState(30);
+    const increment = 30;
 
     const displayedItems = products.slice(0, displayCount);
     const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +32,12 @@ export default function MainListProduct() {
         setTimeout(() => {
             setDisplayCount((prevDisplayCount) => prevDisplayCount + increment);
             setIsLoading(false);
-        }, 500); // Chờ 0.5 giây
+        }, 500);
     };
+
+    if (status == "loading") {
+        return <ProgressLoading />;
+    }
 
     return (
         <div className="appContainer__mainListProduct">
@@ -49,7 +52,7 @@ export default function MainListProduct() {
                 Gợi ý hôm nay
             </h4>
             <Grid container spacing={1}>
-                {displayedItems.map((item, i) => (
+                {displayedItems?.map((item, i) => (
                     <Grid item xs={2} key={i}>
                         <ProductItem
                             id={item.id}

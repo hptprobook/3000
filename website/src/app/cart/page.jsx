@@ -8,6 +8,9 @@ import { fetchAllCart, fetchWithIds } from "@/redux/slices/cartSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import PaymentContainer from "@/components/layouts/Cart/PaymentContainer";
 import { CartProvider } from "@/provider/CartContext";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import useAuth from "@/hooks/useAuth";
+import NotAuth from "@/components/common/Middleware/NotAuth";
 
 const DynamicComponent = dynamic(
     () => import("@/components/layouts/Cart/CartContainer"),
@@ -15,6 +18,8 @@ const DynamicComponent = dynamic(
 );
 
 export default function Cart() {
+    const isAuth = useAuth();
+
     const dispatch = useDispatch();
     const cartList = useSelector((state) => state.carts.cartList);
     const status = useSelector((state) => state.carts.status);
@@ -24,7 +29,11 @@ export default function Cart() {
     }, []);
 
     if (status == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
+    }
+
+    if (!isAuth) {
+        return <NotAuth />;
     }
 
     return (

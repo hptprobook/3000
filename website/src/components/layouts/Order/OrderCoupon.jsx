@@ -3,6 +3,7 @@ import { styled } from "@mui/material/styles";
 import { useDispatch, useSelector } from "react-redux";
 import {
     addCoupon,
+    checkCoupon,
     clearCouponUsage,
     getAllCoupons,
 } from "@/redux/slices/couponSlice";
@@ -122,19 +123,17 @@ const couponSchema = Yup.object().shape({
 
 export default function OrderCoupon() {
     const dispatch = useDispatch();
-    const couponUsage = useSelector((state) => state.coupons.couponUsage);
+    const couponUsage = useSelector((state) => state.coupons.checkCoupon);
     const status = useSelector((state) => state.coupons.status);
     const error = useSelector((state) => state.coupons.error);
     const { addContextCoupon, clearCoupon, coupon } = useCouponContext();
-
     const formik = useFormik({
         initialValues: {
             code: "",
         },
         validationSchema: couponSchema,
         onSubmit: (value) => {
-            console.log(value);
-            dispatch(addCoupon(value));
+            dispatch(checkCoupon(value));
         },
     });
 

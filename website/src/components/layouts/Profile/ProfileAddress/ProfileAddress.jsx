@@ -8,6 +8,7 @@ import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { deleteAddress } from "@/redux/slices/addressSlice";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProfileAddress = styled("div")(() => ({
     "& .create": {
@@ -81,7 +82,7 @@ export default function ProfileAddress({ data }) {
     };
 
     if (!data) {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (
@@ -101,8 +102,8 @@ export default function ProfileAddress({ data }) {
                 <div className="item">
                     <div className="head jc-sb">
                         <p className="name d-flex">
-                            {address.name.toUpperCase()}
-                            {address.default === 1 ? (
+                            {address?.name.toUpperCase()}
+                            {address?.default === 1 ? (
                                 <span className="default at-c">
                                     <CheckCircleOutlineIcon
                                         sx={{
@@ -120,7 +121,7 @@ export default function ProfileAddress({ data }) {
                             <Link
                                 href={{
                                     pathname: "/profile/address/edit",
-                                    query: { addressId: address.id },
+                                    query: { addressId: address?.id },
                                 }}
                             >
                                 Chỉnh sửa
@@ -128,8 +129,8 @@ export default function ProfileAddress({ data }) {
                             <button
                                 onClick={() =>
                                     handleDelete(
-                                        address.id,
-                                        address.default === 1
+                                        address?.id,
+                                        address?.default === 1
                                     )
                                 }
                             >
@@ -138,8 +139,8 @@ export default function ProfileAddress({ data }) {
                         </div>
                     </div>
                     <div className="content">
-                        <p>Địa chỉ: {address.address_info}</p>
-                        <p>Điện thoại: {address.phone}</p>
+                        <p>Địa chỉ: {address?.address_info}</p>
+                        <p>Điện thoại: {address?.phone}</p>
                     </div>
                 </div>
             ))}

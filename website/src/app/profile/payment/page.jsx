@@ -1,5 +1,5 @@
 import React from "react";
 
 export default function ProfilePayment() {
-    return <div>ProfilePayment</div>;
+    return <div>Comming soon...</div>;
 }

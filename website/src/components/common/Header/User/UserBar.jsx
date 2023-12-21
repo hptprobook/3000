@@ -15,6 +15,8 @@ import useAuth from "@/hooks/useAuth";
 import { logoutUser } from "@/redux/slices/authSlice";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
+import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+import { useRouter } from "next/navigation";
 
 const UserBarContainer = styled("div")(() => ({}));
 
@@ -52,6 +54,7 @@ export default function UserBar() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const isLoggedIn = useAuth();
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const handleLoginClick = () => {
         if (!isLoggedIn) {
@@ -61,12 +64,23 @@ export default function UserBar() {
 
     const handleLogout = async () => {
         if (isLoggedIn) {
+            router.refresh();
             dispatch(logoutUser());
         }
     };
 
     const handleCloseModal = () => {
         setIsLoginModalOpen(false);
+    };
+
+    const [activeButton, setActiveButton] = useState("home");
+
+    const handleHomeClick = () => {
+        setActiveButton("home");
+    };
+
+    const handleAccountClick = () => {
+        setActiveButton("account");
     };
 
     // const cartList = useSelector((state) => state.carts.cartList);
@@ -84,7 +98,8 @@ export default function UserBar() {
                         <PrimaryBtn
                             icon={<HomeRoundedIcon />}
                             text="Trang chủ"
-                            isActive={true}
+                            isActive={activeButton === "home"}
+                            onClick={handleHomeClick}
                         />
                     </Link>
                     <Link href={"/"}>
@@ -106,7 +121,7 @@ export default function UserBar() {
                         <PrimaryBtn
                             icon={<SentimentSatisfiedAltIcon />}
                             text="Tài khoản"
-                            isActive={false}
+                            isActive={activeButton === "account"}
                         />
                         {isLoggedIn && (
                             <Box
@@ -149,12 +164,17 @@ export default function UserBar() {
                                 }}
                             >
                                 <Link href={"/profile"}>
-                                    <p>Thông tin tài khoản</p>
+                                    <p onClick={handleAccountClick}>
+                                        Thông tin tài khoản
+                                    </p>
                                 </Link>
-                                <Link href={"/"}>
+                                <Link
+                                    href={"/profile/orders"}
+                                    onClick={handleAccountClick}
+                                >
                                     <p>Đơn hàng của tôi</p>
                                 </Link>
-                                <Link href={"/"}>
+                                <Link href={"/"} onClick={handleAccountClick}>
                                     <p>Trung tâm hỗ trợ</p>
                                 </Link>
                                 <div
@@ -182,12 +202,14 @@ export default function UserBar() {
                         alignItems: "center",
                     }}
                 >
-                    <LocationOnOutlinedIcon sx={{ fontSize: "22px" }} /> Giao
-                    đến:
+                    <LocalPhoneIcon sx={{ fontSize: "22px" }} /> CSKH:
                 </span>
                 &nbsp;
-                <Link style={{ textDecoration: "underline" }} href={"/"}>
-                    45/19 Nguyễn Viết Xuân
+                <Link
+                    style={{ textDecoration: "underline" }}
+                    href={"to:0833129021"}
+                >
+                    0833.129.021
                 </Link>
             </UserBarAddress>
         </UserBarContainer>

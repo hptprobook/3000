@@ -1,10 +1,13 @@
 "use client";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import NotAuth from "@/components/common/Middleware/NotAuth";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import AddressCheckout from "@/components/layouts/Order/AddressCheckout";
 import Checkout from "@/components/layouts/Order/Checkout";
 import OrderContainer from "@/components/layouts/Order/OrderContainer";
 import OrderCoupon from "@/components/layouts/Order/OrderCoupon";
+import useAuth from "@/hooks/useAuth";
 import { CouponProvider } from "@/provider/CouponContext";
 import {
     OrderAddressProvider,
@@ -19,6 +22,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function OrderPage() {
+    const isAuth = useAuth();
     const searchParams = useSearchParams();
     const [cartItemIds, setCartItemIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
@@ -47,10 +51,10 @@ export default function OrderPage() {
         totalLength = 0;
 
     cartWithIds.forEach((item) => {
-        totalHeight += item.product.height || 0;
-        totalWeight += item.product.weight || 0;
-        totalWidth += item.product.width || 0;
-        totalLength += item.product.length || 0;
+        totalHeight += item.product.height || 1;
+        totalWeight += item.product.weight || 1;
+        totalWidth += item.product.width || 1;
+        totalLength += item.product.length || 1;
     });
 
     const cartStatus = useSelector((state) => state.carts.status);
@@ -98,8 +102,12 @@ export default function OrderPage() {
         }
     }, [cartItemIds]);
 
+    if (!isAuth) {
+        return <NotAuth />;
+    }
+
     if (cartStatus == "loading" || addressFetchStatus == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (
@@ -115,14 +123,14 @@ export default function OrderPage() {
                         <OrderContainer data={cartWithIds} />
                     </Grid>
                     <Grid item xs={3}>
-                        <AddressCheckout data={addresses.addresses} />
+                        <AddressCheckout data={addresses?.addresses} />
                         <CouponProvider>
                             <OrderCoupon />
                             <Checkout
                                 totalPrice={totalPrice}
                                 fee={fee?.fee?.data?.total}
                                 cartItemIds={cartItemIds}
-                                addresses={addresses.addresses}
+                                addresses={addresses?.addresses}
                             />
                         </CouponProvider>
                     </Grid>

@@ -8,6 +8,8 @@ import useAuth from "@/hooks/useAuth";
 import LoginModal from "@/components/common/Header/LoginModel/LoginModel";
 import Link from "next/link";
 import { AddToCartContext } from "@/provider/AddToCartContext";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import { toast } from "react-toastify";
 
 const StyledProductDetailAdd = styled("div")(() => ({
     width: "100%",
@@ -97,6 +99,9 @@ const StyledProductDetailAdd = styled("div")(() => ({
 }));
 
 export default function ProductDetailAdd({ data }) {
+    // if (!data) {
+    //     return <ProgressLoading />;
+    // }
     const [quantity, setQuantity] = useState(1);
 
     const incrementQuantity = () => {
@@ -141,19 +146,30 @@ export default function ProductDetailAdd({ data }) {
                     temp_price: tempPrice,
                     variants: variantJson,
                 })
-            );
+            )
+                .then(() => {
+                    if (!error) {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                        });
+                        setAddToCartSuccess(true);
+                    } else {
+                        toast.error(
+                            "Sản phẩm đã hết hàng, vui lòng thử lại sau hoặc liên hệ CSKH",
+                            {
+                                autoClose: 3000,
+                            }
+                        );
+                    }
+                })
+                .catch(() => {
+                    toast.error("Có lỗi xảy ra, vui lòng thử lại sau", {
+                        autoClose: 3000,
+                    });
+                });
         }
     };
-
-    useEffect(() => {
-        if (status === "succeeded") {
-            setAddToCartSuccess(true);
-        }
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
-    }, [status]);
 
     return (
         <>

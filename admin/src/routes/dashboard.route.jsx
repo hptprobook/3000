@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import HomePage from "../pages/Home/Home.page";
+import HomePage from "../pages/Home/HomePage";
 import Error404Page from "../pages/Error/Error404Page";
 import UserPage from "../pages/User/List/ListUserPage";
 import AddUserPage from "../pages/User/Add/AddUserPage";
@@ -23,6 +23,10 @@ import ListBrandPage from "../pages/Brand/List/ListBrandPage";
 import CreateBrandPage from "../pages/Brand/Create/CreateBrandPage";
 import EditBrandPage from "../pages/Brand/Edit/EditBrandPage";
 import { DetailOrderPage } from "../pages/Order/Detail/DetailOrderPage";
+import EditProductPage from "../pages/Product/Edit/EditProductPage";
+import ListCouponsPage from "../pages/Coupons/List/ListCouponsPage";
+import CreateCouponPage from "../pages/Coupons/Create/CreateCouponPage";
+import EditCouponPage from "../pages/Coupons/Edit/EditCouponPage";
 
 function DashboardRoute() {
     return (
@@ -38,6 +42,7 @@ function DashboardRoute() {
             <Route path="post/create" element={<CreatePostPage />} />
             <Route path="post/edit/:id" element={<EditPostPage />} />
             <Route path="product/warehouse" element={<WarehouseProductPage />} />
+            <Route path="product/edit/:id" element={<EditProductPage />} />
             <Route path="category/list" element={<ListCategoriesPage />} />
             <Route path="category/create" element={<CreateCategoryPage />} />
             <Route path="category/edit/:id" element={<EditCategoryPage />} />
@@ -48,6 +53,12 @@ function DashboardRoute() {
             <Route path="category/brand" element={<ListBrandPage />} />
             <Route path="category/brand/create" element={<CreateBrandPage />} />
             <Route path="category/brand/edit/:id" element={<EditBrandPage />} />
+
+            <Route path="coupon/list" element={<ListCouponsPage />} />
+            <Route path="coupon/create" element={<CreateCouponPage />} />
+            <Route path="coupon/edit/:id" element={<EditCouponPage />} />
+
+
 
             <Route path="order/detail/:id" element={<DetailOrderPage />} />
             <Route path="order" element={<ListOrderPage />} />

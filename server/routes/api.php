@@ -26,7 +26,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 
 // Search
-Route::get('/search', [SearchController::class, 'search']);
+Route::get('/search/{searchValue?}', [SearchController::class, 'search']);
 Route::get('/search/save_hot_search', [SearchController::class, 'saveHotSearch']);
 
 // Product
@@ -90,6 +90,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('order_details', OrderDetailController::class);
 
     Route::apiResource('coupons', CouponController::class);
+
+    Route::post('/coupons/check', [CouponUsageController::class, 'checkCoupon']);
 
     Route::apiResource('coupon_usages', CouponUsageController::class);
 

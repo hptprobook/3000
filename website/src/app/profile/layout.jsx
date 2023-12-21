@@ -14,7 +14,11 @@ export default function ProfileLayout({ children }) {
         <>
             <Grid container className="appContainer__profile" columnSpacing={2}>
                 <Grid item xs={12}>
-                    <Breadcrumb />
+                    <Breadcrumb
+                        link={"/"}
+                        text1={"Trang chủ"}
+                        text2={"Trang cá nhân"}
+                    />
                 </Grid>
                 <Grid item xs={3}>
                     <ProfileSidebar />

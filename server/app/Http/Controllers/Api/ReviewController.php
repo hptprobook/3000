@@ -31,8 +31,8 @@ class ReviewController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required|numeric|between:0,20000',
-                'rating' => 'required|numeric|between:1,5',
-                'comment' => 'required|string|min:10|max:720'
+                'rating' => 'required|numeric|between:0.5,5',
+                'comment' => 'nullable|string|max:255'
             ]);
 
             if ($validator->fails()) {

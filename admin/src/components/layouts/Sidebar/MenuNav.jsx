@@ -52,10 +52,7 @@ export function getMenuNav() {
             ]),
         ]),
         createList("Bán hàng", "menu2", true, <MdOutlineSell />, [
-            createList("Người dùng", "user", "/user", <LuUsers2 />, [
-                createList("Danh sách", "user-list", "/user/list"),
-                createList("Tạo", "user-create", "/user/create"),
-            ]),
+            createList("Người dùng", "user", "/user/list", <LuUsers2 />),
             createList("Sản phẩm", "product", "/product", <HiShoppingBag />, [
                 createList("Danh sách", "product-list", "/product/list"),
                 createList("Tạo", "product-create", "/product/create"),
@@ -80,10 +77,7 @@ export function getMenuNav() {
                     ),
                 ]
             ),
-            createList("Mã giảm giá", "coupon", "/coupon", <BiSolidCoupon />, [
-                createList("Danh sách", "coupon-list", "/coupon/list"),
-                createList("Tạo", "coupon-create", "/coupon/create"),
-            ]),
+            createList("Mã giảm giá", "coupon", "/coupon/list", <BiSolidCoupon />),
             createList("Đơn hàng", "order", "/order", <FaShoppingCart />),
         ]),
         createList("Trang web", "menu3", true, <MdWebAsset />, [

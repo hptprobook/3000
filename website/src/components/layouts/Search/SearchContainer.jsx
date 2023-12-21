@@ -1,10 +1,14 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import ProductItem from "@/components/common/Home/ProductItem/ProductItem";
+import { generateProductHref } from "@/utils/generateHref";
+import EmptyProduct from "@/components/common/Middleware/EmptyProduct";
 
 const StyledSearchContainer = styled("div")(() => ({
+    width: "100%",
+    minHeight: "600px",
     padding: "0 4px 4px",
     "& .tabs": {
         display: "flex",
@@ -30,7 +34,7 @@ const StyledSearchContainer = styled("div")(() => ({
     },
 }));
 
-export default function SearchContainer() {
+export default function SearchContainer({ data }) {
     const tabs = [
         "Phổ biến",
         "Bán chạy",
@@ -39,11 +43,37 @@ export default function SearchContainer() {
     ];
 
     const [activeTab, setActiveTab] = useState(tabs[0]);
+    const [sortedData, setSortedData] = useState(data);
+
+    useEffect(() => {
+        handleTabClick(activeTab);
+    }, [data]);
 
     const handleTabClick = (tab) => {
-        setActiveTab(tab);
+        if (data) {
+            setActiveTab(tab);
+            let newData;
+            switch (tab) {
+                case "Bán chạy":
+                    // Sort by sold in descending order
+                    newData = [...data].sort((a, b) => b.sold - a.sold);
+                    break;
+                case "Giá từ thấp đến cao":
+                    // Sort by price in ascending order
+                    newData = [...data].sort((a, b) => a.price - b.price);
+                    break;
+                case "Giá từ cao đến thấp":
+                    // Sort by price in descending order
+                    newData = [...data].sort((a, b) => b.price - a.price);
+                    break;
+                default:
+                    // Default sorting or other sorting logic
+                    newData = [...data];
+                    break;
+            }
+            setSortedData(newData);
+        }
     };
-
     return (
         <StyledSearchContainer>
             <div className="tabs">
@@ -59,172 +89,31 @@ export default function SearchContainer() {
                     </div>
                 ))}
             </div>
-            <Grid container spacing={1}>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
-                <Grid item xs={1.5}>
-                    <ProductItem
-                        name={
-                            "Lò Nướng Điện Sunhouse SHD4206 (10L) - Hàng chính hãng"
-                        }
-                        imgUrl={
-                            "https://salt.tikicdn.com/cache/280x280/ts/product/be/33/51/77564b65c6a43f35426f1a0e61581347.jpg.webp"
-                        }
-                        rate={5}
-                        sold={"5k+"}
-                        discount={20}
-                        price={20000000}
-                        href={""}
-                    />
-                </Grid>
+            <Grid container spacing={1} style={{ width: "100%" }}>
+                {sortedData && sortedData.length > 0 ? (
+                    sortedData.map((item) => (
+                        <Grid item xs={1.5} key={item.id}>
+                            <ProductItem
+                                name={item.name}
+                                imgUrl={item.thumbnail}
+                                rate={5}
+                                sold={item.sold}
+                                discount={item.discount}
+                                price={item.price}
+                                href={generateProductHref(item?.name, item?.id)}
+                            />
+                        </Grid>
+                    ))
+                ) : (
+                    <div
+                        style={{
+                            width: "100%",
+                            height: "500px",
+                        }}
+                    >
+                        <EmptyProduct />
+                    </div>
+                )}
             </Grid>
         </StyledSearchContainer>
     );

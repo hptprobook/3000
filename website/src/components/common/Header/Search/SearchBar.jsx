@@ -120,20 +120,13 @@ export default function SearchBar() {
     }, []);
 
     const searchRecommendedItem = [
-        "Siêu sale",
-        "Khoẻ đẹp",
-        "Nhà cửa",
+        "Hot sale",
+        "Máy tính",
+        "Điện thoại",
         "Sách",
         "Thể thao",
-        "Trái cây",
-        "Thịt, trứng",
-        "Siêu sale",
-        "Khoẻ đẹp",
-        "Nhà cửa",
-        "Sách",
-        "Thể thao",
-        "Trái cây",
-        "Thịt, trứng",
+        "Du lịch",
+        "Bán chạy",
     ];
 
     const dispatch = useDispatch();
@@ -145,13 +138,11 @@ export default function SearchBar() {
     const inputRef = useRef(null);
 
     useEffect(() => {
-        if (!loadData) {
+        if (!loadData && products.length === 0) {
             dispatch(fetchAllProducts());
-            if (status !== "idle") {
-                setLoadData(true);
-            }
+            setLoadData(true);
         }
-    }, [loadData, dispatch, status]);
+    }, [loadData, products]);
 
     const handleFocus = () => {
         setShowSuggestions(true);
@@ -211,11 +202,11 @@ export default function SearchBar() {
     };
 
     const defaultSuggestions = [
-        "Sản phẩm nổi bật",
-        "Xu hướng",
-        "Khuyến mãi",
-        "Mới nhất",
-        "Phổ biến",
+        "Điện thoại",
+        "Máy tính",
+        "Bán chạy",
+        "Hot",
+        "Sản phẩm mới",
     ];
 
     return (
@@ -238,7 +229,12 @@ export default function SearchBar() {
                             placeholder="Tìm kiếm sản phẩm ..."
                         />
 
-                        <SearchBtn type="submit">Tìm kiếm</SearchBtn>
+                        <SearchBtn
+                            type="submit"
+                            disabled={!searchValue ? true : false}
+                        >
+                            Tìm kiếm
+                        </SearchBtn>
 
                         {showSuggestions && (
                             <SearchSuggestion ref={suggestionRef}>

@@ -8,13 +8,17 @@ import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 
 export default function BestSeller() {
     const dispatch = useDispatch();
+    const [loadData, setLoadData] = useState(false);
     const { bestSeller, loading, error } = useSelector(
         (state) => state.categories
     );
 
     useEffect(() => {
-        dispatch(fetchBestSellerCategory());
-    }, []);
+        if (!loadData && bestSeller.length === 0) {
+            dispatch(fetchBestSellerCategory());
+            setLoadData(true);
+        }
+    }, [loadData, bestSeller]);
 
     if (loading) {
         return <CirLoading />;

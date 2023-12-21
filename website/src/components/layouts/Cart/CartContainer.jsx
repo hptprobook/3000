@@ -11,6 +11,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteCartById, fetchAllCart } from "@/redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import EmptyData from "@/components/common/Middleware/EmptyData";
+import useAuth from "@/hooks/useAuth";
+import NotAuth from "@/components/common/Middleware/NotAuth";
 
 const StyledCartContainer = styled("div")(() => ({
     "& .cart-item__header": {
@@ -72,6 +75,10 @@ const StyledCartContainer = styled("div")(() => ({
 }));
 
 export default function CartContainer({ data }) {
+    if (data?.length === 0 || !data) {
+        return <EmptyData text={"Không có sản phẩm nào trong giỏ hàng"} />;
+    }
+
     const [checkedIds, setCheckedIds] = useState([]);
     const [cartData, setCartData] = useState([]);
     const dispatch = useDispatch();
@@ -93,7 +100,7 @@ export default function CartContainer({ data }) {
             quantity: item?.quantity,
         }));
         updateCartItems(initialCartItems);
-    }, []);
+    }, [data]);
 
     const handleCheck = (id, isChecked) => {
         if (isChecked) {
@@ -197,10 +204,6 @@ export default function CartContainer({ data }) {
             dispatch(fetchAllCart());
         });
     };
-
-    if (data?.length === 0) {
-        return <h4>Không có sản phẩm nào trong giỏ hàng</h4>;
-    }
 
     return (
         <StyledCartContainer>

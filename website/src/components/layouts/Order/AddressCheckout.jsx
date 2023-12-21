@@ -12,6 +12,9 @@ const StyledAddressCheckout = styled("div")(() => ({
 }));
 
 export default function AddressCheckout({ data }) {
+    if (!data) {
+        return <div>Cõ lỗi xảy ra</div>;
+    }
     const { selectAddress, selectedAddress } = useOrderAddressContext();
 
     let defaultAddress = "";
@@ -35,25 +38,50 @@ export default function AddressCheckout({ data }) {
                     Thay đổi
                 </Link>
             </div>
-            <p
-                style={{
-                    marginTop: "8px",
-                    fontSize: "15px",
-                    fontWeight: "500",
-                    color: "#38383d",
-                }}
-            >
-                {defaultAddress.name} | {defaultAddress.phone}
-            </p>
-            <p
-                style={{
-                    marginTop: "8px",
-                    fontSize: "14px",
-                    color: "#808089",
-                }}
-            >
-                {defaultAddress.address_info}
-            </p>
+            {defaultAddress ? (
+                <>
+                    <p
+                        style={{
+                            marginTop: "8px",
+                            fontSize: "15px",
+                            fontWeight: "500",
+                            color: "#38383d",
+                        }}
+                    >
+                        {defaultAddress.name} | {defaultAddress.phone}
+                    </p>
+                    <p
+                        style={{
+                            marginTop: "8px",
+                            fontSize: "14px",
+                            color: "#808089",
+                        }}
+                    >
+                        {defaultAddress.address_info}
+                    </p>
+                </>
+            ) : (
+                <>
+                    <p
+                        style={{
+                            marginTop: "8px",
+                            fontSize: "13px",
+                        }}
+                    >
+                        Bạn chưa có địa chỉ giao hàng?
+                    </p>
+                    <Link
+                        href={"/profile/address/create"}
+                        style={{
+                            marginTop: "8px",
+                            color: "var(--link-color)",
+                            fontSize: "13px",
+                        }}
+                    >
+                        Thêm địa chỉ giao hàng
+                    </Link>
+                </>
+            )}
         </StyledAddressCheckout>
     );
 }

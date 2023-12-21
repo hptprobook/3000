@@ -12,7 +12,17 @@ export default function Breadcrumb({ link = "/", text1, text2 = null }) {
                 padding: "15px 0",
             }}
         >
-            <Breadcrumbs aria-label="breadcrumb">
+            <Breadcrumbs
+                aria-label="breadcrumb"
+                sx={{
+                    "& p": {
+                        fontFamily: "var(--font-family)",
+                    },
+                    "& li": {
+                        fontFamily: "var(--font-family)",
+                    },
+                }}
+            >
                 <Link underline="hover" color="inherit" href={link}>
                     {text1}
                 </Link>

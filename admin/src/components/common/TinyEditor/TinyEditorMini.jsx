@@ -1,17 +1,28 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
 import './style.css';
-export default function TinyEditorMini({ onEditorChange }) {
+
+export default function TinyEditorMini({ onEditorChange, defaultValue }) {
     const editorRef = useRef(null);
+
+    useEffect(() => {
+        if (editorRef.current && defaultValue !== undefined) {
+            editorRef.current.setContent(defaultValue);
+        }
+
+    }, [defaultValue, editorRef.current]);
+
     const log = () => {
         if (editorRef.current) {
             const content = editorRef.current.getContent();
             onEditorChange(content);
         }
     };
+
     const handleUndoRedo = () => {
         log(); // Trigger the onChange event after undo or redo
     };
+
     return (
         <>
             <Editor
@@ -19,8 +30,8 @@ export default function TinyEditorMini({ onEditorChange }) {
                 onInit={(evt, editor) => {
                     editorRef.current = editor;
                     editor.on('undo redo', handleUndoRedo);
+                    editor.setContent(defaultValue);
                 }}
-
                 init={{
                     height: 200,
                     menubar: false,

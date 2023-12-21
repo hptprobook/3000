@@ -8,6 +8,7 @@ import Header from "@/components/layouts/Header/Header";
 import { Providers } from "@/redux/provider";
 import { AddToCartProvider } from "@/provider/AddToCartContext";
 import { OrderAddressProvider } from "@/provider/OrderAddressContext";
+// import Skeleton from "react-loading-skeleton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,9 +23,7 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={inter.className}>
                 <Providers>
-                    <ToastContainer
-                        style={{ zIndex: "9999999999999999999999999" }}
-                    />
+                    <ToastContainer style={{ zIndex: "99999999999999" }} />
                     <OrderAddressProvider>
                         <AddToCartProvider>
                             <Header />

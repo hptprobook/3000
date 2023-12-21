@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import ProductItem from "../../Home/ProductItem/ProductItem";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,6 +8,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import "./style.css";
 import CirLoading from "../../Loading/CircularLoading/CirLoading";
+import EmptyProduct from "../../Middleware/EmptyProduct";
 
 const StyledProductTab = styled("div")(() => ({
     "& .tabContent": {
@@ -39,9 +40,17 @@ const StyledButtonTab = styled("button")(() => ({
 }));
 
 export default function ProductTab({ tabs }) {
+    if (!tabs) {
+        return <EmptyProduct />;
+    }
+
     const [activeTab, setActiveTab] = useState(
-        tabs && tabs.length > 0 ? tabs[0].id : 0
+        tabs && tabs?.length > 0 ? tabs[0]?.id : 0
     );
+
+    useEffect(() => {
+        setActiveTab(tabs[0]?.id);
+    }, [tabs]);
 
     const activeTabData = tabs?.find((tab) => tab.id === activeTab);
 

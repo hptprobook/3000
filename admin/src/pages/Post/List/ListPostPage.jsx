@@ -1,71 +1,105 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchAllPosts } from "~/redux/slices/postSlice"; // Replace with your post slice import
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
 import "./style.css";
-import { Grid } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import CardPost from "../../../components/common/Card/CardPost";
 import ChipPostTag from "../../../components/common/Chip/ChipPostTag";
-
-const posts = [
-    {
-        id: 1,
-        title: "Why I Still Lisp, and You Should Too",
-        content:
-        "Aliquam dapibus elementum nulla at malesuada. Ut mi nisl, aliquet non mollis vel, feugiat non nibh.",
-        author_id: 1,
-        tags: "Programming",
-        img: "man-pushing-virtual-programming-language-button-digital-background-63199792.webp",
-    },
-    {
-        id: 2,
-        title: "Scrum Has Hit the Glass Ceiling",
-        content: "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
-        author_id: 2,
-        tags: "Productivity",
-        img: "cute-baby-animals-1558535060.jpg",
-    },
-    {
-        id: 3,
-        title: "Lizard",
-        content: "Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging across all continents except Antarctica",
-        author_id: 3,
-        tags: "Reptile",
-        img: "shouts-animals-watch-baby-hemingway.webp",
-    },
-    {
-        id: 4,
-        title: "Scrum Has Hit the Glass Ceiling",
-        content: "Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.",
-        author_id: 4,
-        tags: "Productivity",
-        img: "WR202206_GiraffeTranslocation_012_360559_reduced.jpg",
-    },
-];
+import Loading from "../../../components/common/Loading/Loading";
+import TablePosts from "../../../components/common/Table/TablePosts";
+import InputSearch from "../../../components/common/TextField/InputSearch";
+import { deletePostByID } from "../../../redux/slices/postSlice";
+import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 
 const ListPostPage = () => {
     const dispatch = useDispatch();
-    // const posts = useSelector((state) => state.posts.posts.data); // Update the selector for posts
-    // const status = useSelector((state) => state.posts.status); // Update the selector for posts
-    // const error = useSelector((state) => state.posts.error); // Update the selector for posts
-    return (
-        <>
-            <HeaderPage
-                namePage={"Bài viết"}
-                Breadcrumb={["Bài viết", "Danh sách"]}
-                ButtonLink="/post/create"
-            />
+    const posts = useSelector((state) => state.posts.posts); // Update the selector for posts
+    //status
+    const statusPost = useSelector((state) => state.posts.status); // Update the selector for posts
+    const error = useSelector((state) => state.posts.error); // Update the selector for posts
+    const statusDelete = useSelector((state) => state.posts.statusDelete);
+    const [postsStatusList, setPostStatusList] = React.useState([]);
 
-            <Grid sx={{ marginTop: "32px" }} container spacing={8}>
-                {/* Map through the posts array and render a CardPost for each post */}
-                {posts.map((post) => (
-                    <Grid key={post.id} item xs={12} sm={6}>
-                        <CardPost post={post} />
+    //search data 
+    const [loadData, setLoadData] = useState(false);
+    const [selectedFilters, setSelectedFilters] = React.useState([]);
+    const [postList, setPostsList] = React.useState([]);
+
+    
+    const handleFilterReturn = (filters) => {
+        setSelectedFilters(filters);
+        // You can perform additional actions based on the selected filters if needed
+    };
+    useEffect(() => {
+        if (loadData === false) {
+            dispatch(fetchAllPosts());
+        }
+    }, [loadData]);
+    useEffect(() => {
+        if (statusPost == 'featch all posts') {
+            setPostStatusList(posts);
+            setLoadData(true);
+        }
+    }, [statusPost]);
+    useEffect(() => {
+        if (statusPost == 'featch all posts') {
+            setPostStatusList(posts);
+
+            if (selectedFilters.length > 0) {
+                const filteredPost = posts.filter(post => selectedFilters.includes(post.status));
+                setPostStatusList(filteredPost);
+                setPostsList(filteredPost);
+            }
+            else {
+                setPostStatusList(posts);
+                setPostsList(posts);
+            }
+        }
+    }, [selectedFilters, posts])
+    const handleSearch = (searchValue) => {
+        const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
+        const result = postsStatusList.filter(item => regex.test(item.name));
+        setPostsList(result);
+        if (searchValue === '') {
+            setPostsList(postsStatusList);
+        }
+    };
+    //delete 
+    const handleDeletepPost = (value) => {
+        dispatch(deletePostByID({ id: value }));
+    }
+    if (statusPost === 'loading') {
+        return (
+            <Loading />
+        )
+    }
+    if (statusPost === 'failed') {
+        return (
+            <div>Error</div>
+        )
+    }
+    if (statusPost === 'featch all posts') {
+        return (
+            <>
+             {statusDelete === 'loading delete' ? <LinearIndeterminate /> : null}
+                <HeaderPage
+                    namePage={"Bài viết"}
+                    Breadcrumb={["Bài viết", "Danh sách"]}
+                    ButtonLink="/post/create"
+                />
+                <Box sx={{ padding: "32px 0 0" }}>
+                    <Grid container spacing={0} sx={{ padding: '32px 0', margin: 0 }}>
+                        <Grid item xs={12} sx={{ p: '0 12px' }}>
+                            <InputSearch onChange={handleSearch} />
+                        </Grid>
                     </Grid>
-                ))}
-            </Grid>
-        </>
-    );
+                    <TablePosts data={postList} onDeletePost={handleDeletepPost} />
+                </Box>
+            </>
+        );
+    }
+
 };
 
 export default ListPostPage;
