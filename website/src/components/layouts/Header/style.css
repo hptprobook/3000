@@ -1,6 +1,6 @@
 .header {
     display: flex;
-    width: 1400px !important;
+    max-width: 1400px;
     height: 96px;
     margin: auto;
     align-items: center;

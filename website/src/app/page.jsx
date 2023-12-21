@@ -6,11 +6,8 @@ import Banner from "@/components/layouts/Home/Banner/Banner";
 import FlashSale from "@/components/layouts/Home/FlashSale/FlashSale";
 import BestSeller from "@/components/layouts/Home/BestSeller/BestSeller";
 import RecommendedProduct from "@/components/layouts/Home/RecommendedProduct/RecommendedProduct";
-import TopBrand from "@/components/layouts/Home/TopBrand/TopBrand";
 import MainListProduct from "@/components/layouts/Home/MainList/MainListProduct";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
-import { createTheme, ThemeProvider } from "@mui/material";
-import Skeleton from "react-loading-skeleton";
 
 export default function Home() {
     return (
