@@ -6,10 +6,12 @@
        - `` cd admin``
        - `` npm i``
        - `` npm run dev``
+       - đổi tên .env.example thành .env
      * Website:
        - `` cd website``
        - `` npm i``
        - `` npm run dev``
+       - đổi tên .env.example thành .env
      * Server:
        - `` cd server``
        - `` php artisan serve``
