@@ -9,6 +9,7 @@ import LoginModal from "@/components/common/Header/LoginModel/LoginModel";
 import Link from "next/link";
 import { AddToCartContext } from "@/provider/AddToCartContext";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import { toast } from "react-toastify";
 
 const StyledProductDetailAdd = styled("div")(() => ({
     width: "100%",
@@ -145,19 +146,28 @@ export default function ProductDetailAdd({ data }) {
                     temp_price: tempPrice,
                     variants: variantJson,
                 })
-            );
+            )
+                .then(() => {
+                    if (!error) {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: "smooth",
+                        });
+                        setAddToCartSuccess(true);
+                    } else {
+                        toast.error(
+                            "Sản phẩm đã hết hàng, vui lòng thử lại sau hoặc liên hệ CSKH",
+                            {
+                                autoClose: 3000,
+                            }
+                        );
+                    }
+                })
+                .catch(() => {
+                    //
+                });
         }
     };
-
-    useEffect(() => {
-        if (status === "succeeded") {
-            setAddToCartSuccess(true);
-        }
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
-    }, [status]);
 
     return (
         <>

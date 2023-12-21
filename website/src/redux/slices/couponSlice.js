@@ -16,6 +16,21 @@ export const addCoupon = createAsyncThunk(
     }
 );
 
+export const checkCoupon = createAsyncThunk(
+    "coupon/addCoupon",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await CouponService.checkCoupon(data);
+            if (response.error) {
+                return rejectWithValue(response.message);
+            }
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
 export const getAllCoupons = createAsyncThunk(
     "coupon/getAllCoupons",
     async (_, { rejectWithValue }) => {
@@ -31,6 +46,7 @@ export const getAllCoupons = createAsyncThunk(
 const initialState = {
     couponUsage: null,
     coupons: [],
+    checkCoupon: null,
     status: "idle",
     error: null,
 };
@@ -40,23 +56,23 @@ const couponSlice = createSlice({
     initialState,
     reducers: {
         clearCouponUsage: (state) => {
-            state.couponUsage = null;
+            state.checkCoupon = null;
         },
     },
     extraReducers: (builder) => {
         builder
-            .addCase(addCoupon.pending, (state) => {
-                state.status = "loading";
-                state.error = null;
-            })
-            .addCase(addCoupon.fulfilled, (state, action) => {
-                state.status = "succeeded";
-                state.couponUsage = action.payload;
-            })
-            .addCase(addCoupon.rejected, (state, action) => {
-                state.status = "failed";
-                state.error = action.payload;
-            })
+            // .addCase(addCoupon.pending, (state) => {
+            //     state.status = "loading";
+            //     state.error = null;
+            // })
+            // .addCase(addCoupon.fulfilled, (state, action) => {
+            //     state.status = "succeeded";
+            //     state.couponUsage = action.payload;
+            // })
+            // .addCase(addCoupon.rejected, (state, action) => {
+            //     state.status = "failed";
+            //     state.error = action.payload;
+            // })
             .addCase(getAllCoupons.pending, (state) => {
                 state.status = "loading";
                 state.error = null;
@@ -66,6 +82,18 @@ const couponSlice = createSlice({
                 state.coupons = action.payload;
             })
             .addCase(getAllCoupons.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(checkCoupon.pending, (state) => {
+                state.status = "loading";
+                state.error = null;
+            })
+            .addCase(checkCoupon.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.checkCoupon = action.payload;
+            })
+            .addCase(checkCoupon.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });

@@ -42,10 +42,10 @@ class PostController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'content' => 'required',
-                'author' => 'required',
-                'tags' => 'required',
-                'img' => 'required',
-                'status' => 'required',
+                // 'author' => 'required',
+                // 'tags' => 'required',
+                // 'img' => 'required',
+                // 'status' => 'required',
             ]);
 
             $post = Post::create($validatedData);
@@ -66,10 +66,10 @@ class PostController extends Controller
             $validatedData = $request->validate([
                 'title' => 'required|max:255',
                 'content' => 'required',
-                'author' => 'required',
-                'tags' => 'required',
-                'img' => 'required',
-                'status' => 'required',
+                // 'author' => 'required',
+                // 'tags' => 'required',
+                // 'img' => 'required',
+                // 'status' => 'required',
             ]);
 
             $post = $post->update($validatedData);

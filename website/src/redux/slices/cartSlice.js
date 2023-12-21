@@ -16,6 +16,9 @@ export const addToCart = createAsyncThunk(
     async (cartData, { rejectWithValue }) => {
         try {
             const response = await CartService.addToCart(cartData);
+            if (response.error) {
+                return rejectWithValue(response.message);
+            }
             return response;
         } catch (err) {
             return rejectWithValue(err.response.data);

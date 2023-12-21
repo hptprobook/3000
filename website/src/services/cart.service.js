@@ -6,7 +6,10 @@ const CartService = {
             const res = await request.post("carts", data);
             return res;
         } catch (err) {
-            return err.response;
+            return {
+                error: true,
+                message: err.response?.data?.errors,
+            };
         }
     },
     fetchAllCart: async () => {

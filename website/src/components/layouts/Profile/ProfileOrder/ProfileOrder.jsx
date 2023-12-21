@@ -434,13 +434,6 @@ export default function ProfileOrder({ data }) {
                                 >
                                     Đã nhận được hàng
                                 </button>
-                            ) : item.status === "delivered" ? (
-                                <button
-                                    className="btn review"
-                                    onClick={() => reviewProduct(item.id)}
-                                >
-                                    Nhận xét
-                                </button>
                             ) : null}
                         </div>
                     </div>

@@ -1,5 +1,6 @@
 "use client";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import ProfileAddress from "@/components/layouts/Profile/ProfileAddress/ProfileAddress";
 import { getAddressGHN, getAddresses } from "@/redux/slices/addressSlice";
 import React, { useEffect } from "react";
@@ -18,7 +19,7 @@ export default function ProfileAddressPage() {
     }, [address, deleted]);
 
     if (addressFetchStatus == "loading") {
-        return <CirLoading />;
+        return <ProgressLoading />;
     }
 
     return (

@@ -91,6 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('coupons', CouponController::class);
 
+    Route::post('/coupons/check', [CouponUsageController::class, 'checkCoupon']);
+
     Route::apiResource('coupon_usages', CouponUsageController::class);
 
     Route::apiResource('sellers', SellerController::class);

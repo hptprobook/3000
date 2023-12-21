@@ -48,10 +48,10 @@ export default function OrderPage() {
         totalLength = 0;
 
     cartWithIds.forEach((item) => {
-        totalHeight += item.product.height || 0;
-        totalWeight += item.product.weight || 0;
-        totalWidth += item.product.width || 0;
-        totalLength += item.product.length || 0;
+        totalHeight += item.product.height || 1;
+        totalWeight += item.product.weight || 1;
+        totalWidth += item.product.width || 1;
+        totalLength += item.product.length || 1;
     });
 
     const cartStatus = useSelector((state) => state.carts.status);
