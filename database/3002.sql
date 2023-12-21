@@ -84,9 +84,9 @@ CREATE TABLE `cart_items` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `cart_id` bigint(20) unsigned NOT NULL,
   `product_id` bigint(20) unsigned NOT NULL,
-  `quantity` bigint(20) unsigned NOT NULL,
+  `quantity` int(20) unsigned NOT NULL,
   `variants` varchar(128) NOT NULL,
-  `price` int(20) unsigned DEFAULT NULL,
+  `price` float unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `cart_items_product_id_foreign` (`product_id`),
   KEY `cart_items_cart_id_foreign` (`cart_id`),
@@ -289,7 +289,7 @@ CREATE TABLE `order_details` (
   `product_id` bigint(20) unsigned NOT NULL,
   `quantity` int(10) unsigned NOT NULL,
   `variants` varchar(255) NOT NULL,
-  `price` int(10) unsigned NOT NULL,
+  `price` float unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `order_details_product_id_foreign` (`product_id`),
   KEY `order_details_order_id_foreign` (`order_id`),
@@ -319,8 +319,8 @@ CREATE TABLE `orders` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) unsigned NOT NULL,
   `total_amount` bigint(20) unsigned NOT NULL,
-  `ship_fee` int(11) unsigned NOT NULL,
-  `discount` int(11) DEFAULT NULL,
+  `ship_fee` float unsigned NOT NULL,
+  `discount` float DEFAULT NULL,
   `address_id` bigint(20) unsigned NOT NULL,
   `status` varchar(50) NOT NULL,
   `note` varchar(255) DEFAULT NULL,
@@ -380,7 +380,7 @@ CREATE TABLE `payments` (
   `order_id` bigint(20) unsigned NOT NULL,
   `method` varchar(64) NOT NULL,
   `status` varchar(64) NOT NULL,
-  `amount` int(10) unsigned NOT NULL,
+  `amount` float unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -525,7 +525,7 @@ CREATE TABLE `product_variants` (
   `product_id` bigint(20) unsigned NOT NULL,
   `variant_type_id` bigint(20) unsigned NOT NULL,
   `value` varchar(128) NOT NULL,
-  `price` int(20) NOT NULL,
+  `price` float NOT NULL,
   PRIMARY KEY (`id`),
   KEY `product_variants_product_id_foreign` (`product_id`),
   KEY `product_variants_variant_type_id_foreign` (`variant_type_id`),
@@ -806,4 +806,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-21 21:28:27
+-- Dump completed on 2023-12-21 22:06:34
