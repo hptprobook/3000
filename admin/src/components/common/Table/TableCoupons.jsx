@@ -175,7 +175,7 @@ export default function TableCoupons({ data, onDeleteCoupon }) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    const handleDeleteTag = (id) => {
+    const handleDeleteCoupon = (id) => {
         onDeleteCoupon(id);
     };
     const handleRequestSort = (event, property) => {
@@ -285,7 +285,7 @@ export default function TableCoupons({ data, onDeleteCoupon }) {
                                         <CustomTableCell align="left">{row.end_date}</CustomTableCell>
 
                                         <CustomTableCell align="right">
-                                            <NavLink to={'/coupons/edit/' + row.id}>
+                                            <NavLink to={'/coupon/edit/' + row.id}>
                                                 <Tooltip title="Sửa" >
                                                     <IconButton sx={{
                                                         color: '#9da4ae',
@@ -301,7 +301,7 @@ export default function TableCoupons({ data, onDeleteCoupon }) {
                                                     color: '#9da4ae',
                                                     marginRight: '8px'
                                                 }}
-                                                    onClick={(e) => handleDeleteTag(row.id)}
+                                                    onClick={(e) => handleDeleteCoupon(row.id)}
                                                 >
                                                     <MdDelete style={{ fontSize: '16px' }} />
                                                 </IconButton>

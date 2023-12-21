@@ -1,32 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography, colors } from "@mui/material";
 import HeaderPage from "../../../components/common/HeaderPage/HeaderPage";
-import TinyEditor from "../../../components/common/TinyEditor/TinyEditor";
-import TinyEditorMini from "../../../components/common/TinyEditor/TinyEditorMini";
-import { storageFirebase } from "../../../config/firebaseConfig";
 import styled from "@emotion/styled";
-import color from "../../../config/colorConfig";
 import InputEdit from "../../../components/common/TextField/InputEdit";
 import InfoBox from "../../../components/common/Box/InforBox";
 import SelectEdit from "../../../components/common/Select/SelectEdit";
-import { v4 } from 'uuid';
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import ImageDropZone from "../../../components/common/DropZoneUpload/DropZoneImage";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
-import Loading from "../../../components/common/Loading/Loading";
-import { fetchAllBrands } from "../../../redux/slices/brandsSlice";
-import { fetchAllTags } from "../../../redux/slices/tagsSlice";
-import AutoFillTag from "../../../components/common/AutoCompelete/AutoFillTag";
 import ButtonNormal from "../../../components/common/Button/ButtonNormal";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import AutoVariant from "../../../components/common/AutoCompelete/AutoVariant";
-import { fetchVariant } from "../../../redux/slices/variantSlice";
-import ListVariantSelect from "../../../components/common/List/ListVariantSelect";
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
-import { createProduct } from "../../../redux/slices/productSlice";
 import { createCoupon, resetState } from "../../../redux/slices/couponsSlice";
 
 

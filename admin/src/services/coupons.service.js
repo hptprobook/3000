@@ -12,9 +12,9 @@ const CouponsService = {
             throw err;
         }
     },
-    getOneBrand: async (id) => {
+    getCoupon: async (id) => {
         try {
-            const res = await request.get(`brands/${id}`);
+            const res = await request.get(`coupons/${id}`);
             return res;
         } catch (err) {
             throw err;
@@ -28,21 +28,19 @@ const CouponsService = {
             throw err;
         }
     },
-    deleteBrandByID: async (id) => {
+    deleteCouponByID: async (id) => {
         try {
-            const res = await request.delete(`brands/${id}`);
+            const res = await request.delete(`coupons/${id}`);
             return res.data;
         } catch (err) {
-            console.log("Error: ", err);
             throw err;
         }
     },
-    updateBrandByID: async (id, data) => {
+    updateCouponByID: async (id, data) => {
         try {
-            const res = await request.put(`brands/${id}`, data);
+            const res = await request.put(`coupons/${id}`, data);
             return res.data;
         } catch (err) {
-            console.log("Error: ", err);
             throw err;
         }
     },

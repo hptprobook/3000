@@ -9,7 +9,8 @@ import Loading from "../../../components/common/Loading/Loading";
 import { deleteTagByID, fetchAllTags, setStatus } from "../../../redux/slices/tagsSlice";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 import TableCoupons from "../../../components/common/Table/TableCoupons";
-import { fetchAllCoupons } from "../../../redux/slices/couponsSlice";
+import { deleteCouponById, fetchAllCoupons, resetState } from "../../../redux/slices/couponsSlice";
+import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 
 
 export default function ListCouponsPage() {
@@ -18,9 +19,12 @@ export default function ListCouponsPage() {
     const coupons = useSelector((state) => state.coupons.data);
     const status = useSelector((state) => state.coupons.status);
     // const dataReturn = useSelector((state) => state.tags.delete);
-    // const statusDelete = useSelector((state) => state.tags.statusDelete);
+    const statusDelete = useSelector((state) => state.coupons.statusDelete);
     const [dataCoupons, setDataCoupons] = useState([]);
     const [loadData, setLoadData] = useState(false);
+    const [successDelete, setSuccessDelete] = useState(false);
+
+
     useEffect(() => {
         if (loadData == false) {
             dispatch(fetchAllCoupons());
@@ -32,13 +36,18 @@ export default function ListCouponsPage() {
             setLoadData(true);
         }
     }, [status]);
-    // useEffect(() => {
-    //     if (statusDelete == 'delete') {
-    //         setLoadData(false);
-    //     }
-    // }, [statusDelete]);
+    useEffect(() => {
+        if (statusDelete == 'success') {
+            setSuccessDelete(true);
+            dispatch(resetState())
+            setTimeout(() => {
+                setSuccessDelete(true);
+                setLoadData(false);
+            }, 3000)
+        }
+    }, [statusDelete]);
     const handleDeleteCoupon = (value) => {
-        dispatch(deleteTagByID({ id: value }));
+        dispatch(deleteCouponById({ id: value }));
     }
     const handleSearch = (searchValue) => {
         const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
@@ -48,7 +57,6 @@ export default function ListCouponsPage() {
             setDataCoupons(coupons);
         }
     };
-    console.log(coupons)
     if (status === 'loading') {
         return (
             <Loading />
@@ -59,10 +67,10 @@ export default function ListCouponsPage() {
             <div>Error</div>
         )
     }
-    if (status === 'success') {
+    if (loadData) {
         return (
             <Box>
-                {/* {statusDelete === 'loading delete' ? <LinearIndeterminate /> : null} */}
+                {successDelete ? <BasicAlertl label={'Xóa mã giảm giá thành công'} severity={'success'} /> : null}
 
                 <HeaderPage
                     namePage={"Mã giảm giá"}

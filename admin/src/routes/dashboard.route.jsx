@@ -26,6 +26,7 @@ import { DetailOrderPage } from "../pages/Order/Detail/DetailOrderPage";
 import EditProductPage from "../pages/Product/Edit/EditProductPage";
 import ListCouponsPage from "../pages/Coupons/List/ListCouponsPage";
 import CreateCouponPage from "../pages/Coupons/Create/CreateCouponPage";
+import EditCouponPage from "../pages/Coupons/Edit/EditCouponPage";
 
 function DashboardRoute() {
     return (
@@ -55,6 +56,8 @@ function DashboardRoute() {
 
             <Route path="coupon/list" element={<ListCouponsPage />} />
             <Route path="coupon/create" element={<CreateCouponPage />} />
+            <Route path="coupon/edit/:id" element={<EditCouponPage />} />
+
 
 
             <Route path="order/detail/:id" element={<DetailOrderPage />} />

@@ -43,11 +43,9 @@ export default function BarChartDashboardMoney({ data }) {
     }
 
 
-    console.log(xLabels);
     const orderTotal = {
         total: Array(4).fill(0), // 4 weeks * 7 days = 28
     };
-    console.log(data)
     for (let i = 0; i < xLabels.length; i++) {
         const [startPart, endPart] = xLabels[i].split(' - ');
         const rangeStartDate = formatDayMonth(startPart);
@@ -55,12 +53,7 @@ export default function BarChartDashboardMoney({ data }) {
         data.forEach(order => {
             const orderDate = new Date(order.created_at); // Assuming 'created_at' is a valid date string in ISO format
             const formattedOrderDate = formatDayMonth(orderDate); // Use the same format as xLabel
-            // Check if the order date is within the specified range
-            console.log(rangeStartDate, '>', formattedOrderDate, '>', rangeEndDate);
             if (formattedOrderDate >= rangeStartDate && formattedOrderDate <= rangeEndDate) {
-
-
-                // Tăng số lượng đơn hàng cho ngày đó và trạng thái tương ứng
                 const orderStatus = order.status;
                 const orderTotalAmount = order.total_amount;
                 if (orderStatus === 'delivered') {
