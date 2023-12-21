@@ -164,7 +164,9 @@ export default function ProductDetailAdd({ data }) {
                     }
                 })
                 .catch(() => {
-                    //
+                    toast.error("Có lỗi xảy ra, vui lòng thử lại sau", {
+                        autoClose: 3000,
+                    });
                 });
         }
     };

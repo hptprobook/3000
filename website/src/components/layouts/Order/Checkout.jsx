@@ -8,6 +8,7 @@ import { addOrder } from "@/redux/slices/orderSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { addCoupon } from "@/redux/slices/couponSlice";
+import useAuth from "@/hooks/useAuth";
 
 const StyledCheckout = styled("div")(() => ({
     padding: "20px 16px",
@@ -170,7 +171,7 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                         fontWeight: "500",
                     }}
                 >
-                    {finalPrice.toLocaleString()}đ
+                    {finalPrice?.toLocaleString()}đ
                 </span>
             </div>
             <button

@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import { useOrderAddressContext } from "@/provider/OrderAddressContext";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const StyledOrderAddress = styled("div")(({ isDefault = false }) => ({
     marginTop: "24px",
@@ -91,6 +92,12 @@ export default function OrderAddress() {
                         </Grid>
                     ))}
                 </Grid>
+                <Link
+                    href={"/profile/address/create"}
+                    style={{ color: "var(--link-color)" }}
+                >
+                    Thêm địa chỉ mới
+                </Link>
             </StyledOrderAddress>
         </div>
     );

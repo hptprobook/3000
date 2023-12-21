@@ -36,6 +36,9 @@ const StyledCategoryContainer = styled("div")(() => ({
 }));
 
 export default function CategoryContainer({ data }) {
+    if (!data || data?.length === 0) {
+        return <EmptyProduct />;
+    }
     const tabs = [
         "Phổ biến",
         "Bán chạy",

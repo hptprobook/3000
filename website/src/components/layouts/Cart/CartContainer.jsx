@@ -12,6 +12,8 @@ import { deleteCartById, fetchAllCart } from "@/redux/slices/cartSlice";
 import { toast } from "react-toastify";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import EmptyData from "@/components/common/Middleware/EmptyData";
+import useAuth from "@/hooks/useAuth";
+import NotAuth from "@/components/common/Middleware/NotAuth";
 
 const StyledCartContainer = styled("div")(() => ({
     "& .cart-item__header": {
@@ -73,7 +75,7 @@ const StyledCartContainer = styled("div")(() => ({
 }));
 
 export default function CartContainer({ data }) {
-    if (data?.length === 0) {
+    if (data?.length === 0 || !data) {
         return <EmptyData text={"Không có sản phẩm nào trong giỏ hàng"} />;
     }
 

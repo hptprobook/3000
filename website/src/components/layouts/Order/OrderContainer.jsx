@@ -48,7 +48,7 @@ const StyledOrderContainer = styled("div")(() => ({
 }));
 
 export default function OrderContainer({ data }) {
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
         return <EmptyData text={"Không có sản phẩm nào được chọn"} />;
     }
 

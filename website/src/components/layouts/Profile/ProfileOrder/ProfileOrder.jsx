@@ -177,6 +177,9 @@ const StyledProfileOrder = styled("div")(({ isActive }) => ({
 }));
 
 export default function ProfileOrder({ data }) {
+    if (data?.error == "Orders are empty") {
+        return <div>Đơn hàng trống</div>;
+    }
     const [activeTab, setActiveTab] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
     const dispatch = useDispatch();
