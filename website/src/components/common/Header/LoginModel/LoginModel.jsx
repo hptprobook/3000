@@ -14,6 +14,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import SignupForm from "../../TextField/SignupForm/SignupForm";
+import ProgressLoading from "../../Loading/ProgressLoading/ProgressLoading";
+import { useRouter } from "next/navigation";
 
 const validateLogin = (value) => {
     let error;
@@ -46,6 +48,7 @@ const LoginModal = ({ isOpen, onClose }) => {
     );
     const [isToastShown, setToastShown] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
+    const router = useRouter();
 
     const formik = useFormik({
         initialValues: {
@@ -53,13 +56,14 @@ const LoginModal = ({ isOpen, onClose }) => {
             password: "",
         },
         validationSchema: loginSchema,
-        onSubmit: async (values, { setSubmitting, setErrors }) => {
-            await dispatch(
+        onSubmit: (values, { setSubmitting, setErrors }) => {
+            dispatch(
                 loginUser({
                     login: values.login,
                     password: values.password,
                 })
             );
+            router.push("/");
 
             setSubmitting(false);
         },
@@ -101,7 +105,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         <div className="loginModal" style={{ zIndex: "99999999" }}>
             <div className="loginModal__backdrop" onClick={onClose}></div>
             <div className="loginModal__content">
-                {loading && <CirLoading />}
+                {loading && <ProgressLoading />}
                 <button className="loginModal__closeBtn" onClick={onClose}>
                     <CancelIcon sx={{ fontSize: "32px" }} />
                 </button>

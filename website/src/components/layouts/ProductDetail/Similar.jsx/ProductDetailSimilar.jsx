@@ -9,6 +9,7 @@ import "swiper/css/pagination";
 import { Autoplay, Grid } from "swiper/modules";
 import "./style.css";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import { generateProductHref } from "@/utils/generateHref";
 
 const StyledProductDetailSimilar = styled("div")(() => ({
     width: "100%",
@@ -35,7 +36,7 @@ export default function ProductDetailSimilar({ data }) {
             <h4>Sản phẩm tương tự</h4>
             <Swiper
                 slidesPerView={3}
-                navigation={true}
+                navigation={false}
                 autoplay={{
                     delay: 7500,
                     disableOnInteraction: false,
@@ -43,7 +44,6 @@ export default function ProductDetailSimilar({ data }) {
                 grid={{
                     rows: 2,
                 }}
-                // navigation={true}
                 spaceBetween={12}
                 modules={[Grid, Autoplay]}
                 className="productDetailSimilar"
@@ -54,7 +54,10 @@ export default function ProductDetailSimilar({ data }) {
                             name={product?.name}
                             price={product?.price}
                             imgUrl={product?.thumbnail}
-                            href={"#"}
+                            href={generateProductHref(
+                                product?.name,
+                                product?.id
+                            )}
                         />
                     </SwiperSlide>
                 ))}

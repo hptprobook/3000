@@ -1,12 +1,15 @@
 "use client";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
+import NotAuth from "@/components/common/Middleware/NotAuth";
 import ProfileAddress from "@/components/layouts/Profile/ProfileAddress/ProfileAddress";
+import useAuth from "@/hooks/useAuth";
 import { getAddressGHN, getAddresses } from "@/redux/slices/addressSlice";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function ProfileAddressPage() {
+    const isAuth = useAuth();
     const dispatch = useDispatch();
 
     const addresses = useSelector((state) => state.addresses);
@@ -20,6 +23,10 @@ export default function ProfileAddressPage() {
 
     if (addressFetchStatus == "loading") {
         return <ProgressLoading />;
+    }
+
+    if (!isAuth) {
+        return <NotAuth />;
     }
 
     return (

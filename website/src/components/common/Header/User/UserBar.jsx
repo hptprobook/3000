@@ -16,6 +16,7 @@ import { logoutUser } from "@/redux/slices/authSlice";
 import "./style.css";
 import { useDispatch, useSelector } from "react-redux";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
+import { useRouter } from "next/navigation";
 
 const UserBarContainer = styled("div")(() => ({}));
 
@@ -53,6 +54,7 @@ export default function UserBar() {
     const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
     const isLoggedIn = useAuth();
     const dispatch = useDispatch();
+    const router = useRouter();
 
     const handleLoginClick = () => {
         if (!isLoggedIn) {
@@ -62,6 +64,7 @@ export default function UserBar() {
 
     const handleLogout = async () => {
         if (isLoggedIn) {
+            router.refresh();
             dispatch(logoutUser());
         }
     };

@@ -12,6 +12,9 @@ const StyledAddressCheckout = styled("div")(() => ({
 }));
 
 export default function AddressCheckout({ data }) {
+    if (!data) {
+        return <div>Cõ lỗi xảy ra</div>;
+    }
     const { selectAddress, selectedAddress } = useOrderAddressContext();
 
     let defaultAddress = "";
