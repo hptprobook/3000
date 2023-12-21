@@ -19,6 +19,14 @@ const ProductsService = {
             throw err;
         }
     },
+    deleteProductById: async (id) => {
+        try {
+            const res = await request.delete(`products/${id}`);
+            return res.data;
+        } catch (err) {
+            throw err;
+        }
+    },
     createProduct: async (data) => {
         try {
             const res = await request.post(`products`, data);

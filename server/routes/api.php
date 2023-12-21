@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 // Auth
 Route::post('/login', [AuthController::class, 'login']);
+
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 
@@ -60,6 +61,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('users/current_user', [UserController::class, 'getCurrentUser']);
     Route::put('users/updateCurrentUser', [UserController::class, 'updateCurrentUser']);
     Route::apiResource('users', UserController::class);
+    Route::get('/is_admin', [AuthController::class, 'isAdmin']);
 
     Route::apiResource('addresses', AddressController::class);
 

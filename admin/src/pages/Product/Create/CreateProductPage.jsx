@@ -5,6 +5,7 @@ import TinyEditor from "../../../components/common/TinyEditor/TinyEditor";
 import TinyEditorMini from "../../../components/common/TinyEditor/TinyEditorMini";
 import { storageFirebase } from "../../../config/firebaseConfig";
 import styled from "@emotion/styled";
+import { FaPercentage } from "react-icons/fa";
 import color from "../../../config/colorConfig";
 import InputEdit from "../../../components/common/TextField/InputEdit";
 import InfoBox from "../../../components/common/Box/InforBox";
@@ -27,6 +28,7 @@ import ListVariantSelect from "../../../components/common/List/ListVariantSelect
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 import { createProduct } from "../../../redux/slices/productSlice";
+import { TbCurrencyDong } from "react-icons/tb";
 
 const fetchAllData = () => async (dispatch) => {
     try {
@@ -188,58 +190,40 @@ export default function CreateProductPage() {
                 setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
             } else {
                 setCreateError(false);
-                if (listVariant.length < 1) {
+                if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
                     setCreateError(true);
-                    setCreateErrorHelp('Vui lòng nhập biến thể!');
+                    setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
                 }
                 else {
                     setCreateError(false);
-                    if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
+                    if (detail == '') {
                         setCreateError(true);
-                        setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
+                        setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
                     }
                     else {
                         setCreateError(false);
-                        if (detail == '') {
+                        if (imglist.length < 1) {
                             setCreateError(true);
-                            setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
+                            setCreateErrorHelp('Vui lòng tải ảnh sản phẩm!');
                         }
                         else {
                             setCreateError(false);
-                            if (imglist.length < 1) {
-                                setCreateError(true);
-                                setCreateErrorHelp('Vui lòng tải ảnh sản phẩm!');
+                            let variants = listVariant.map(item => {
+                                const { id, ...rest } = item;
+                                return rest;
+                            });
+                            if (taglist !== '') {
+                                values['tags'] = taglist;
                             }
-                            else {
-                                setCreateError(false);
-                                let variants = listVariant.map(item => {
-                                    const { id, ...rest } = item;
-                                    return rest;
-                                });
-                                if (taglist !== '') {
-                                    values['tags'] = taglist;
-                                }
-                                values['detail'] = detail;
-                                values['short_desc'] = short_desc;
-                                values['category_id'] = category_id;
-                                values['variants'] = variants;
-                                handleUploadFireBase('banrh', imglist, values);
-                            }
+                            values['detail'] = detail;
+                            values['short_desc'] = short_desc;
+                            values['category_id'] = category_id;
+                            values['variants'] = variants;
+                            handleUploadFireBase('banrh', imglist, values);
                         }
                     }
                 }
             }
-            // const payload = {
-            //     name: values.name,
-            //     phone: values.phone,
-            //     province_id,
-            //     district_id,
-            //     street: values.address,
-            //     ward_id: ward_code,
-            //     address_info: fullAddress,
-            //     default: values.isDefault,
-            // };
-
         },
     });
     useEffect(() => {
@@ -376,8 +360,8 @@ export default function CreateProductPage() {
         }
     }
     // debug
-    if (statusLoad === "loading" && statusLoadVariant !== "success") {
-        return <div><Loading /></div>;
+    if (statusLoadVariant === "loading") {
+        return <div><Loading /></div>
     }
     if (statusLoadVariant === "success") {
         return (
@@ -432,6 +416,7 @@ export default function CreateProductPage() {
                             </DivMargin>
                             <DivMargin>
                                 <InputEdit
+                                    icon={<TbCurrencyDong />}
                                     id={'price'}
                                     label={'Giá'}
                                     value={formik.values.price}
@@ -450,11 +435,13 @@ export default function CreateProductPage() {
                             <DivMargin>
                                 <InputEdit
                                     id={'discount'}
+                                    icon={<FaPercentage />}
                                     label={'Giảm giá'}
                                     value={formik.values.discount}
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
                                     name={'discount'}
+                                    note={'Không bắt buộc'}
                                     error={
                                         formik.touched.discount &&
                                         Boolean(formik.errors.discount)
@@ -581,7 +568,7 @@ export default function CreateProductPage() {
                                 </Grid>
                             </DivMargin>
                         </InfoBox>
-                        <InfoBox title="Biến thể">
+                        <InfoBox title="Biến thể (Không bắt buộc)">
                             <DivMargin>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} md={4}>
