@@ -62,7 +62,7 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $user = User::with(['addresses.ward', 'orders'])->findOrFail($id);
+            $user = User::with(['addresses', 'orders'])->findOrFail($id);
 
             return response()->json($user, Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
