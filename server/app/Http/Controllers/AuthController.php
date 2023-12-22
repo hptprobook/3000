@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -76,6 +77,8 @@ class AuthController extends Controller
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
             ]);
+
+            Cart::create(['user_id' => $user->id]);
 
             return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {

@@ -5,6 +5,7 @@ const initialState = {
     loading: false,
     error: "",
     user: null,
+    changedPassword: null,
     registerData: null,
     access_token: null,
 };
@@ -45,6 +46,21 @@ export const logoutUser = createAsyncThunk("auth/logout", async (thunkAPI) => {
     }
 });
 
+export const changePassword = createAsyncThunk(
+    "auth/changePassword",
+    async (data, thunkAPI) => {
+        try {
+            const response = await AuthService.changePassword(data);
+            if (response.error) {
+                return thunkAPI.rejectWithValue(response.message);
+            }
+            return response.data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
 const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -68,6 +84,19 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = action.payload.user;
                 state.access_token = action.payload.access_token;
+            })
+            .addCase(changePassword.pending, (state) => {
+                state.loading = true;
+                state.error = false;
+            })
+            .addCase(changePassword.rejected, (state, action) => {
+                state.error = action.payload;
+                state.loading = false;
+            })
+            .addCase(changePassword.fulfilled, (state, action) => {
+                state.error = false;
+                state.loading = false;
+                state.changedPassword = action.payload;
             })
             .addCase(register.pending, (state) => {
                 state.loading = true;

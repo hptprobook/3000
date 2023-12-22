@@ -109,7 +109,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <button className="loginModal__closeBtn" onClick={onClose}>
                     <CancelIcon sx={{ fontSize: "32px" }} />
                 </button>
-                <h2 onClick={formik.handleSubmit}>Xin chào</h2>
+                <h2>Xin chào</h2>
                 <p style={{ marginTop: "12px" }}>
                     Đăng nhập hoặc tạo tài khoản
                 </p>

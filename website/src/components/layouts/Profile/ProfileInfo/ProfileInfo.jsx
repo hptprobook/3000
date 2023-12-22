@@ -12,7 +12,7 @@ import * as Yup from "yup";
 import { TextField } from "@mui/material";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import { updateCurrentUser } from "@/redux/slices/userSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
 const StyledProfileInfo = styled("div")(() => ({
@@ -127,7 +127,7 @@ const StyledProfileInfo = styled("div")(() => ({
 const updateUserSchema = Yup.object().shape({
     name: Yup.string()
         .required("Họ và tên không được để trống")
-        .min(5, "Giá trị không hợp lệ")
+        .min(2, "Giá trị không hợp lệ")
         .test(
             "two-words",
             "Họ và phải chứa ít nhất hai từ",
@@ -145,6 +145,7 @@ const updateUserSchema = Yup.object().shape({
 
 export default function ProfileInfo({ user }) {
     const dispatch = useDispatch();
+    const { updateUser, error } = useSelector((state) => state.users);
 
     const formik = useFormik({
         initialValues: {
@@ -154,25 +155,33 @@ export default function ProfileInfo({ user }) {
             gender: null,
         },
         validationSchema: updateUserSchema,
-        onSubmit: (value) => {
+        onSubmit: async (value, { setSubmitting }) => {
             const data = {
                 name: value.name,
                 phone_number: value.phone || null,
                 birth_date: value.birth_date,
-                gender: value.gender || null,
+                gender: value.gender || "other",
             };
-            console.log(data);
-            dispatch(updateCurrentUser(data))
-                .then(() => {
-                    toast.success("Cập nhật thông tin thành công", {
-                        autoClose: 2000,
-                    });
-                })
-                .catch((error) => {
-                    toast.error(error);
+
+            try {
+                await dispatch(updateCurrentUser(data)).unwrap();
+                toast.success("Cập nhật thông tin thành công", {
+                    autoClose: 2000,
                 });
+            } catch (err) {
+                toast.error("Số điện thoại đã tồn tại", {
+                    autoClose: 3000,
+                });
+            }
+            setSubmitting(false);
         },
     });
+
+    useEffect(() => {
+        if (error == "The phone number has already been taken.") {
+            formik.setErrors({ phone: "Số điện thoại đã tồn tại!" });
+        }
+    }, [error, formik.setErrors]);
 
     useEffect(() => {
         if (user) {
@@ -191,7 +200,7 @@ export default function ProfileInfo({ user }) {
 
     return (
         <StyledProfileInfo>
-            <form action="" onSubmit={formik.handleSubmit}>
+            <form onSubmit={formik.handleSubmit}>
                 <div className="left">
                     <p>Thông tin cá nhân</p>
                     <div className="first">
@@ -307,7 +316,7 @@ export default function ProfileInfo({ user }) {
                         <LockIcon />
                         <span>Đổi mật khẩu</span>
                     </div>
-                    <Link href={""}>
+                    <Link href={"/profile/changePassword"}>
                         <button className="update">Cập nhật</button>
                     </Link>
                 </div>

@@ -12,6 +12,7 @@ import FlashSaleProduct from "@/components/common/Home/FlashSaleProduct/FlashSal
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllProducts } from "@/redux/slices/productSlice";
 import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { generateProductHref } from "@/utils/generateHref";
 
 function FlashSale() {
     const [timeLeft, setTimeLeft] = useState({
@@ -115,12 +116,17 @@ function FlashSale() {
                         .slice(0, 12)
                         .map((item) => (
                             <SwiperSlide key={item.id}>
-                                <Link href={"/"}>
+                                <Link
+                                    href={generateProductHref(
+                                        item?.name,
+                                        item?.id
+                                    )}
+                                >
                                     <FlashSaleProduct
-                                        discount={item.discount}
-                                        name={item.name}
-                                        imgUrl={item.thumbnail}
-                                        price={item.price}
+                                        discount={item?.discount}
+                                        name={item?.name}
+                                        imgUrl={item?.thumbnail}
+                                        price={item?.price}
                                     />
                                 </Link>
                             </SwiperSlide>
@@ -131,4 +137,4 @@ function FlashSale() {
     );
 }
 
-export default memo(FlashSale);
+export default FlashSale;

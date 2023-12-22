@@ -10,8 +10,13 @@ import { toast } from "react-toastify";
 const registerSchema = Yup.object().shape({
     name: Yup.string()
         .required("Tên người dùng là bắt buộc")
-        .min(5, "Tên phải có ít nhất 5 ký tự")
-        .max(50, "Tên không được quá 50 ký tự"),
+        .min(3, "Tên phải có ít nhất 3 ký tự")
+        .max(128, "Tên không được quá 128 ký tự")
+        .test(
+            "two-words",
+            "Họ và phải chứa ít nhất hai từ",
+            (value) => value && value.trim().split(/\s+/).length >= 2
+        ),
     email: Yup.string()
         .required("Email là bắt buộc")
         .email("Email không hợp lệ"),

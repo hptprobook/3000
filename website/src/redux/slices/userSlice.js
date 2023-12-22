@@ -43,6 +43,9 @@ export const updateCurrentUser = createAsyncThunk(
     async (user, { rejectWithValue }) => {
         try {
             const response = await UserService.updateCurrentUser(user);
+            if (response.error) {
+                return rejectWithValue(response.message);
+            }
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);

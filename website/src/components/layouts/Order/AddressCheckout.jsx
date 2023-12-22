@@ -71,7 +71,12 @@ export default function AddressCheckout({ data }) {
                         Bạn chưa có địa chỉ giao hàng?
                     </p>
                     <Link
-                        href={"/profile/address/create"}
+                        href={{
+                            pathname: "/profile/address/create",
+                            query: {
+                                isOrder: true,
+                            },
+                        }}
                         style={{
                             marginTop: "8px",
                             color: "var(--link-color)",

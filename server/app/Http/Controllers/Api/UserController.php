@@ -127,19 +127,19 @@ class UserController extends Controller
         try {
             $user = Auth::user();
 
-            $validatedData = $request->validate([
+            $request->validate([
                 'name' => 'sometimes|string|max:255',
-                'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
                 'phone_number' => 'sometimes|min:9|max:10|unique:users,phone_number,' . $user->id,
                 'gender' => 'sometimes|in:male,female,other',
                 'birth_date' => 'sometimes|date_format:Y-m-d'
             ]);
 
-            if ($request->has('password')) {
-                $validatedData['password'] = Hash::make($request->password);
-            }
-
-            $user->fill($validatedData)->save();
+            $user = $user->update([
+                'name' => $request->name,
+                'phone_number' => $request->phone_number,
+                'gender' => $request->gender,
+                'birth_date' => $request->birth_date,
+            ]);
 
             return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {

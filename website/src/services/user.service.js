@@ -42,7 +42,10 @@ const UserService = {
             const res = await request.put("users/updateCurrentUser", user);
             return res;
         } catch (err) {
-            return err.response;
+            return {
+                error: true,
+                message: err.response?.data?.errors,
+            };
         }
     },
 };

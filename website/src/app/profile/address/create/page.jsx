@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getAddressGHN } from "@/redux/slices/addressSlice";
+import { useParams, useSearchParams } from "next/navigation";
 
 const theme = createTheme({
     typography: {
@@ -13,6 +14,9 @@ const theme = createTheme({
 
 export default function CreateAddressPage() {
     const dispatch = useDispatch();
+    const params = useSearchParams();
+    const isOrder = params.get("isOrder");
+    const isOrdered = params.get("isOrdered");
 
     const addressGHN = useSelector((state) => state.addresses.addressGHN);
     const addressGHNfetchStatus = useSelector(
@@ -25,7 +29,11 @@ export default function CreateAddressPage() {
 
     return (
         <ThemeProvider theme={theme}>
-            <ProfileCreateAddress provinces={addressGHN} />
+            <ProfileCreateAddress
+                provinces={addressGHN}
+                isOrder={isOrder}
+                isOrdered={isOrdered}
+            />
         </ThemeProvider>
     );
 }

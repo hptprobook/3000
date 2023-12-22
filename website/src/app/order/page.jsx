@@ -45,17 +45,19 @@ export default function OrderPage() {
 
     const dispatch = useDispatch();
     const cartWithIds = useSelector((state) => state.carts.cartWithIds);
-    let totalHeight = 0,
-        totalWeight = 0,
-        totalWidth = 0,
-        totalLength = 0;
+    let totalHeight = 1,
+        totalWeight = 1,
+        totalWidth = 1,
+        totalLength = 1;
 
-    cartWithIds.forEach((item) => {
-        totalHeight += item.product.height || 1;
-        totalWeight += item.product.weight || 1;
-        totalWidth += item.product.width || 1;
-        totalLength += item.product.length || 1;
-    });
+    if (typeof cartWithIds === "array") {
+        cartWithIds?.forEach((item) => {
+            totalHeight += item.product.height || 1;
+            totalWeight += item.product.weight || 1;
+            totalWidth += item.product.width || 1;
+            totalLength += item.product.length || 1;
+        });
+    }
 
     const cartStatus = useSelector((state) => state.carts.status);
 
@@ -67,11 +69,9 @@ export default function OrderPage() {
         addresses.addresses?.find((address) => address.default === 1);
 
     useEffect(() => {
-        if (addressFetchStatus == "idle") {
-            dispatch(getAddresses());
-        }
+        dispatch(getAddresses());
         setAddressesList(addresses.addresses);
-    }, [addressFetchStatus]);
+    }, []);
 
     const feeData = {
         service_id: 53320,

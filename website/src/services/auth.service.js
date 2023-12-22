@@ -31,6 +31,17 @@ const AuthService = {
             return err.response;
         }
     },
+    changePassword: async (data) => {
+        try {
+            const res = await request.post("changePassword", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response?.data?.error,
+            };
+        }
+    },
 };
 
 export default AuthService;
