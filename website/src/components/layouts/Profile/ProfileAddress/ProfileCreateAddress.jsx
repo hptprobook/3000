@@ -80,7 +80,11 @@ const StyledProfileCreateAddress = styled("div")(() => ({
     },
 }));
 
-export default function ProfileCreateAddress({ provinces }) {
+export default function ProfileCreateAddress({
+    provinces,
+    isOrder,
+    isOrdered,
+}) {
     const [selectedProvinceId, setSelectedProvinceId] = useState(null);
     const [selectedDistrictId, setSelectedDistrictId] = useState(null);
     const [selectedWardId, setSelectedWardId] = useState(null);
@@ -187,9 +191,15 @@ export default function ProfileCreateAddress({ provinces }) {
                     toast.success("Thêm mới địa chỉ thành công", {
                         autoClose: 2000,
                     });
-                    setTimeout(() => {
-                        router.push("/profile/address");
-                    }, 1000);
+                    if (isOrder) {
+                        setTimeout(() => {
+                            router.back();
+                        }, 1000);
+                    } else {
+                        setTimeout(() => {
+                            router.push("/profile/address");
+                        }, 1000);
+                    }
                 })
                 .catch((error) => {
                     toast.error(error);

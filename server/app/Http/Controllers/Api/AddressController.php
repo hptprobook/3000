@@ -25,7 +25,7 @@ class AddressController extends Controller
             $user = Auth::user();
             $userId = $user->id;
 
-            $addresses = Address::where('user_id', $userId)->with(['ward'])->get();
+            $addresses = Address::where('user_id', $userId)->get();
 
             return response()->json($addresses, Response::HTTP_OK);
         } catch (Exception $e) {

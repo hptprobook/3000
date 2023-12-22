@@ -1,10 +1,12 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Grid } from "@mui/material";
 import { useOrderAddressContext } from "@/provider/OrderAddressContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getAddresses } from "@/redux/slices/addressSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const StyledOrderAddress = styled("div")(({ isDefault = false }) => ({
     marginTop: "24px",
@@ -47,6 +49,20 @@ const StyledOrderAddress = styled("div")(({ isDefault = false }) => ({
 export default function OrderAddress() {
     const { selectAddress, addressesList } = useOrderAddressContext();
     const router = useRouter();
+    const dispatch = useDispatch();
+    const addressRedux = useSelector((state) => state.addresses.addresses);
+
+    const [addresses, setAddresses] = useState(addressRedux);
+
+    useEffect(() => {
+        if (addressesList.length === 0) {
+            dispatch(getAddresses());
+            console.log("haha");
+        } else {
+            setAddresses(addressesList);
+            console.log("hihi");
+        }
+    }, []);
 
     const handleSelectAddress = (address) => {
         selectAddress(address);
@@ -65,7 +81,7 @@ export default function OrderAddress() {
                     Chọn địa chỉ giao hàng có sẵn bên dưới
                 </p>
                 <Grid container className="container" spacing={3}>
-                    {addressesList?.map((address) => (
+                    {addresses?.map((address) => (
                         <Grid item xs={6} key={address.id}>
                             <div
                                 className="address_item"
@@ -92,12 +108,20 @@ export default function OrderAddress() {
                         </Grid>
                     ))}
                 </Grid>
-                <Link
-                    href={"/profile/address/create"}
-                    style={{ color: "var(--link-color)" }}
+                <div
+                    style={{
+                        marginTop: "20px",
+                    }}
                 >
-                    Thêm địa chỉ mới
-                </Link>
+                    <Link
+                        href={{
+                            pathname: "/profile/address/create",
+                        }}
+                        style={{ color: "var(--link-color)" }}
+                    >
+                        Thêm địa chỉ mới
+                    </Link>
+                </div>
             </StyledOrderAddress>
         </div>
     );
