@@ -156,35 +156,43 @@ export default function EditProductPage() {
     const formik = useFormik({
         validationSchema: productSchema,
         onSubmit: (values) => {
-            if (category_id == '') {
+            setCreateError(false);
+            if (createError && createErrorHelp !== '') {
                 setCreateError(true);
-                setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
-            } else {
-                setCreateError(false);
-                if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
+                setCreateError(createErrorHelp);
+            }
+            else {
+                if (category_id == '') {
                     setCreateError(true);
-                    setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
-                }
-                else {
+                    setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
+                } else {
                     setCreateError(false);
-                    if (detail == '') {
+                    if (short_desc == '') {
+                        setCreateErrorHelp('Mô tả ngắn không được rỗng!');
                         setCreateError(true);
-                        setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
                     }
                     else {
                         setCreateError(false);
-                        let variants = listVariant.map(item => {
-                            const { id, ...rest } = item;
-                            return rest;
-                        });
-                        if (taglist !== '') {
-                            values['tags'] = taglist;
+                        if (detail == '') {
+                            setCreateErrorHelp('Mô tả chi tiết không được rỗng!');
+                            setCreateError(true);
                         }
-                        values['detail'] = detail;
-                        values['short_desc'] = short_desc;
-                        values['category_id'] = category_id;
-                        values['variants'] = variants;
-                        dispatch(updateProduct({ id: id, data: values }));
+                        else {
+                            setCreateError(false);
+                            setSuccessUpdate(false);
+                            let variants = listVariant.map(item => {
+                                const { id, ...rest } = item;
+                                return rest;
+                            });
+                            if (taglist !== '') {
+                                values['tags'] = taglist;
+                            }
+                            values['detail'] = detail;
+                            values['short_desc'] = short_desc;
+                            values['category_id'] = category_id;
+                            values['variants'] = variants;
+                            dispatch(updateProduct({ id: id, data: values }));
+                        }
                     }
                 }
             }
@@ -199,23 +207,47 @@ export default function EditProductPage() {
         setChildCategories(child);
     }, [selectedCategory]);
 
-    const handleDetail = (value) => {
+    const handleValidateDetail = (value) => {
         if (value.length < 12) {
-            setCreateError('Mô tả chi tiết không ít hơn 12 kí tự');
+            console.log(value);
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả chi tiết không ít hơn 12 kí tự');
+        }
+        else if (value.length > 18000) {
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả chi tiết không nhiều hơn 18000 kí tự');
         }
         else {
-            setCreateError('');
-            setDetail(value);
+            setCreateError(false)
+            setCreateErrorHelp('');
         }
+    };
+    const handleDetail = (value) => {
+        setDetail(value);
     }
-    const handleShortDesc = (value) => {
-        if (value.length > 1000) {
-            setShort_descError('Mô tả ngắn không quá 1000 kí tự');
+    useEffect(() => {
+        handleValidateDetail(detail);
+    }, [detail]);
+    const handleValidateShortDesc = (value) => {
+        if (value.length > 1024) {
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả ngắn không quá 512 kí tự');
+        }
+        else if (value.length < 10) {
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả ngắn không ít hơn 10 kí tự');
         }
         else {
-            setShort_descError('');
-            setShort_desc(value);
+            setCreateError(false)
+            setCreateErrorHelp('');
         }
+
+    }
+    useEffect(() => {
+        handleValidateShortDesc(short_desc);
+    }, [short_desc]);
+    const handleShortDesc = (value) => {
+        setShort_desc(value);
     };
     const transformVariant = (originalData) => {
         const result = [];
