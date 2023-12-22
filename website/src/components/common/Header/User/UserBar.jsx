@@ -64,8 +64,8 @@ export default function UserBar() {
 
     const handleLogout = async () => {
         if (isLoggedIn) {
-            router.refresh();
             dispatch(logoutUser());
+            router.push("/");
         }
     };
 

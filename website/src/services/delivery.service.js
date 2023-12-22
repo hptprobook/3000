@@ -36,6 +36,17 @@ const DeliveryService = {
             return err.response;
         }
     },
+    getService: async (data) => {
+        try {
+            const res = await requestGHN.post(
+                "v2/shipping-order/available-services",
+                data
+            );
+            return res.data;
+        } catch (err) {
+            return err.response;
+        }
+    },
 };
 
 export default DeliveryService;

@@ -5,6 +5,7 @@ const initialState = {
     districts: [],
     wards: [],
     fee: null,
+    services: [],
     status: "idle",
     error: null,
 };
@@ -38,6 +39,18 @@ export const getFee = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await DeliveryService.getFee(data);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
+
+export const getService = createAsyncThunk(
+    "delivery/getService",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await DeliveryService.getService(data);
             return response;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -81,6 +94,17 @@ const addressSlice = createSlice({
                 state.fee = action.payload;
             })
             .addCase(getFee.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+            .addCase(getService.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(getService.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.services = action.payload;
+            })
+            .addCase(getService.rejected, (state, action) => {
                 state.status = "failed";
                 state.error = action.payload;
             });
