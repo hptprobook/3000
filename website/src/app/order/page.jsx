@@ -15,7 +15,7 @@ import {
 } from "@/provider/OrderAddressContext";
 import { getAddresses } from "@/redux/slices/addressSlice";
 import { fetchWithIds } from "@/redux/slices/cartSlice";
-import { getFee } from "@/redux/slices/deliverySlice";
+import { getFee, getService } from "@/redux/slices/deliverySlice";
 import { Grid } from "@mui/material";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -27,6 +27,10 @@ export default function OrderPage() {
     const [cartItemIds, setCartItemIds] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const { setAddressesList, selectedAddress } = useOrderAddressContext();
+
+    function isPlainObject(obj) {
+        return typeof obj === "object" && obj !== null && !Array.isArray(obj);
+    }
 
     useEffect(() => {
         const cartItemIds = searchParams.get("cartItemIds");
@@ -46,14 +50,14 @@ export default function OrderPage() {
     const dispatch = useDispatch();
     const cartWithIds = useSelector((state) => state.carts.cartWithIds);
     let totalHeight = 1,
-        totalWeight = 1,
+        totalWeight = 500,
         totalWidth = 1,
         totalLength = 1;
 
-    if (typeof cartWithIds === "array") {
+    if (Array.isArray(cartWithIds)) {
         cartWithIds?.forEach((item) => {
             totalHeight += item.product.height || 1;
-            totalWeight += item.product.weight || 1;
+            totalWeight += item.product.weight || 500;
             totalWidth += item.product.width || 1;
             totalLength += item.product.length || 1;
         });
@@ -64,17 +68,36 @@ export default function OrderPage() {
     const addresses = useSelector((state) => state.addresses);
     const addressFetchStatus = useSelector((state) => state.addresses.status);
     const fee = useSelector((state) => state.deliveries);
+    const services = useSelector((state) => state.deliveries.services);
+    const [serviceId, setServiceId] = useState(0);
     const targetAddress =
         selectedAddress ??
         addresses.addresses?.find((address) => address.default === 1);
 
+    const isTargetAddress = isPlainObject(targetAddress);
+
     useEffect(() => {
         dispatch(getAddresses());
         setAddressesList(addresses.addresses);
-    }, []);
+        if (targetAddress) {
+            dispatch(
+                getService({
+                    shop_id: 4689273,
+                    from_district: 1552,
+                    to_district: targetAddress?.district_id,
+                })
+            );
+        }
+    }, [isTargetAddress]);
+
+    useEffect(() => {
+        if (services && services.data) {
+            setServiceId(services.data[0].service_id);
+        }
+    }, [services]);
 
     const feeData = {
-        service_id: 53320,
+        service_id: serviceId,
         insurance_value: parseFloat(totalPrice),
         coupon: null,
         from_district_id: 1552,
@@ -87,10 +110,10 @@ export default function OrderPage() {
     };
 
     useEffect(() => {
-        if (targetAddress && cartWithIds) {
+        if (serviceId != 0) {
             dispatch(getFee(feeData));
         }
-    }, [targetAddress, cartWithIds]);
+    }, [targetAddress, cartWithIds, serviceId]);
 
     useEffect(() => {
         if (cartItemIds.length > 0) {
