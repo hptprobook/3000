@@ -131,13 +131,15 @@ export default function CreateProductPage() {
     }, [statusCreate])
     // upload anh
     const handleUploadFireBase = async (name, imgList, data) => {
-        const storageRef = ref(storageFirebase, `products/${name}/${v4()}`);
-        const uploadPromises = imgList.map((img) => {
+        const uploadImage = async (img) => {
             return new Promise((resolve, reject) => {
+                const storageRef = ref(storageFirebase, `products/${name}/${v4()}`);
+                // Replace 'your-storage-path/' with your desired storage path
                 const uploadTask = uploadBytesResumable(storageRef, img);
+
                 uploadTask.on('state_changed',
                     (snapshot) => {
-                        // Xử lý sự kiện thay đổi trạng thái
+                        // Handle state changes (if needed)
                         switch (snapshot.state) {
                             case 'running':
                                 setLoadingUpload(true);
@@ -146,28 +148,45 @@ export default function CreateProductPage() {
                         }
                     },
                     (error) => {
-                        reject(error); // Xử lý lỗi khi upload
+                        reject(error); // Handle upload error
                     },
                     () => {
-                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                            resolve(downloadURL); // Đưa ra URL khi upload thành công
-                        });
+                        getDownloadURL(uploadTask.snapshot.ref)
+                            .then((downloadURL) => {
+                                resolve(downloadURL); // Resolve with the download URL upon successful upload
+                            })
+                            .catch((error) => {
+                                reject(error); // Handle error while getting download URL
+                            });
                     }
                 );
             });
-        });
+        };
 
-        try {
-            const urls = await Promise.all(uploadPromises);
+        // Function to upload multiple images
+        const uploadMultipleImages = async () => {
+            const uploadedImageURLs = [];
+
+            for (const img of imgList) {
+                try {
+                    const downloadURL = await uploadImage(img);
+                    uploadedImageURLs.push(downloadURL);
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    // Handle error as needed
+                }
+            }
+
+            // uploadedImageURLs array now contains the download URLs of all uploaded images
             setLoadingUpload(false);
-            setSuccessUpload(true);
             setSuccessCreate(false);
-            data['thumbnail'] = urls[0];
-            data['images'] = urls;
+            data['thumbnail'] = uploadedImageURLs[0];
+            data['images'] = uploadedImageURLs;
             dispatch(createProduct({ data: data }));
-        } catch (error) {
-            console.error('Error uploading images:', error);
-        }
+        };
+
+        // Call the function to upload multiple images
+        uploadMultipleImages();
     };
 
     const formik = useFormik({
@@ -180,6 +199,7 @@ export default function CreateProductPage() {
             width: 1,
             length: 1,
             weight: 1,
+            brand_id: 1,
         },
         validationSchema: productSchema,
         onSubmit: (values) => {
