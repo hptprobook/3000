@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchParentCategory } from "@/redux/slices/categorySlice";
+import { generateCategoryHref } from "@/utils/generateHref";
 
 export default function Sidebar() {
     const astras = [
@@ -61,17 +62,23 @@ export default function Sidebar() {
             <div className="appSidebar__categories">
                 <h4>Danh mục</h4>
                 {parentCategories.map((category) => (
-                    <Link href={`/category/${category.id}`} key={category.id}>
+                    <Link
+                        href={generateCategoryHref(
+                            category?.name,
+                            category?.id
+                        )}
+                        key={category?.id}
+                    >
                         <PrimaryBtn
                             icon={
                                 <Image
-                                    src={category.icon_url}
-                                    alt={category.name}
+                                    src={category?.icon_url}
+                                    alt={category?.name}
                                     width={32}
                                     height={32}
                                 />
                             }
-                            text={category.name}
+                            text={category?.name}
                             fullWidth={true}
                         />
                     </Link>

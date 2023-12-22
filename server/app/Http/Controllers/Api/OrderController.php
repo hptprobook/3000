@@ -150,7 +150,15 @@ class OrderController extends Controller
 
             $order = $order->update(['status' => $request->status]);
 
-            $order = $user->orders()->findOrFail($id);
+            $order = $user->orders()->with('order_details')->findOrFail($id);
+
+            if ($request->status == 'delivered') {
+                foreach ($order->order_details as $detail) {
+                    $product = Product::find($detail->product_id);
+                    $product->sold += $detail->quantity;
+                    $product->save();
+                }
+            }
 
             DB::commit();
 
@@ -166,6 +174,7 @@ class OrderController extends Controller
             return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
     public function updateNotAuth(Request $request, string $id)
     {
         DB::beginTransaction();

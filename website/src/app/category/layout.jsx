@@ -3,6 +3,7 @@ import CategorySidebar from "@/components/layouts/Category/CategorySidebar";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { CategoryProvider } from "@/provider/CategoryContext";
 import { Grid } from "@mui/material";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 export default function CategoryLayout({ children }) {
@@ -12,8 +13,8 @@ export default function CategoryLayout({ children }) {
                 <Grid item xs={12}>
                     <Breadcrumb
                         link="/"
-                        text1={"Danh mục"}
-                        text2={"Đồ chơi mẹ và bé"}
+                        text1={"Trang chủ"}
+                        text2={"Danh mục"}
                     />
                 </Grid>
                 <CategoryProvider>
