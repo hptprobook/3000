@@ -75,7 +75,7 @@ const StyledCartContainer = styled("div")(() => ({
 }));
 
 export default function CartContainer({ data }) {
-    if (data?.length === 0 || !data) {
+    if (!data || data?.length === 0) {
         return <EmptyData text={"Không có sản phẩm nào trong giỏ hàng"} />;
     }
 
@@ -92,6 +92,7 @@ export default function CartContainer({ data }) {
     } = useContext(CartContext);
 
     useEffect(() => {
+        console.log(data);
         setCheckedIds(data?.map((item) => item.id));
         setCartData(data);
 

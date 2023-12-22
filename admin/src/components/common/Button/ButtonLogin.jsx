@@ -2,7 +2,7 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 
-export default function ButtonLogin({ fullW = true, colorText, background, hover, label, funcustom }) {
+export default function ButtonLogin({ fullW = true, colorText, background, hover, label }) {
     const ColorButton = styled(Button)(({ theme }) => ({
         color: colorText,
         backgroundColor: background,
@@ -14,10 +14,9 @@ export default function ButtonLogin({ fullW = true, colorText, background, hover
 
     return (
         <ColorButton
-            onClick={funcustom} // Use onClick to attach the custom function
+            type='submit'
             size='large'
             fullWidth={fullW}
-            sx={{ m: 1 }}
             variant='contained'
         >
             {label}

@@ -1,16 +1,22 @@
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_REACT_API_URL;
-const accessToken = localStorage.getItem("access_token");
-axios.defaults.withCredentials = true;
-axios.defaults.withXSRFToken = true;
+
+// Function to get the access token from local storage
+const getAccessToken = () => localStorage.getItem("access_token");
 
 const request = axios.create({
     baseURL,
     headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${getAccessToken()}`, // Initial value
     },
+});
+
+// Intercept requests and update the Authorization header
+request.interceptors.request.use((config) => {
+    config.headers.Authorization = `Bearer ${getAccessToken()}`;
+    return config;
 });
 
 export const get = async (path, options = {}) => {

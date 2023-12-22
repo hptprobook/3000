@@ -24,6 +24,17 @@ export const fetchProductById = createAsyncThunk(
         }
     }
 );
+export const deleteProductById = createAsyncThunk(
+    "products/deleteProductById",
+    async ({ id }, { rejectWithValue }) => {
+        try {
+            const response = await ProductsService.deleteProductById(id);
+            return response;
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
+    }
+);
 export const createProduct = createAsyncThunk(
     "products/createProduct",
     async ({ data }, { rejectWithValue }) => {
@@ -54,11 +65,14 @@ const productsSlice = createSlice({
     initialState: { data: [], status: "idle", error: null },
     reducers: {
         resetState: (state) => {
+            state.error = null;
             // Reset the state to its initial values
             state.status = "idle";
             state.statusFetchById = "idle";  // Add this line if 'statusFetchById' is part of your state
             state.statusCreate = "idle";
-            state.statusUpdate = "idle";// Add this line if 'statusCreate' is part of your state
+            state.statusUpdate = "idle";
+            state.statusDelete = "idle";// Add this line if 'statusCreate' is part of your state
+            // Add this line if 'statusCreate' is part of your state
         },
     },
     extraReducers: (builder) => {
@@ -94,6 +108,17 @@ const productsSlice = createSlice({
             })
             .addCase(createProduct.rejected, (state, action) => {
                 state.statusCreate = "failed";
+                state.error = action.error.message;
+            })
+            .addCase(deleteProductById.pending, (state) => {
+                state.statusDelete = "loading";
+            })
+            .addCase(deleteProductById.fulfilled, (state, action) => {
+                state.statusDelete = "success";
+                state.deleteReturn = action.payload;
+            })
+            .addCase(deleteProductById.rejected, (state, action) => {
+                state.statusDelete = "failed";
                 state.error = action.error.message;
             })
             .addCase(updateProduct.pending, (state) => {
