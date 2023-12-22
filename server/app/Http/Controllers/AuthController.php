@@ -44,6 +44,19 @@ class AuthController extends Controller
             return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    public function isAdmin(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if ($user['role'] == 'ADMIN' && $user['status'] == 'active') {
+                return true;
+            } else {
+                return  'false';
+            }
+        } catch (Exception $e) {
+            return response()->json($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function register(Request $request)
     {

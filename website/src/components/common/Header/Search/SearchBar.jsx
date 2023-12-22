@@ -19,7 +19,7 @@ const SearchInputContainer = styled("div")(({ theme }) => ({
     border: "1px solid #dddde3",
     alignItems: "center",
     height: "40px",
-    width: "800px !important",
+    maxWidth: "800px !important",
     [theme.breakpoints.up("sm")]: {
         width: "auto",
     },

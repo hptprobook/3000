@@ -20,9 +20,7 @@ export default function ProfileSidebar() {
     return (
         <StyledProfileSidebar className="profile-sidebar">
             <div className="profile-sidebar__header">
-                <p>
-                    Xin chào, <b>Phan Hóa</b>
-                </p>
+                <p>Xin chào</p>
             </div>
             <div className="profile-sidebar__item mt-12">
                 {profileSidebarOpt.map((item) => (

@@ -20,7 +20,6 @@ export default function MainLayout() {
 
     const changeMode = () => {
         setMode((prevMode) => (prevMode === 'dark' ? 'light' : 'dark'));
-        console.log(mode)
     }
 
     return (
@@ -29,7 +28,7 @@ export default function MainLayout() {
                 <CssBaseline />
                 <Sidebar />
                 <div className='main-layout'>
-                    <Header sx={{ flexGrow: 1, width: '100%' }} mode={mode} changeMode={changeMode}/>
+                    <Header sx={{ flexGrow: 1, width: '100%' }} mode={mode} changeMode={changeMode} />
                     <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                         <DashboardRoute />
                     </Box>

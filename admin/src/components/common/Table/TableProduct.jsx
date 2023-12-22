@@ -17,6 +17,7 @@ import color from '../../../config/colorConfig';
 import { NavLink } from 'react-router-dom';
 import { IconButton, Tooltip } from '@mui/material';
 import { BiSolidPencil } from 'react-icons/bi';
+import { MdDelete } from 'react-icons/md';
 
 const CustomTableCell = styled(TableCell)(({ theme }) => ({
     borderBottom: '1px solid rgb(45, 55, 72)',
@@ -156,13 +157,15 @@ EnhancedTableHead.propTypes = {
     rowCount: PropTypes.number.isRequired,
 };
 
-export default function TableProduct({ data }) {
+export default function TableProduct({ data, onDeleteProduct }) {
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
+    const handleDeleteProduct = (id) => {
+        onDeleteProduct(id);
+    }
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -282,6 +285,16 @@ export default function TableProduct({ data }) {
                                                     </IconButton>
                                                 </Tooltip>
                                             </NavLink>
+                                            <Tooltip title="Xóa" >
+                                                <IconButton sx={{
+                                                    color: '#9da4ae',
+                                                    marginRight: '8px'
+                                                }}
+                                                    onClick={(e) => handleDeleteProduct(row.id)}
+                                                >
+                                                    <MdDelete style={{ fontSize: '16px' }} />
+                                                </IconButton>
+                                            </Tooltip>
                                         </CustomTableCell>
                                     </TableRow>
                                 );

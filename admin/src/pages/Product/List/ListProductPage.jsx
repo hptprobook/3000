@@ -6,12 +6,13 @@ import color from "../../../config/colorConfig";
 import InputSearch from "../../../components/common/TextField/InputSearch";
 import SelectFilterProduct from "../../../components/common/Select/SelectFilterProduct";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllProducts } from "../../../redux/slices/productSlice";
+import { deleteProductById, fetchAllProducts, resetState } from "../../../redux/slices/productSlice";
 import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 
 import TableProduct from "../../../components/common/Table/TableProduct";
-import { setStatus } from "../../../redux/slices/categoriesSlice";
 import Loading from "../../../components/common/Loading/Loading";
+import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
+import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
 
 
 export default function ListProductPage() {
@@ -25,11 +26,16 @@ export default function ListProductPage() {
     const [selectedFilters, setSelectedFilters] = React.useState([]);
     const [productsCategory, setProductCategory] = React.useState([]);
     const [productsList, setProductsList] = React.useState([]);
+    const [successDelete, setSuccessDelete] = React.useState(false);
+
+    const statusDelete = useSelector((state) => state.products.statusDelete);
     const handleFilterReturn = (filters) => {
         setSelectedFilters(filters);
         // You can perform additional actions based on the selected filters if needed
     };
-
+    const handleDeleteProduct = (id) => {
+        dispatch(deleteProductById({ id: id }));
+    }
 
     useEffect(() => {
         if (statusCat == 'idle') {
@@ -43,9 +49,16 @@ export default function ListProductPage() {
         }
     }, [statusPro]);
     useEffect(() => {
+        if (statusDelete == 'success') {
+            setSuccessDelete(true);
+            setTimeout(() => {
+                dispatch(resetState())
+            }, 2000);
+        }
+    }, [statusDelete]);
+    useEffect(() => {
         if (statusPro == 'products already') {
             setProductsList(products);
-
             if (selectedFilters.length > 0) {
                 const filteredProducts = products.filter(product => selectedFilters.includes(product.category_id));
                 setProductCategory(filteredProducts);
@@ -80,6 +93,9 @@ export default function ListProductPage() {
     if (statusPro === 'products already') {
         return (
             <Box>
+                {successDelete ? <BasicAlertl label={'Xóa sản phẩm thành công!'} severity={'success'} /> : ''}
+                {successDelete == 'loading' ? <LinearIndeterminate /> : ''}
+
                 <HeaderPage
                     namePage={"Sản phẩm"}
                     Breadcrumb={["Sản phẩm", "Danh sách"]}
@@ -104,7 +120,7 @@ export default function ListProductPage() {
                             <InputSearch onChange={handleSearch} />
                         </Box>
                         <SelectFilterProduct data={categories} filterReturn={handleFilterReturn} />
-                        <TableProduct data={productsList} />
+                        <TableProduct data={productsList} onDeleteProduct={handleDeleteProduct} />
                     </Box>
                 </Box>
             </Box>
