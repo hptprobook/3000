@@ -19,7 +19,7 @@ class SellerController extends Controller
     public function index()
     {
         try {
-            $sellers = Seller::with(['addresses.ward'])->get();
+            $sellers = Seller::with(['addresses'])->get();
 
             return response()->json($sellers, Response::HTTP_OK);
         } catch (Exception $e) {
