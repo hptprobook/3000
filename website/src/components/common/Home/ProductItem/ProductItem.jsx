@@ -66,6 +66,8 @@ export default function ProductItem({
         return price.toLocaleString("vi-VN");
     };
 
+    const finalPrice = price - price * (discount / 100);
+
     const calculateShippingDate = () => {
         const today = new Date();
         const shippingDate = new Date(today);
@@ -110,7 +112,7 @@ export default function ProductItem({
                     className="price"
                     style={{ display: "flex", alignItems: "center" }}
                 >
-                    {formatPriceToVND(price)} <span>₫</span>
+                    {formatPriceToVND(finalPrice)} <span>₫</span>
                     {discount > 0 && (
                         <div
                             style={{

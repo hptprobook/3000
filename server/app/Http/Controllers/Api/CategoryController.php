@@ -113,7 +113,7 @@ class CategoryController extends Controller
                 [
                     'name' => 'required|min:3|max:128',
                     'parent_id' => 'max:10',
-                    'icon_url' => 'required|max:255'
+                    'icon_url' => 'required|max:512'
                 ]
             );
 
@@ -157,7 +157,7 @@ class CategoryController extends Controller
                 [
                     'name' => 'min:3|max:128',
                     'parent_id' => 'max:10',
-                    'icon_url' => 'max:255'
+                    'icon_url' => 'max:512'
                 ]
             );
 

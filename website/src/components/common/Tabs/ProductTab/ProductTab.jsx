@@ -72,8 +72,8 @@ export default function ProductTab({ tabs }) {
             </div>
             <div className="tabContent">
                 {activeTabData &&
-                activeTabData.products &&
-                activeTabData.products.length > 0 ? (
+                activeTabData?.products &&
+                activeTabData?.products.length > 0 ? (
                     <Swiper
                         slidesPerView={6}
                         spaceBetween={8}
@@ -82,18 +82,19 @@ export default function ProductTab({ tabs }) {
                         className="ProductTabSwiper"
                         slideToClickedSlide={6}
                     >
-                        {activeTabData.products.map((product) => (
-                            <SwiperSlide key={product.id}>
+                        {activeTabData?.products.map((product) => (
+                            <SwiperSlide key={product?.id}>
                                 <ProductItem
-                                    name={product.name}
-                                    price={product.price}
-                                    rate={product.average_rating}
-                                    imgUrl={product.thumbnail}
+                                    name={product?.name}
+                                    price={product?.price}
+                                    rate={product?.average_rating}
+                                    imgUrl={product?.thumbnail}
                                     href={`/product/${encodeURIComponent(
-                                        product.name
+                                        product?.name
                                             .toLowerCase()
                                             .replace(/ /g, "-")
-                                    )}-${encodeURIComponent(product.id)}`}
+                                    )}-${encodeURIComponent(product?.id)}`}
+                                    discount={product?.discount}
                                 />
                             </SwiperSlide>
                         ))}

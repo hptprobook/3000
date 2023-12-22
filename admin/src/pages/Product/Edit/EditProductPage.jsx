@@ -384,8 +384,8 @@ export default function EditProductPage() {
                 {createError ? <BasicAlertl label={createErrorHelp} severity={'error'} /> : null}
 
                 <HeaderPage
-                    namePage={"Tạo mới"}
-                    Breadcrumb={["Sản phẩm", "Tạo"]}
+                    namePage={"Chỉnh sửa"}
+                    Breadcrumb={["Sản phẩm", "Chỉnh sửa"]}
                 />
                 <Box sx={{
                     marginTop: '32px'
@@ -672,7 +672,7 @@ export default function EditProductPage() {
                             }}
                         >
                             <ButtonNormal label={'Hủy'} />
-                            <ButtonNormal label={'Tạo'} type={'submit'} bg={'true'} />
+                            <ButtonNormal label={'Lưu'} type={'submit'} bg={'true'} />
                         </DivMargin>
                     </form>
 
