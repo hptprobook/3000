@@ -27,7 +27,7 @@ import { fetchVariant } from "../../../redux/slices/variantSlice";
 import ListVariantSelect from "../../../components/common/List/ListVariantSelect";
 import BasicAlertl from "../../../components/common/Alert/BasicAlertl";
 import LinearIndeterminate from "../../../components/common/Loading/LoadingLine";
-import { createProduct } from "../../../redux/slices/productSlice";
+import { createProduct, resetState } from "../../../redux/slices/productSlice";
 import { TbCurrencyDong } from "react-icons/tb";
 
 const fetchAllData = () => async (dispatch) => {
@@ -63,7 +63,7 @@ const productSchema = Yup.object().shape({
         .min(0, "Giảm giá không thể nhỏ hơn 0"),
     // .positive("Giảm giá phải là số dương"),
     brand_id: Yup.number()
-        .required("Nhãn hàng không được để trống!"),
+        .nullable(),
     height: Yup.number()
         .required("Chiều cao không được để trống")
         .positive("Chiều cao phải là số dương"),
@@ -126,9 +126,7 @@ export default function CreateProductPage() {
     useEffect(() => {
         if (statusCreate == 'success') {
             setSuccessCreate(true);
-        }
-        else {
-            setSuccessCreate(false);
+            dispatch(resetState());
         }
     }, [statusCreate])
     // upload anh
@@ -163,6 +161,7 @@ export default function CreateProductPage() {
             const urls = await Promise.all(uploadPromises);
             setLoadingUpload(false);
             setSuccessUpload(true);
+            setSuccessCreate(false);
             data['thumbnail'] = urls[0];
             data['images'] = urls;
             dispatch(createProduct({ data: data }));
@@ -181,45 +180,50 @@ export default function CreateProductPage() {
             width: 1,
             length: 1,
             weight: 1,
-            brand_id: "",
         },
         validationSchema: productSchema,
         onSubmit: (values) => {
-            if (category_id == '') {
-                setCreateError(true);
-                setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
-            } else {
-                setCreateError(false);
-                if (short_desc == '' || short_descError == 'Mô tả ngắn không quá 1000 kí tự') {
+            setSuccessUpload(false);
+            if (createError && createErrorHelp !== '') {
+                setCreateError(createErrorHelp);
+            }
+            else {
+                if (category_id == '') {
                     setCreateError(true);
-                    setCreateErrorHelp('Vui lòng nhập mô tả ngắn sản phẩm!');
-                }
-                else {
+                    setCreateErrorHelp('Vui lòng chọn phân loại sản phẩm');
+                } else {
                     setCreateError(false);
-                    if (detail == '') {
+                    if (short_desc == '') {
+                        setCreateErrorHelp('Mô tả ngắn không được rỗng!');
                         setCreateError(true);
-                        setCreateErrorHelp('Vui lòng nhập chi tiết sản phẩm!');
                     }
                     else {
                         setCreateError(false);
-                        if (imglist.length < 1) {
+                        if (detail == '') {
+                            setCreateErrorHelp('Mô tả chi tiết không được rỗng!');
                             setCreateError(true);
-                            setCreateErrorHelp('Vui lòng tải ảnh sản phẩm!');
                         }
                         else {
                             setCreateError(false);
-                            let variants = listVariant.map(item => {
-                                const { id, ...rest } = item;
-                                return rest;
-                            });
-                            if (taglist !== '') {
-                                values['tags'] = taglist;
+                            if (imglist.length < 1) {
+                                setCreateError(true);
+                                setCreateErrorHelp('Vui lòng tải ảnh sản phẩm!');
                             }
-                            values['detail'] = detail;
-                            values['short_desc'] = short_desc;
-                            values['category_id'] = category_id;
-                            values['variants'] = variants;
-                            handleUploadFireBase('banrh', imglist, values);
+                            else {
+                                setCreateError(false);
+                                let variants = listVariant.map(item => {
+                                    const { id, ...rest } = item;
+                                    return rest;
+                                });
+                                if (taglist !== '') {
+                                    values['tags'] = taglist;
+                                }
+                                values['detail'] = detail;
+                                values['short_desc'] = short_desc;
+                                values['category_id'] = category_id;
+                                values['variants'] = variants;
+                                handleUploadFireBase(values.name, imglist, values);
+                            }
                         }
                     }
                 }
@@ -240,24 +244,47 @@ export default function CreateProductPage() {
         const child = categories.filter(item => item.parent_id == selectedCategory);
         setChildCategories(child);
     }, [selectedCategory]);
-
-    const handleDetail = (value) => {
+    const handleValidateDetail = (value) => {
         if (value.length < 12) {
-            setCreateError('Mô tả chi tiết không ít hơn 12 kí tự');
+            console.log(value);
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả chi tiết không ít hơn 12 kí tự');
+        }
+        else if (value.length > 18000) {
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả chi tiết không nhiều hơn 18000 kí tự');
         }
         else {
-            setCreateError('');
-            setDetail(value);
+            setCreateError(false)
+            setCreateErrorHelp('');
         }
+    };
+    const handleDetail = (value) => {
+        setDetail(value);
     }
-    const handleShortDesc = (value) => {
-        if (value.length > 1000) {
-            setShort_descError('Mô tả ngắn không quá 1000 kí tự');
+    useEffect(() => {
+        handleValidateDetail(detail);
+    }, [detail]);
+    const handleValidateShortDesc = (value) => {
+        if (value.length > 1024) {
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả ngắn không quá 512 kí tự');
+        }
+        else if (value.length < 10) {
+            setCreateError(true)
+            setCreateErrorHelp('Mô tả ngắn không ít hơn 10 kí tự');
         }
         else {
-            setShort_descError('');
-            setShort_desc(value);
+            setCreateError(false)
+            setCreateErrorHelp('');
         }
+
+    }
+    useEffect(() => {
+        handleValidateShortDesc(short_desc);
+    }, [short_desc]);
+    const handleShortDesc = (value) => {
+        setShort_desc(value);
     };
     // upload ảnh
     const handleChangeVariantName = (variant) => {
