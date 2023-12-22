@@ -111,12 +111,10 @@ export default function CreateProductPage() {
     const [createError, setCreateError] = useState(false);
     const [createErrorHelp, setCreateErrorHelp] = useState('');
 
-    const [short_desc, setShort_desc] = useState('');
-    const [short_descError, setShort_descError] = useState('');
-    const [detail, setDetail] = useState('');
+    const [short_desc, setShort_desc] = useState('Đây là mô tả ngắn');
+    const [detail, setDetail] = useState('Đấy là chi tiết sản phẩm');
 
     const [loadingUpload, setLoadingUpload] = useState(false);
-    const [successUpload, setSuccessUpload] = useState(false);
     const [successCreate, setSuccessCreate] = useState(false);
 
 
@@ -143,7 +141,6 @@ export default function CreateProductPage() {
                         switch (snapshot.state) {
                             case 'running':
                                 setLoadingUpload(true);
-                                setSuccessUpload(false);
                                 break;
                         }
                     },
@@ -203,7 +200,6 @@ export default function CreateProductPage() {
         },
         validationSchema: productSchema,
         onSubmit: (values) => {
-            setSuccessUpload(false);
             if (createError && createErrorHelp !== '') {
                 setCreateError(createErrorHelp);
             }
@@ -413,7 +409,6 @@ export default function CreateProductPage() {
     if (statusLoadVariant === "success") {
         return (
             <Box>
-                {successUpload ? <BasicAlertl label={'Tải ảnh lên thành công'} severity={'success'} /> : null}
                 {successCreate ? <BasicAlertl label={'Tạo sản phẩm thành công'} severity={'success'} /> : null}
                 {loadingUpload ? <LinearIndeterminate /> : null}
                 {statusCreate == 'loading' ? <LinearIndeterminate /> : null}
