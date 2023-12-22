@@ -377,43 +377,53 @@ export default function ProfileOrder({ data }) {
                             </Grid>
                         </Grid>
                         <div className="detail open">
-                            {item.order_details.map((detail) => (
-                                <div className="detail__item" key={detail.id}>
-                                    <div className="img">
-                                        <img
-                                            className="img-c"
-                                            src={detail?.product.thumbnail}
-                                            alt=""
-                                        />
-                                    </div>
-                                    <div className="info">
-                                        <Link
-                                            href={generateProductHref(
-                                                detail?.product.name,
-                                                detail.product.id
-                                            )}
-                                            className="name"
-                                        >
-                                            {truncateString(
-                                                detail.product.name,
-                                                100
-                                            )}
-                                        </Link>
-                                        <div
-                                            className="jc-sb"
-                                            style={{ marginTop: "8px" }}
-                                        >
-                                            <p className="quantity">
-                                                SL: x{detail.quantity}
-                                            </p>
-                                            <p className="price">
-                                                {detail?.product?.price.toLocaleString()}
-                                                đ
-                                            </p>
+                            {item.order_details.map((detail) => {
+                                const finalPrice =
+                                    detail?.product?.price -
+                                    (detail?.product?.price *
+                                        detail?.product?.discount) /
+                                        100;
+                                return (
+                                    <div
+                                        className="detail__item"
+                                        key={detail.id}
+                                    >
+                                        <div className="img">
+                                            <img
+                                                className="img-c"
+                                                src={detail?.product.thumbnail}
+                                                alt=""
+                                            />
+                                        </div>
+                                        <div className="info">
+                                            <Link
+                                                href={generateProductHref(
+                                                    detail?.product.name,
+                                                    detail.product.id
+                                                )}
+                                                className="name"
+                                            >
+                                                {truncateString(
+                                                    detail.product.name,
+                                                    100
+                                                )}
+                                            </Link>
+                                            <div
+                                                className="jc-sb"
+                                                style={{ marginTop: "8px" }}
+                                            >
+                                                <p className="quantity">
+                                                    SL: x{detail.quantity}
+                                                </p>
+                                                <p className="price">
+                                                    {finalPrice.toLocaleString()}
+                                                    đ
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                         <div className="actions">
                             <Link

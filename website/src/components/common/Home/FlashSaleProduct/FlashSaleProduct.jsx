@@ -56,6 +56,8 @@ export default function FlashSaleProduct({ discount, imgUrl, price, name }) {
         return price.toLocaleString("vi-VN");
     };
 
+    const finalPrice = price - price * (discount / 100);
+
     return (
         <FlashSaleItem>
             <div className="imageThumbnail">
@@ -63,7 +65,7 @@ export default function FlashSaleProduct({ discount, imgUrl, price, name }) {
                 <span>-{discount}%</span>
             </div>
             <div className="price">
-                {formatPriceToVND(price)}
+                {formatPriceToVND(finalPrice)}
                 <span>₫</span>
             </div>
             <div className="tag">Vừa mở bán</div>

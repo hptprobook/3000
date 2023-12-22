@@ -80,6 +80,9 @@ export default function ProductDetailInfo({ product }) {
         return price ? price.toLocaleString("vi-VN") : 0;
     };
 
+    const finalPrice =
+        product?.price - product?.price * (product?.discount / 100);
+
     const [selectedOptions, setSelectedOptions] = useState({});
 
     useEffect(() => {
@@ -112,7 +115,7 @@ export default function ProductDetailInfo({ product }) {
                 .options.find((o) => o.name === selectedOptions[variantType]);
             additionalPrice += Number(selectedOption.price);
         });
-        const basePrice = Number(product?.price) || 0;
+        const basePrice = Number(finalPrice) || 0;
         setTotalPrice(basePrice + additionalPrice);
     };
 
@@ -156,7 +159,7 @@ export default function ProductDetailInfo({ product }) {
                 <p>Đã bán: {product?.sold}</p>
             </div>
             <div className="productDetailInfo__price">
-                <p className="price">{formatPriceToVND(product?.price)}</p>
+                <p className="price">{formatPriceToVND(finalPrice)}</p>
                 <div className="discount">-{product?.discount}%</div>
             </div>
             <div className="productDetailInfo__variant">
