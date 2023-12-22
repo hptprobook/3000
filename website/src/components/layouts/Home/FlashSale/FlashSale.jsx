@@ -90,8 +90,8 @@ function FlashSale() {
                     </span>
                 </div>
                 <div>
-                    <Link
-                        href={""}
+                    {/* <Link
+                        href={"/search/hot"}
                         style={{
                             display: "flex",
                             alignItems: "center",
@@ -101,7 +101,7 @@ function FlashSale() {
                         }}
                     >
                         Xem thêm <NavigateNextIcon />
-                    </Link>
+                    </Link> */}
                 </div>
             </header>
             <div className="appContainer__flashSale--item">

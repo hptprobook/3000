@@ -23,10 +23,19 @@ export default function Breadcrumb({ link = "/", text1, text2 = null }) {
                     },
                 }}
             >
-                <Link underline="hover" color="inherit" href={link}>
+                <Link
+                    underline="hover"
+                    color="inherit"
+                    href={link}
+                    style={{
+                        fontSize: "14px",
+                    }}
+                >
                     {text1}
                 </Link>
-                <Typography color="text.primary">{text2}</Typography>
+                <Typography sx={{ fontSize: "14px" }} color="text.primary">
+                    {text2}
+                </Typography>
             </Breadcrumbs>
         </div>
     );
