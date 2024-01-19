@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
+use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,11 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::post('/auth/forgot/password', [AuthController::class, 'forgotPassword'])->name('password.forgot');
+Route::post('/auth/password/verifyToken', [AuthController::class, 'verifyToken']);
+Route::post('/auth/password/resetPassword', [AuthController::class, 'resetPassword']);
+
+Route::post('/order/vnpay', [VnpayController::class, 'create']);
 
 // Search
 Route::get('/search/{searchValue?}', [SearchController::class, 'search']);
