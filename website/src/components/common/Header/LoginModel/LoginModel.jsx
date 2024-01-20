@@ -16,6 +16,7 @@ import * as Yup from "yup";
 import SignupForm from "../../TextField/SignupForm/SignupForm";
 import ProgressLoading from "../../Loading/ProgressLoading/ProgressLoading";
 import { useRouter } from "next/navigation";
+import { TextField } from "@mui/material";
 
 const validateLogin = (value) => {
     let error;
@@ -49,6 +50,7 @@ const LoginModal = ({ isOpen, onClose }) => {
     const [isToastShown, setToastShown] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
     const router = useRouter();
+    const [currentForm, setCurrentForm] = useState("login");
 
     const formik = useFormik({
         initialValues: {
@@ -115,7 +117,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </p>
                 <div style={{ display: "flex" }}>
                     <div style={{ width: "70%", padding: "24px 80px 0 0" }}>
-                        {isLogin ? (
+                        {currentForm === "login" && (
                             <>
                                 <form onSubmit={formik.handleSubmit}>
                                     <LoginForm
@@ -163,13 +165,31 @@ const LoginModal = ({ isOpen, onClose }) => {
                                         style={{
                                             color: "var(--link-color)",
                                         }}
-                                        onClick={toggleForm}
+                                        onClick={() =>
+                                            setCurrentForm("register")
+                                        }
                                     >
                                         Tạo tài khoản
                                     </Link>
+
+                                    <Link
+                                        href={"#"}
+                                        style={{
+                                            color: "var(--link-color)",
+                                            display: "block",
+                                            marginTop: "16px",
+                                        }}
+                                        onClick={() =>
+                                            setCurrentForm("forgotPassword")
+                                        }
+                                    >
+                                        Quên mật khẩu
+                                    </Link>
                                 </div>
                             </>
-                        ) : (
+                        )}
+
+                        {currentForm === "register" && (
                             <>
                                 <SignupForm onRegister={onRegister} />
                                 <div
@@ -183,7 +203,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                                         style={{
                                             color: "var(--link-color)",
                                         }}
-                                        onClick={toggleForm}
+                                        onClick={() => setCurrentForm("login")}
                                     >
                                         Đăng nhập
                                     </Link>
@@ -191,7 +211,17 @@ const LoginModal = ({ isOpen, onClose }) => {
                             </>
                         )}
 
-                        {isLogin && (
+                        {currentForm === "forgotPassword" && (
+                            <div>
+                                <TextField
+                                    fullWidth
+                                    label={"Nhập email hoặc số điện thoại"}
+                                />
+                                <button>Gửi mã xác nhận</button>
+                            </div>
+                        )}
+
+                        {currentForm === "login" && (
                             <>
                                 <div style={{ marginTop: "20px" }}>
                                     <h4 style={{ textAlign: "center" }}>

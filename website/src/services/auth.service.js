@@ -42,6 +42,17 @@ const AuthService = {
             };
         }
     },
+    forgotPassword: async (data) => {
+        try {
+            const res = await request.post("password/forgot", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response,
+            };
+        }
+    },
 };
 
 export default AuthService;

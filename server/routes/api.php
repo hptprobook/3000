@@ -26,7 +26,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
-Route::post('/auth/forgot/password', [AuthController::class, 'forgotPassword'])->name('password.forgot');
+Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword'])->name('password.forgot');
 Route::post('/auth/password/verifyToken', [AuthController::class, 'verifyToken']);
 Route::post('/auth/password/resetPassword', [AuthController::class, 'resetPassword']);
 
