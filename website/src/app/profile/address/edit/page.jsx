@@ -4,8 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import ProfileEditAddress from "@/components/layouts/Profile/ProfileAddress/ProfileEditAddress";
 import { useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
-import { getAddressById, getAddressGHN } from "@/redux/slices/addressSlice";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { getAddressGHN } from "@/redux/slices/addressSlice";
 
 const theme = createTheme({
     typography: {
@@ -24,8 +23,8 @@ export default function EditAddressPage() {
     }, [searchParams]);
 
     const dispatch = useDispatch();
-    const addressById = useSelector((state) => state.addresses.addressById);
-    const addressFetchStatus = useSelector((state) => state.addresses.status);
+    // const addressById = useSelector((state) => state.addresses.addressById);
+    // const addressFetchStatus = useSelector((state) => state.addresses.status);
 
     // useEffect(() => {
     //     if (addressId) {
@@ -34,9 +33,9 @@ export default function EditAddressPage() {
     // }, []);
 
     const addressGHN = useSelector((state) => state.addresses.addressGHN);
-    const addressGHNfetchStatus = useSelector(
-        (state) => state.addresses.status
-    );
+    // const addressGHNfetchStatus = useSelector(
+    //     (state) => state.addresses.status
+    // );
 
     useEffect(() => {
         dispatch(getAddressGHN());

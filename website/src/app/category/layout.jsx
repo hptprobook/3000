@@ -3,7 +3,6 @@ import CategorySidebar from "@/components/layouts/Category/CategorySidebar";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { CategoryProvider } from "@/provider/CategoryContext";
 import { Grid } from "@mui/material";
-import { usePathname } from "next/navigation";
 import React from "react";
 
 export default function CategoryLayout({ children }) {

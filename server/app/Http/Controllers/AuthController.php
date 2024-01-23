@@ -108,7 +108,7 @@ class AuthController extends Controller
         // Gửi mail
         Mail::to($request->email)->send(new PasswordResetMail($token));
 
-        return response()->json(['message' => 'Mã xác nhận đã được gửi đến email của bạn.']);
+        return response()->json(['message' => 'success'], 200);
     }
 
     public function verifyToken(Request $request)

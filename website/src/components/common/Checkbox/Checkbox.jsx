@@ -3,9 +3,9 @@ import "./style.css";
 
 export default function Checkbox() {
     return (
-        <label class="checkbox-container">
-            <input class="custom-checkbox" checked="" type="checkbox" />
-            <span class="checkmark"></span>
+        <label className="checkbox-container">
+            <input className="custom-checkbox" checked="" type="checkbox" />
+            <span className="checkmark"></span>
         </label>
     );
 }

@@ -23,7 +23,6 @@ const ImageUpload = () => {
                 const progress =
                     (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 setProgress(progress);
-                console.log("Upload is " + progress + "% done");
                 switch (snapshot.state) {
                     case "paused":
                         console.log("Upload is paused");
@@ -33,7 +32,6 @@ const ImageUpload = () => {
                         break;
                 }
             },
-            (error) => {},
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                     alert(
@@ -42,7 +40,6 @@ const ImageUpload = () => {
                     );
                     setImage(null);
                     setProgress(0);
-                    console.log("File available at", downloadURL);
                 });
             }
         );

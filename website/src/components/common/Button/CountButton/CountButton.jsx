@@ -55,7 +55,7 @@ const CountButton = styled("div")(({ isActive }) => ({
     },
 }));
 
-export default function CountBtn({ icon, count }) {
+export default function CountBtn({ icon }) {
     const { addToCartSuccess, setAddToCartSuccess } =
         useContext(AddToCartContext);
     const [isActive, setIsActive] = useState(true);

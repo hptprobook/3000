@@ -1,8 +1,12 @@
-1. Quên mật khẩu -> xong API
-2. VNPay -> xong API
-3. Thống kê, Vẽ chart
-4. Import / Export excel
-5. Mua lại đơn hàng
-6. Xuất hóa đơn
-7. Blog
-8. Seller
+# Quên mật khẩu -> xong API
+# VNPay -> xong API
+# Thống kê, Vẽ chart
+# Import / Export excel
+# Mua lại đơn hàng
+# Cấp quyền cho nhân viên, quản trị viên cấp 1, cấp 2, ...
+# Kiểm tra admin / user
+# Authen đăng nhập, tự cấp lại access_token khi hết hạn
+# Đăng nhập bằng FB, GG
+# Xuất hóa đơn
+# Blog
+# Seller

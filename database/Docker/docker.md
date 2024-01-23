@@ -45,3 +45,42 @@ EXPOSE <port> : Expose a port for the container
 CMD command arg1 arg2 ... : Default command to run when the container starts
 CMD ["command", "arg1", "arg2", ...] : Same as above, but as an executable array
 -->
+
+# Pushing image
+# Login into the registry with:
++ docker login
+
+# Push image
++ docker push <image>:<tag>
+
+# docker-compose.yaml
++ docker-compose build <service_name>
++ docker-compose up => đọc file yaml và khởi tạo toàn bộ service
++ docker-compose up <service_name> => " khởi tạo service
++ docker-compose up -d <service_name> => chạy ngầm(detach)
++ docker-compose logs -f <service_name>
++ docker-compose stop <service_name>
++ docker-compose down
+
+# Network
+
+<!-- 
+version: "3"
+services: 
+    pg: 
+        image: postgress:9.6-alpine
+        ports: 
+            - 5432:5432
+        volumes: 
+            -pgdata:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+    frontend:
+        image: hpt/frontend:lastest
+        build:
+            context: .
+volumes: 
+    pgdata: 
+ -->

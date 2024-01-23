@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import PrimaryBtn from "../../Button/PrimaryButton/PrimaryBtn";
@@ -7,14 +7,13 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import CameraIcon from "@mui/icons-material/Camera";
 import SentimentSatisfiedAltIcon from "@mui/icons-material/SentimentSatisfiedAlt";
 import ShoppingCartRoundedIcon from "@mui/icons-material/ShoppingCartRounded";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import CountBtn from "../../Button/CountButton/CountButton";
 import { Box } from "@mui/material";
 import LoginModal from "../LoginModel/LoginModel";
 import useAuth from "@/hooks/useAuth";
 import { logoutUser } from "@/redux/slices/authSlice";
 import "./style.css";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import LocalPhoneIcon from "@mui/icons-material/LocalPhone";
 import { useRouter } from "next/navigation";
 

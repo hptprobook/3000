@@ -30,7 +30,6 @@ const PrimaryButton = styled("button")(() => ({
 export default function PrimaryBtn({
     icon,
     text,
-    id = 0,
     isActive = false,
     fullWidth = false,
 }) {

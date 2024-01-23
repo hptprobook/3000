@@ -1,11 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Grid } from "@mui/material";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import dynamic from "next/dynamic";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllCart, fetchWithIds } from "@/redux/slices/cartSlice";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
+import { fetchAllCart } from "@/redux/slices/cartSlice";
 import PaymentContainer from "@/components/layouts/Cart/PaymentContainer";
 import { CartProvider } from "@/provider/CartContext";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
@@ -28,7 +27,7 @@ export default function Cart() {
         dispatch(fetchAllCart());
     }, []);
 
-    if (status == "loading") {
+    if (status === "loading") {
         return <ProgressLoading />;
     }
 

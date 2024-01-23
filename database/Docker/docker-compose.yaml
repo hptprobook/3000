@@ -1,0 +1,40 @@
+version: '3'
+services:
+  pg: 
+    image: postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    
+  be: 
+    image: nambach/docker-demo-backend
+    ports:
+      - 8080:80
+    environment:
+      PORT: 80
+      DB_HOST: pg
+      DB_NAME: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_SCHEMA: public
+      DLL_METHOD: update
+
+  fe: 
+    image: nambach/docker-demo-frontend
+    ports: 
+      - 80:80
+    environment: 
+      appURL: localhost:80
+      appPort: 80
+      backendUrl: http://be
+      pathRewrite: api
+
+volumes:
+  pgdata:  

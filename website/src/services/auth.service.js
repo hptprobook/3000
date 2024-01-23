@@ -25,7 +25,7 @@ const AuthService = {
     },
     logout: async () => {
         try {
-            await axios.post("/api/logout");
+            await request.post("logout");
             return;
         } catch (err) {
             return err.response;
@@ -44,7 +44,7 @@ const AuthService = {
     },
     forgotPassword: async (data) => {
         try {
-            const res = await request.post("password/forgot", data);
+            const res = await request.post("auth/password/forgot", data);
             return res;
         } catch (err) {
             return {

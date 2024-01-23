@@ -7,16 +7,15 @@ import LoginButton from "../../Button/LoginButton/LoginButton";
 import FacebookRoundedIcon from "@mui/icons-material/FacebookRounded";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { clearRegisterData, loginUser } from "@/redux/slices/authSlice";
-import CirLoading from "../../Loading/CircularLoading/CirLoading";
+import { loginUser } from "@/redux/slices/authSlice";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useFormik, ErrorMessage } from "formik";
+import { useFormik } from "formik";
 import * as Yup from "yup";
 import SignupForm from "../../TextField/SignupForm/SignupForm";
 import ProgressLoading from "../../Loading/ProgressLoading/ProgressLoading";
 import { useRouter } from "next/navigation";
-import { TextField } from "@mui/material";
+import ForgotPassword from "../../TextField/ForgotPassword/ForgotPassword";
 
 const validateLogin = (value) => {
     let error;
@@ -58,7 +57,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             password: "",
         },
         validationSchema: loginSchema,
-        onSubmit: (values, { setSubmitting, setErrors }) => {
+        onSubmit: (values, { setSubmitting }) => {
             dispatch(
                 loginUser({
                     login: values.login,
@@ -72,9 +71,9 @@ const LoginModal = ({ isOpen, onClose }) => {
     });
 
     useEffect(() => {
-        if (error == "Email or phone does not exist.") {
+        if (error === "Email or phone does not exist.") {
             formik.setErrors({ login: "Tên tài khoản không chính xác" });
-        } else if (error == "Password is incorrect.") {
+        } else if (error === "Password is incorrect.") {
             formik.setErrors({ password: "Mật khẩu không chính xác" });
         }
     }, [error, formik.setErrors]);
@@ -88,12 +87,6 @@ const LoginModal = ({ isOpen, onClose }) => {
             setToastShown(true);
         }
     }, [isOpen, user, onClose, isToastShown]);
-
-    const toggleForm = (e) => {
-        e.preventDefault();
-        setIsLogin(!isLogin);
-        dispatch(clearRegisterData());
-    };
 
     const onRegister = () => {
         setIsLogin(!isLogin);
@@ -113,7 +106,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </button>
                 <h2>Xin chào</h2>
                 <p style={{ marginTop: "12px" }}>
-                    Đăng nhập hoặc tạo tài khoản
+                    {currentForm === "forgotPassword"
+                        ? "Lấy lại mật khẩu"
+                        : "Đăng nhập hoặc tạo tài khoản"}
                 </p>
                 <div style={{ display: "flex" }}>
                     <div style={{ width: "70%", padding: "24px 80px 0 0" }}>
@@ -211,15 +206,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                             </>
                         )}
 
-                        {currentForm === "forgotPassword" && (
-                            <div>
-                                <TextField
-                                    fullWidth
-                                    label={"Nhập email hoặc số điện thoại"}
-                                />
-                                <button>Gửi mã xác nhận</button>
-                            </div>
-                        )}
+                        {currentForm === "forgotPassword" && <ForgotPassword />}
 
                         {currentForm === "login" && (
                             <>

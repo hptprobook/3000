@@ -1,5 +1,4 @@
 "use client";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import NotAuth from "@/components/common/Middleware/NotAuth";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
@@ -7,12 +6,10 @@ import AddressCheckout from "@/components/layouts/Order/AddressCheckout";
 import Checkout from "@/components/layouts/Order/Checkout";
 import OrderContainer from "@/components/layouts/Order/OrderContainer";
 import OrderCoupon from "@/components/layouts/Order/OrderCoupon";
+import PaymentMethod from "@/components/layouts/Order/PaymentMethod";
 import useAuth from "@/hooks/useAuth";
 import { CouponProvider } from "@/provider/CouponContext";
-import {
-    OrderAddressProvider,
-    useOrderAddressContext,
-} from "@/provider/OrderAddressContext";
+import { useOrderAddressContext } from "@/provider/OrderAddressContext";
 import { getAddresses } from "@/redux/slices/addressSlice";
 import { fetchWithIds } from "@/redux/slices/cartSlice";
 import { getFee, getService } from "@/redux/slices/deliverySlice";
@@ -40,7 +37,7 @@ export default function OrderPage() {
         try {
             parsedCartItemIds = cartItemIds ? JSON.parse(cartItemIds) : [];
         } catch (e) {
-            console.error("Error parsing cartItemIds:", e);
+            //
         }
 
         setCartItemIds(parsedCartItemIds);
@@ -110,7 +107,7 @@ export default function OrderPage() {
     };
 
     useEffect(() => {
-        if (serviceId != 0) {
+        if (serviceId !== 0) {
             dispatch(getFee(feeData));
         }
     }, [targetAddress, cartWithIds, serviceId]);
@@ -129,7 +126,7 @@ export default function OrderPage() {
         return <NotAuth />;
     }
 
-    if (cartStatus == "loading" || addressFetchStatus == "loading") {
+    if (cartStatus === "loading" || addressFetchStatus === "loading") {
         return <ProgressLoading />;
     }
 
@@ -144,6 +141,7 @@ export default function OrderPage() {
                 <Grid container>
                     <Grid item xs={9}>
                         <OrderContainer data={cartWithIds} />
+                        <PaymentMethod />
                     </Grid>
                     <Grid item xs={3}>
                         <AddressCheckout data={addresses?.addresses} />

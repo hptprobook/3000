@@ -2,7 +2,6 @@
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import CategoryContainer from "@/components/layouts/Category/CategoryContainer";
 import { getProductByCatId } from "@/redux/slices/categorySlice";
-import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -12,14 +11,11 @@ export default function CategoryPage({ params }) {
     const status = useSelector((state) => state.categories.status);
     const categoryId = params.slug ? params.slug.split("-").pop() : null;
 
-    const capitalizeFirstLetter = (word) =>
-        word.charAt(0).toUpperCase() + word.slice(1);
-
     useEffect(() => {
         dispatch(getProductByCatId(categoryId));
     }, []);
 
-    if (status == "loading") {
+    if (status === "loading") {
         return <ProgressLoading />;
     }
 

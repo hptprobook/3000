@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import AddressService from "@/services/address.service";
-import authSlice from "./authSlice";
 
 const initialState = {
     addresses: [],
@@ -42,8 +41,9 @@ export const getAddressById = createAsyncThunk(
         try {
             const response = await AddressService.getAddressById(id);
             return response;
-        } catch (err) {}
-        return rejectWithValue(err.response.data);
+        } catch (err) {
+            return rejectWithValue(err.response.data);
+        }
     }
 );
 

@@ -102,7 +102,7 @@ export default function ProductItem({
                 <p className="name">{truncatedName}</p>
                 <div className="rate">
                     <Rating rate={rate} size={"13px"} />
-                    {sold != 0 && (
+                    {sold !== 0 && (
                         <span style={{ fontSize: "11px", color: "#9c9ca3" }}>
                             | Đã bán {sold}
                         </span>

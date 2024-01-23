@@ -10,7 +10,6 @@ export default function ProfileOrderPage() {
     const isAuth = useAuth();
     const dispatch = useDispatch();
     const orders = useSelector((state) => state.orders.orders);
-    const status = useSelector((state) => state.orders.status);
     const putOrder = useSelector((state) => state.orders.putOrder);
 
     useEffect(() => {
