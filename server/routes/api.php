@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SellerController;
@@ -29,8 +30,6 @@ Route::post('/changePassword', [AuthController::class, 'changePassword'])->middl
 Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword'])->name('password.forgot');
 Route::post('/auth/password/verifyToken', [AuthController::class, 'verifyToken']);
 Route::post('/auth/password/resetPassword', [AuthController::class, 'resetPassword']);
-
-Route::post('/order/vnpay', [VnpayController::class, 'create']);
 
 // Search
 Route::get('/search/{searchValue?}', [SearchController::class, 'search']);
@@ -108,4 +107,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
 
     Route::apiResource('settings', SettingController::class)->except(['index', 'show']);
+
+    // VNPAY
+    Route::post('/order/vnpay', [VnpayController::class, 'create']);
+    Route::get('/order/vnpay/return', [VnpayController::class, 'return']);
+
+    // Report
+    Route::get("/dashboard/report", [ReportController::class, 'reportDashboard']);
+    Route::post("/report/chart/order", [ReportController::class, "getOrderReportToChart"]);
+    Route::post("/report/chart/amount", [ReportController::class, "getAmountReportToChart"]);
 });

@@ -206,7 +206,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                             </>
                         )}
 
-                        {currentForm === "forgotPassword" && <ForgotPassword />}
+                        {currentForm === "forgotPassword" && (
+                            <ForgotPassword setCurrentForm={setCurrentForm} />
+                        )}
 
                         {currentForm === "login" && (
                             <>

@@ -127,7 +127,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Token không hợp lệ hoặc đã hết hạn.'], 400);
         }
 
-        return response()->json(['message' => 'Token hợp lệ.']);
+        return response()->json(['message' => 'success']);
     }
 
     public function resetPassword(Request $request)
@@ -142,7 +142,7 @@ class AuthController extends Controller
 
         DB::table('password_reset_tokens')->where('email', $user->email)->delete();
 
-        return response()->json(['message' => 'Mật khẩu đã được đặt lại thành công.']);
+        return response()->json(['message' => 'success']);
     }
 
     public function changePassword(Request $request)

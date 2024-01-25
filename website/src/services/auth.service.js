@@ -53,6 +53,30 @@ const AuthService = {
             };
         }
     },
+
+    verifyToken: async (data) => {
+        try {
+            const res = await request.post("auth/password/verifyToken", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response,
+            };
+        }
+    },
+
+    resetPassword: async (data) => {
+        try {
+            const res = await request.post("auth/password/resetPassword", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response,
+            };
+        }
+    },
 };
 
 export default AuthService;

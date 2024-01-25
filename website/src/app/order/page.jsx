@@ -10,6 +10,7 @@ import PaymentMethod from "@/components/layouts/Order/PaymentMethod";
 import useAuth from "@/hooks/useAuth";
 import { CouponProvider } from "@/provider/CouponContext";
 import { useOrderAddressContext } from "@/provider/OrderAddressContext";
+import { PaymentMethodProvider } from "@/provider/PaymentMethodContext";
 import { getAddresses } from "@/redux/slices/addressSlice";
 import { fetchWithIds } from "@/redux/slices/cartSlice";
 import { getFee, getService } from "@/redux/slices/deliverySlice";
@@ -138,24 +139,26 @@ export default function OrderPage() {
                 </h4>
             </div>
             <div className="appContainer__checkout">
-                <Grid container>
-                    <Grid item xs={9}>
-                        <OrderContainer data={cartWithIds} />
-                        <PaymentMethod />
+                <PaymentMethodProvider>
+                    <Grid container>
+                        <Grid item xs={9}>
+                            <OrderContainer data={cartWithIds} />
+                            <PaymentMethod />
+                        </Grid>
+                        <Grid item xs={3}>
+                            <AddressCheckout data={addresses?.addresses} />
+                            <CouponProvider>
+                                <OrderCoupon />
+                                <Checkout
+                                    totalPrice={totalPrice}
+                                    fee={fee?.fee?.data?.total}
+                                    cartItemIds={cartItemIds}
+                                    addresses={addresses?.addresses}
+                                />
+                            </CouponProvider>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={3}>
-                        <AddressCheckout data={addresses?.addresses} />
-                        <CouponProvider>
-                            <OrderCoupon />
-                            <Checkout
-                                totalPrice={totalPrice}
-                                fee={fee?.fee?.data?.total}
-                                cartItemIds={cartItemIds}
-                                addresses={addresses?.addresses}
-                            />
-                        </CouponProvider>
-                    </Grid>
-                </Grid>
+                </PaymentMethodProvider>
             </div>
             <div
                 style={{

@@ -11,6 +11,7 @@ export default function LoginForm({
     error,
     helperText,
     mt = "12px",
+    disabled = false,
 }) {
     return (
         <TextField
@@ -21,6 +22,7 @@ export default function LoginForm({
             onBlur={onBlur}
             error={error}
             helperText={helperText}
+            disabled={disabled}
             sx={{
                 width: "100%",
                 marginTop: mt,

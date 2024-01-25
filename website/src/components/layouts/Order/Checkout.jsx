@@ -3,12 +3,15 @@ import { styled } from "@mui/material/styles";
 import Link from "next/link";
 import { useCouponContext } from "@/provider/CouponContext";
 import { useOrderAddressContext } from "@/provider/OrderAddressContext";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addOrder } from "@/redux/slices/orderSlice";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { addCoupon } from "@/redux/slices/couponSlice";
-import useAuth from "@/hooks/useAuth";
+import { usePaymentMethodContext } from "@/provider/PaymentMethodContext";
+import {
+    clearCheckoutData,
+    createVNPCheckout,
+} from "@/redux/slices/checkoutSlice";
 
 const StyledCheckout = styled("div")(() => ({
     padding: "20px 16px",
@@ -22,12 +25,16 @@ const StyledCheckout = styled("div")(() => ({
 }));
 
 export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
-    const newFee = fee ? fee : 0;
-    const { clearCoupon, coupon } = useCouponContext();
-    const { selectAddress, selectedAddress } = useOrderAddressContext();
     let defaultAddress = "";
-    const dispatch = useDispatch();
     const router = useRouter();
+    const dispatch = useDispatch();
+    const newFee = fee ? fee : 0;
+    const [orderId, setOrderId] = useState(null);
+    const { clearCoupon, coupon } = useCouponContext();
+    const { selectedAddress } = useOrderAddressContext();
+    const { selectedPaymentMethod } = usePaymentMethodContext();
+    const { postOrder } = useSelector((state) => state.orders);
+    const { checkoutData } = useSelector((state) => state.checkout);
 
     if (addresses?.length > 0) {
         defaultAddress =
@@ -52,9 +59,15 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
         setFinalPrice(Number(totalPrice) + newFee - newDiscount);
     }, [coupon, totalPrice, fee]);
 
-    const handleSubmit = () => {
-        if (defaultAddress) {
-            dispatch(
+    useEffect(() => {
+        if (postOrder) {
+            setOrderId(postOrder.id);
+        }
+    }, [postOrder]);
+
+    const processOrder = async () => {
+        try {
+            await dispatch(
                 addOrder({
                     cart_item_ids: cartItemIds,
                     address_id: defaultAddress.id,
@@ -63,25 +76,46 @@ export default function Checkout({ totalPrice, fee, cartItemIds, addresses }) {
                     code: coupon ? coupon.code : null,
                     discount: discount,
                 })
-            )
-                .then(() => {
-                    toast.success("Đặt hàng thành công", {
-                        autoClose: 2000,
-                    });
-                    setTimeout(() => {
-                        router.push("/profile/orders");
-                    }, 1000);
-                    // dispatch(addCoupon({ code: coupon.code }));
-                    clearCoupon();
-                })
-                .catch((error) => {
-                    toast.error(error);
-                });
-        } else {
+            );
+
+            if (selectedPaymentMethod === "COD") {
+                toast.success("Đặt hàng thành công", { autoClose: 2000 });
+                setTimeout(() => router.push("/profile/orders"), 1000);
+                clearCoupon();
+            }
+        } catch (error) {
+            toast.error(error);
+        }
+    };
+
+    useEffect(() => {
+        if (orderId && selectedPaymentMethod === "VNPAY") {
+            const data = {
+                amount: finalPrice + newFee,
+                order_id: orderId,
+                method: "VNPAY",
+            };
+
+            dispatch(createVNPCheckout(data));
+        }
+    }, [orderId, selectedPaymentMethod, finalPrice, newFee, dispatch]);
+
+    useEffect(() => {
+        if (checkoutData && checkoutData?.message === "success") {
+            toast.info("Đang chuyển hướng...");
+            window.location.href = checkoutData.data;
+            clearCheckoutData();
+        }
+    }, [checkoutData]);
+
+    const handleSubmit = () => {
+        if (!defaultAddress) {
             toast.error("Bạn cần phải thêm địa chỉ giao hàng", {
                 autoClose: 2000,
             });
+            return;
         }
+        processOrder();
     };
 
     return (

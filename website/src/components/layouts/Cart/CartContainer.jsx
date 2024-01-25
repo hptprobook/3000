@@ -7,13 +7,10 @@ import { Grid } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Link from "next/link";
 import { CartContext } from "@/provider/CartContext";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { deleteCartById, fetchAllCart } from "@/redux/slices/cartSlice";
 import { toast } from "react-toastify";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import EmptyData from "@/components/common/Middleware/EmptyData";
-import useAuth from "@/hooks/useAuth";
-import NotAuth from "@/components/common/Middleware/NotAuth";
 
 const StyledCartContainer = styled("div")(() => ({
     "& .cart-item__header": {
@@ -82,17 +79,10 @@ export default function CartContainer({ data }) {
     const [checkedIds, setCheckedIds] = useState([]);
     const [cartData, setCartData] = useState([]);
     const dispatch = useDispatch();
-    const {
-        quantity,
-        setQuantity,
-        setTotalPrice,
-        setCartItemIds,
-        updateCartItems,
-        cartItems,
-    } = useContext(CartContext);
+    const { setQuantity, setTotalPrice, setCartItemIds, updateCartItems } =
+        useContext(CartContext);
 
     useEffect(() => {
-        console.log(data);
         setCheckedIds(data?.map((item) => item.id));
         setCartData(data);
 
