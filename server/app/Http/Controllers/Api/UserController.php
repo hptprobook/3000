@@ -77,40 +77,32 @@ class UserController extends Controller
         try {
             $user = User::findOrFail($id);
 
-            $validatedData = $request->validate(
-                [
-                    'name' => 'required|string|max:255',
-                    'email' => 'string|email|max:255|unique:users,email,' . $id,
-                    'role' => 'in:USER,ADMIN',
-                    'phone_number' => 'min:9|max:10',
-                    'gender' => 'in:male,female,other',
-                    'birth_date' => 'date_format:Y/m/d',
-                    'ward_id' => 'required|integer|min:1|max:30000',
-                    'street' => 'required|string|min:4|max:128'
-                ]
-            );
+            $request->validate([
+                'name' => 'sometimes|string|max:255',
+                'phone_number' => 'sometimes|min:9|max:10|unique:users,phone_number,' . $user->id,
+                'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
+                'password' => 'sometimes|string|min:6',
+                'role' => 'sometimes|in:USER,ADMIN,SELLER',
+                'gender' => 'sometimes|in:male,female,other',
+                'birth_date' => 'sometimes|date_format:Y-m-d'
+            ]);
 
-            $wardExists = Ward::where('id', $validatedData['ward_id'])->exists();
-            if (!$wardExists) {
-                return response()->json([
-                    'error' => 'The provided ward_id does not exist in the database.'
-                ], Response::HTTP_UNPROCESSABLE_ENTITY);
-            }
-
-            $address = Address::updateOrCreate(
-                ['user_id' => $user->id, 'ward_id' => $validatedData['ward_id']],
-                ['name' => $validatedData['name'], 'phone' => $validatedData['phone_number'], 'address_info' => $validatedData['street']]
-            );
-
-            $user = $user->update([
+            $updateData = [
                 'name' => $request->name,
                 'email' => $request->email,
-                'role' => $request->role ?? 'USER',
+                'role' => $request->role,
                 'phone_number' => $request->phone_number,
                 'gender' => $request->gender,
                 'birth_date' => $request->birth_date,
-                'address_id' => $address->id
-            ]);
+            ];
+
+            if (!empty($request->password)) {
+                $updateData['password'] = Hash::make($request->password);
+            }
+
+            $user->update($updateData);
+
+            $user = $user->fresh();
 
             return response()->json($user, Response::HTTP_CREATED);
         } catch (ValidationException $e) {

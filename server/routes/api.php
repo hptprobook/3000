@@ -23,13 +23,17 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
 Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword'])->name('password.forgot');
 Route::post('/auth/password/verifyToken', [AuthController::class, 'verifyToken']);
 Route::post('/auth/password/resetPassword', [AuthController::class, 'resetPassword']);
+
+// VNPAY
+Route::post('/order/vnpay', [VnpayController::class, 'create']);
+Route::get('/order/vnpay/return', [VnpayController::class, 'return']);
 
 // Search
 Route::get('/search/{searchValue?}', [SearchController::class, 'search']);
@@ -65,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('users/current_user', [UserController::class, 'getCurrentUser']);
     Route::put('users/updateCurrentUser', [UserController::class, 'updateCurrentUser']);
+    Route::put('users/update', [UserController::class, 'update']);
     Route::apiResource('users', UserController::class);
     Route::get('/is_admin', [AuthController::class, 'isAdmin']);
 
@@ -108,9 +113,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('settings', SettingController::class)->except(['index', 'show']);
 
-    // VNPAY
-    Route::post('/order/vnpay', [VnpayController::class, 'create']);
-    Route::get('/order/vnpay/return', [VnpayController::class, 'return']);
+
 
     // Report
     Route::get("/dashboard/report", [ReportController::class, 'reportDashboard']);

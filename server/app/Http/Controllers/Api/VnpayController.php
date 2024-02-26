@@ -84,14 +84,8 @@ class VnpayController extends Controller
 
     public function return(Request $request)
     {
-        $vnp_TmnCode = env("VNP_TMNCODE");
-        $vnp_HashSecret = env("VNP_HASHSECRET");
-        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        $vnp_Returnurl = env("VNP_RETURN_URL");
-        $vnp_apiUrl = "http://sandbox.vnpayment.vn/merchant_webapi/merchant.html";
-        $apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-        $startTime = date("YmdHis");
-        $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
+        $vnp_HashSecret = "OZSZCHTPJSZVEWFRAUZETVLDUIXTWJWN";
+        $vnp_Returnurl = "http://localhost:3000/profile/orders";
 
         $vnp_SecureHash = $_GET['vnp_SecureHash'];
         $inputData = array();
@@ -120,9 +114,9 @@ class VnpayController extends Controller
 
             if ($_GET['vnp_ResponseCode'] == '00') {
 
-                Payment::where('order_id', $orderId)->update([
-                    "status" => 1
-                ]);
+                // Payment::where('order_id', $orderId)->update([
+                //     "status" => 1
+                // ]);
 
                 return redirect()->to($vnp_Returnurl . '?status=success');
             } else {
