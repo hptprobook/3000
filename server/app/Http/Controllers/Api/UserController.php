@@ -83,7 +83,7 @@ class UserController extends Controller
                 'email' => 'sometimes|string|email|max:255|unique:users,email,' . $id,
                 'password' => 'sometimes|string|min:6',
                 'role' => 'sometimes|in:USER,ADMIN,SELLER',
-                'gender' => 'sometimes|in:male,female,other',
+                // 'gender' => 'sometimes|in:male,female,other',
                 'birth_date' => 'sometimes|date_format:Y-m-d'
             ]);
 
