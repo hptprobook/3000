@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderDetailController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\SellerController;
@@ -17,14 +18,22 @@ use App\Http\Controllers\Api\SettingController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VariantTypesController;
+use App\Http\Controllers\Api\VnpayController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/changePassword', [AuthController::class, 'changePassword'])->middleware('auth:sanctum');
+Route::post('/auth/password/forgot', [AuthController::class, 'forgotPassword'])->name('password.forgot');
+Route::post('/auth/password/verifyToken', [AuthController::class, 'verifyToken']);
+Route::post('/auth/password/resetPassword', [AuthController::class, 'resetPassword']);
+
+// VNPAY
+Route::post('/order/vnpay', [VnpayController::class, 'create']);
+Route::get('/order/vnpay/return', [VnpayController::class, 'return']);
 
 // Search
 Route::get('/search/{searchValue?}', [SearchController::class, 'search']);
@@ -60,6 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('users/current_user', [UserController::class, 'getCurrentUser']);
     Route::put('users/updateCurrentUser', [UserController::class, 'updateCurrentUser']);
+    Route::put('users/update', [UserController::class, 'update']);
     Route::apiResource('users', UserController::class);
     Route::get('/is_admin', [AuthController::class, 'isAdmin']);
 
@@ -102,4 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
 
     Route::apiResource('settings', SettingController::class)->except(['index', 'show']);
+
+
+
+    // Report
+    Route::get("/dashboard/report", [ReportController::class, 'reportDashboard']);
+    Route::post("/report/chart/order", [ReportController::class, "getOrderReportToChart"]);
+    Route::post("/report/chart/amount", [ReportController::class, "getAmountReportToChart"]);
 });

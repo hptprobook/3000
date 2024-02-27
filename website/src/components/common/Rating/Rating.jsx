@@ -30,7 +30,6 @@ export default function Rating({ rate, size }) {
         let stars = [];
         let fullStars = Math.floor(rate);
         let hasHalfStar = rate % 1 !== 0; // Check if there is a half star
-        let starCount = hasHalfStar ? fullStars + 1 : fullStars; // Count half star as one if it exists
 
         for (let i = 0; i < 5; i++) {
             if (i < fullStars) {

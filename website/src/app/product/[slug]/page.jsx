@@ -7,12 +7,11 @@ import ProductDetailSeller from "@/components/layouts/ProductDetail/Seller/Produ
 import ProductDetailSimilar from "@/components/layouts/ProductDetail/Similar.jsx/ProductDetailSimilar";
 import ProductDetailSlider from "@/components/layouts/ProductDetail/Slider/ProductDetailSlider";
 import { Grid } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { VariantProvider } from "@/provider/VariantContext";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductById } from "@/redux/slices/productSlice";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 
@@ -31,7 +30,7 @@ export default function ProductDetail({ params }) {
         loadProduct(productId);
     }, []);
 
-    if (status == "loading") {
+    if (status === "loading") {
         return <ProgressLoading />;
     }
 

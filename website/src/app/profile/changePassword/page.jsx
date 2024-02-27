@@ -36,7 +36,6 @@ export default function ChangePasswordPage() {
         },
         validationSchema: changePasswordSchema,
         onSubmit: (value, { setSubmitting }) => {
-            console.log(value);
             dispatch(
                 changePassword({
                     currentPassword: value.old,
@@ -53,7 +52,7 @@ export default function ChangePasswordPage() {
 
     useEffect(() => {
         if (
-            error ==
+            error ===
             "The provided password does not match your current password."
         ) {
             formik.setErrors({ old: "Mật khẩu hiện tại không chính xác" });
@@ -63,7 +62,7 @@ export default function ChangePasswordPage() {
     useEffect(() => {
         if (
             changePassword &&
-            changedPassword?.message == "Password changed successfully"
+            changedPassword?.message === "Password changed successfully"
         ) {
             toast.success("Đổi mật khẩu thành công");
         }

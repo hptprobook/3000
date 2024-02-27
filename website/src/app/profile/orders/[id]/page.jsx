@@ -14,7 +14,7 @@ export default function ProfileDetailOrder({ params }) {
         dispatch(getOrderById(params.id));
     }, []);
 
-    if (status == "loading") {
+    if (status === "loading") {
         return <ProgressLoading />;
     }
 

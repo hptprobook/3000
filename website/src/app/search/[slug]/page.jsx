@@ -1,11 +1,10 @@
 "use client";
 import Breadcrumb from "@/components/common/Breadcrumb/Breadcrumb";
-import CirLoading from "@/components/common/Loading/CircularLoading/CirLoading";
 import ProgressLoading from "@/components/common/Loading/ProgressLoading/ProgressLoading";
 import HomeFooter from "@/components/layouts/Home/Footer/HomeFooter";
 import SearchContainer from "@/components/layouts/Search/SearchContainer";
 import { fetchSearch } from "@/redux/slices/searchSlice";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -16,12 +15,11 @@ export default function page() {
     const results = useSelector((state) => state.search.results);
     const status = useSelector((state) => state.search.status);
 
-    console.log(decodeURIComponent(modifiedPathname));
     useEffect(() => {
         dispatch(fetchSearch(modifiedPathname));
     }, [pathname]);
 
-    if (status == "loading" || !modifiedPathname) {
+    if (status === "loading" || !modifiedPathname) {
         return <ProgressLoading />;
     }
 

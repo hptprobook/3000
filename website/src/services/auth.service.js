@@ -25,7 +25,7 @@ const AuthService = {
     },
     logout: async () => {
         try {
-            await axios.post("/api/logout");
+            await request.post("logout");
             return;
         } catch (err) {
             return err.response;
@@ -39,6 +39,41 @@ const AuthService = {
             return {
                 error: true,
                 message: err.response?.data?.error,
+            };
+        }
+    },
+    forgotPassword: async (data) => {
+        try {
+            const res = await request.post("auth/password/forgot", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response,
+            };
+        }
+    },
+
+    verifyToken: async (data) => {
+        try {
+            const res = await request.post("auth/password/verifyToken", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response,
+            };
+        }
+    },
+
+    resetPassword: async (data) => {
+        try {
+            const res = await request.post("auth/password/resetPassword", data);
+            return res;
+        } catch (err) {
+            return {
+                error: true,
+                message: err.response,
             };
         }
     },

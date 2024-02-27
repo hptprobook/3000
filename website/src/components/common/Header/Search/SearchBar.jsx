@@ -131,7 +131,7 @@ export default function SearchBar() {
 
     const dispatch = useDispatch();
     const products = useSelector((state) => state.products);
-    const status = useSelector((state) => state.products.status);
+    // const status = useSelector((state) => state.products.status);
     const [loadData, setLoadData] = useState(false);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [emptyInput, setEmptyInput] = useState(false);

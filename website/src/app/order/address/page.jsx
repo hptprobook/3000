@@ -57,10 +57,8 @@ export default function OrderAddress() {
     useEffect(() => {
         if (addressesList.length === 0) {
             dispatch(getAddresses());
-            console.log("haha");
         } else {
             setAddresses(addressesList);
-            console.log("hihi");
         }
     }, []);
 

@@ -42,8 +42,6 @@ export const updateOrder = createAsyncThunk(
     async ({ data, id }, { rejectWithValue }) => {
         try {
             const response = await OrderService.updateOrder(data, id);
-            console.log("🚀 ~ file: orderSlice.js:45 ~ id:", id);
-            console.log("🚀 ~ file: orderSlice.js:45 ~ data:", data);
             return response.data;
         } catch (err) {
             return rejectWithValue(err.response.data);
@@ -135,7 +133,7 @@ const orderSlice = createSlice({
                 state.status = "loading";
                 state.error = null;
             })
-            .addCase(deleteOrder.fulfilled, (state, action) => {
+            .addCase(deleteOrder.fulfilled, (state) => {
                 state.status = "succeeded";
                 state.deleted = true;
             })

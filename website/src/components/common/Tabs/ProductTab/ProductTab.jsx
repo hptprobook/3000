@@ -7,7 +7,6 @@ import "swiper/css";
 import { Navigation } from "swiper/modules";
 import "swiper/css/navigation";
 import "./style.css";
-import CirLoading from "../../Loading/CircularLoading/CirLoading";
 import EmptyProduct from "../../Middleware/EmptyProduct";
 
 const StyledProductTab = styled("div")(() => ({

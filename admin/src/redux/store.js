@@ -11,6 +11,7 @@ import productsReducer from "./slices/productSlice";
 import variantReducer from "./slices/variantSlice";
 import couponsReducer from "./slices/couponsSlice";
 import authSlice from "./slices/authSlice";
+import reportSlice from "./slices/reportSlice";
 
 export const store = configureStore({
     reducer: {
@@ -26,5 +27,6 @@ export const store = configureStore({
         variant: variantReducer,
         coupons: couponsReducer,
         auth: authSlice,
+        reports: reportSlice,
     },
 });

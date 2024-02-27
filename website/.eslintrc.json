@@ -1,34 +1,26 @@
 {
     "env": {
-        "browser": true,
-        "es2021": true,
-        "node": true
+        "browser": true
     },
-    "extends": [
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:react-hooks/recommended",
-        "next/babel",
-        "next/core-web-vitals"
-    ],
+    "plugins": ["react"],
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "settings": {
         "react": {
             "version": "detect"
         }
     },
     "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module",
         "ecmaFeatures": {
             "jsx": true
-        },
-        "ecmaVersion": 12,
-        "sourceType": "module"
+        }
     },
     "rules": {
-        // Định nghĩa các quy tắc cụ thể tại đây
-        // Ví dụ: "react/react-in-jsx-scope": "off" nếu bạn đang sử dụng Next.js với React 17 trở lên
+        "react/prop-types": "off",
+        "no-console": "warn",
+        "no-undef": "error",
+        "no-unused-vars": "warn",
+        "eqeqeq": "warn"
     }
 }
-
-// {
-//     "extends": ["next/babel", "next/core-web-vitals"]
-// }

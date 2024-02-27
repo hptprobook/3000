@@ -21,12 +21,12 @@ export default function ProfilePage() {
     const currentUser = useSelector((state) => state.users.currentUser);
 
     useEffect(() => {
-        if (status == "idle") {
+        if (status === "idle") {
             dispatch(getCurrentUser());
         }
     }, []);
 
-    if (status == "loading") {
+    if (status === "loading") {
         return <ProgressLoading />;
     }
 

@@ -12,6 +12,7 @@ import deliveryReducer from "./slices/deliverySlice";
 import orderReducer from "./slices/orderSlice";
 import couponReducer from "./slices/couponSlice";
 import reviewReducer from "./slices/reviewSlice";
+import checkoutReducer from "./slices/checkoutSlice";
 
 export const store = configureStore({
     reducer: {
@@ -28,6 +29,7 @@ export const store = configureStore({
         coupons: couponReducer,
         deliveries: deliveryReducer,
         reviews: reviewReducer,
+        checkout: checkoutReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({

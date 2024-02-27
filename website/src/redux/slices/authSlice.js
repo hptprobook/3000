@@ -7,7 +7,10 @@ const initialState = {
     user: null,
     changedPassword: null,
     registerData: null,
+    forgotPassword: null,
     access_token: null,
+    verifyToken: null,
+    resetPassword: null,
 };
 
 export const loginUser = createAsyncThunk(
@@ -46,11 +49,56 @@ export const logoutUser = createAsyncThunk("auth/logout", async (thunkAPI) => {
     }
 });
 
+export const forgotPassword = createAsyncThunk(
+    "auth/password/forgot",
+    async (email, thunkAPI) => {
+        try {
+            const response = await AuthService.forgotPassword(email);
+            if (response.error) {
+                return thunkAPI.rejectWithValue(response.message);
+            }
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.message);
+        }
+    }
+);
+
 export const changePassword = createAsyncThunk(
     "auth/changePassword",
     async (data, thunkAPI) => {
         try {
             const response = await AuthService.changePassword(data);
+            if (response.error) {
+                return thunkAPI.rejectWithValue(response.message);
+            }
+            return response.data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
+export const verifyToken = createAsyncThunk(
+    "auth/verifyToken",
+    async (data, thunkAPI) => {
+        try {
+            const response = await AuthService.verifyToken(data);
+            if (response.error) {
+                return thunkAPI.rejectWithValue(response.message);
+            }
+            return response.data;
+        } catch (err) {
+            return thunkAPI.rejectWithValue(err.message);
+        }
+    }
+);
+
+export const resetPassword = createAsyncThunk(
+    "auth/resetPassword",
+    async (data, thunkAPI) => {
+        try {
+            const response = await AuthService.resetPassword(data);
             if (response.error) {
                 return thunkAPI.rejectWithValue(response.message);
             }
@@ -111,11 +159,50 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(forgotPassword.pending, (state) => {
+                state.loading = true;
+                state.error = false;
+            })
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = false;
+                state.forgotPassword = action.payload;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
             .addCase(logoutUser.fulfilled, (state) => {
                 state.error = false;
                 state.loading = false;
                 state.user = null;
                 state.access_token = null;
+            })
+            .addCase(verifyToken.pending, (state) => {
+                state.loading = true;
+                state.error = false;
+            })
+            .addCase(verifyToken.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = false;
+                state.verifyToken = action.payload;
+            })
+            .addCase(verifyToken.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(resetPassword.pending, (state) => {
+                state.loading = true;
+                state.error = false;
+            })
+            .addCase(resetPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = false;
+                state.resetPassword = action.payload;
+            })
+            .addCase(resetPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     },
 });

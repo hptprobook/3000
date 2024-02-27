@@ -9,7 +9,7 @@ import { fetchCategoriesAsync } from "../../../redux/slices/categoriesSlice";
 import Loading from "../../../components/common/Loading/Loading";
 import TableOrder from "../../../components/common/Table/TableOrder";
 import { fetchAllOrders } from "../../../redux/slices/ordersSlice";
-
+import ExportButton from "../../../components/common/Button/ExportButton";
 
 export default function ListOrderPage() {
     const dispatch = useDispatch();
@@ -32,46 +32,45 @@ export default function ListOrderPage() {
         }
     }, [loadData]);
     useEffect(() => {
-        if (statusOrder == 'success') {
+        if (statusOrder == "success") {
             setOrderStatusList(orders);
             setLoadData(true);
         }
     }, [statusOrder]);
     useEffect(() => {
-        if (statusOrder == 'success') {
+        if (statusOrder == "success") {
             setOrderList(orders);
 
             if (selectedFilters.length > 0) {
-                const filteredOrder = orders.filter(order => selectedFilters.includes(order.status));
+                const filteredOrder = orders.filter((order) =>
+                    selectedFilters.includes(order.status)
+                );
                 setOrderStatusList(filteredOrder);
                 setOrderList(filteredOrder);
-            }
-            else {
+            } else {
                 setOrderStatusList(orders);
                 setOrderList(orders);
             }
         }
-    }, [selectedFilters, orders])
+    }, [selectedFilters, orders]);
     const handleSearch = (searchValue) => {
-        const regex = new RegExp(searchValue, 'i'); // 'i' để không phân biệt hoa thường
-        const result = ordersStatusList.filter(item => regex.test(item.address.name));
+        const regex = new RegExp(searchValue, "i"); // 'i' để không phân biệt hoa thường
+        const result = ordersStatusList.filter((item) =>
+            regex.test(item.address.name)
+        );
         setOrderList(result);
-        if (searchValue === '') {
+        if (searchValue === "") {
             setOrderList(ordersStatusList);
         }
     };
 
-    if (statusOrder === 'loading') {
-        return (
-            <Loading />
-        )
+    if (statusOrder === "loading") {
+        return <Loading />;
     }
-    if (statusOrder === 'failed') {
-        return (
-            <div>Error</div>
-        )
+    if (statusOrder === "failed") {
+        return <div>Error</div>;
     }
-    if (statusOrder === 'success') {
+    if (statusOrder === "success") {
         return (
             <Box>
                 <HeaderPage
@@ -98,19 +97,23 @@ export default function ListOrderPage() {
                         </Box>
                         <SelectFilterOrder
                             data={[
-                                { id: 'pending', name: 'Chưa giải quyết', },
-                                { id: 'processing', name: 'Đang xử lý' },
-                                { id: 'shipping', name: 'Đang giao' },
-                                { id: 'cancelled', name: 'Hủy' },
-                                { id: 'delivered', name: 'Giao hàng thành công' },
-                                { id: 'refunded', name: 'Trả hàng' },
+                                { id: "pending", name: "Chưa giải quyết" },
+                                { id: "processing", name: "Đang xử lý" },
+                                { id: "shipping", name: "Đang giao" },
+                                { id: "cancelled", name: "Hủy" },
+                                {
+                                    id: "delivered",
+                                    name: "Giao hàng thành công",
+                                },
+                                { id: "refunded", name: "Trả hàng" },
                             ]}
-                            filterReturn={handleFilterReturn} />
+                            filterReturn={handleFilterReturn}
+                        />
                         <TableOrder data={orderList} />
                     </Box>
                 </Box>
+                <ExportButton data={orderList} />
             </Box>
         );
     }
-
 }
