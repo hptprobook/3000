@@ -27,6 +27,7 @@ class ProductController extends Controller
                 ->withCount(['reviews as average_rating' => function ($query) {
                     $query->select(DB::raw('coalesce(avg(rating),0)'));
                 }])
+                ->orderBy('created_at', 'desc')
                 ->get();
 
             $products->each(function ($product) {

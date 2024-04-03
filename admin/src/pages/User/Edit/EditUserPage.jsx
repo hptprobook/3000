@@ -16,6 +16,7 @@ import SelectEdit from "~/components/common/Select/SelectEdit";
 import { setStatus, updateUserByID } from "../../../redux/slices/userSlice";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import Button from "@mui/material/Button";
 
 const userSchema = Yup.object().shape({
     name: Yup.string()
@@ -246,7 +247,7 @@ const EditUserPage = () => {
                                 borderRadius: "14px",
                             }}
                         >
-                            <button type="submit">Cập nhật</button>
+                            <Button variant="contained">Cập nhật</Button>
                         </Box>
                     </form>
                 </Box>
