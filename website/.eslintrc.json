@@ -15,12 +15,8 @@
         "ecmaFeatures": {
             "jsx": true
         }
-    },
-    "rules": {
-        "react/prop-types": "off",
-        "no-console": "warn",
-        "no-undef": "error",
-        "no-unused-vars": "warn",
-        "eqeqeq": "warn"
     }
+    // "rules": {
+    //     "react/prop-types": "off"
+    // }
 }
